@@ -14,6 +14,7 @@ import InsertData from './components/InsertData';
 import TestPage from './components/TestPage';
 import AbstractComplete from './components/AbstractComplete';
 import TopicReview from './components/staff/TopicReview';
+import TopicReviewOverview from './components/staff/TopicReviewOverview';
 function App() {
 
   const router = createBrowserRouter([
@@ -70,8 +71,12 @@ function App() {
       element: <AbstractComplete />
     },
     {
-      path: '/staff/topicReview',
+      path: '/staff/topicReview/:studentId',
       element: <TopicReview />
+    },
+    {
+      path: '/staff/topicReviewOverview',
+      element: <TopicReviewOverview />
     }
   ])
   

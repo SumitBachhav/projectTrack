@@ -1,8 +1,14 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios';
+import { useNavigate, useParams } from 'react-router-dom';
 
-// fetch data through student id
 
 const TopicReview = () => {
+
+    const { studentId } = useParams()
+    console.log(studentId)
+
+    // fetch data through student id and useEffect-----------------------------------------------------------
 
     const TopicReviewDetails = {
         items: [
@@ -29,9 +35,41 @@ const TopicReview = () => {
             },
         ],
         markAsDone: false,
-        studentId: 1
     }
     let items = TopicReviewDetails.items
+
+    const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    // Fetch data on component mount
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //       try {
+    //         const response = await axios.get('https://api.example.com/data');
+    //         setData(response.data); 
+    //       } catch (error) {
+    //         setError(error.message);
+    //       } finally {
+    //         setLoading(false);
+    //       }
+    //     };
+
+    //     fetchData();
+    //   }, []);  // Empty dependency array means this effect runs only once (on mount)
+
+    //   if (loading) {
+    //     return <div>Loading...</div>;
+    //   }
+
+    //   if (error) {
+    //     return <div>Error: {error}</div>;
+    //   }
+
+    //   setData(JSON.stringify(data))
+
+
+
 
     const handleMarkAsDone = () => {
         // setMarkAsDone(!markAsDone);
@@ -161,3 +199,50 @@ const TopicReview = () => {
 }
 
 export default TopicReview
+
+
+/*
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+const DataFetchingComponent = () => {
+  const [data, setData] = useState(null);  // Holds the fetched data
+  const [loading, setLoading] = useState(true);  // Loading state
+  const [error, setError] = useState(null);  // Error state
+
+  // Fetch data on component mount
+  useEffect(() => {
+    // Replace this URL with the endpoint you're fetching from
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('https://api.example.com/data');  // API endpoint
+        setData(response.data);  // Store the fetched data in the state
+      } catch (error) {
+        setError(error.message);  // Store error message
+      } finally {
+        setLoading(false);  // Update loading state
+      }
+    };
+
+    fetchData();
+  }, []);  // Empty dependency array means this effect runs only once (on mount)
+
+  if (loading) {
+    return <div>Loading...</div>;  // Show loading state
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;  // Show error state
+  }
+
+  return (
+    <div>
+      <h1>Fetched Data</h1>
+      <pre>{JSON.stringify(data, null, 2)}</pre>  {// Display the fetched data}
+    </div>
+  );
+};
+
+export default DataFetchingComponent;
+
+*/
