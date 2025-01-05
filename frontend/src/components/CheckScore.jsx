@@ -29,19 +29,56 @@ function CheckScore() {
     const [matchedText3, setMatchedText3] = useState('');
     const [error, setError] = useState('');
 
+    const [abstractList, setAbstractList] = useState([]);
+    const [addButtonDisabled, setAddButtonDisabled] = useState(true);
+    const [sendButtonDisabled, setSendButtonDisabled] = useState(true);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
 
-    const next = () => {
-        // navigate('/student/dashboard');
+    const clear = () => {
         setFormData({
             paragraph: '',
             title: '',
             keyword: '',
             domain: '',
         })
+        setScore1('Please submit abstract to get similarity score and abstracts');
+        setScore2('Please submit abstract to get similarity score and abstracts');
+        setScore3('Please submit abstract to get similarity score and abstracts');
+        setMatchedText1('');
+        setMatchedText2('');
+        setMatchedText3('');
+        setError('');
+        setAddButtonDisabled(true);
+    };
+
+    const add = () => {
+        console.log("from add", formData)
+        const listObject = {
+            paragraph: formData.paragraph,
+            title: formData.title,
+            keyword: formData.keyword,
+            domain: formData.domain,
+            score1: score1,
+            score2: score2,
+            score3: score3,
+            matchedText1: matchedText1,
+            matchedText2: matchedText2,
+            matchedText3: matchedText3,
+            //instead of matchedText we can send id of abstract
+        }
+        setAbstractList([...abstractList, listObject]);
+        setSendButtonDisabled(false);
+    };
+
+    const send = () => {
+        navigate('/student/abstractSubmissionComplete');
+        // console.log("from add", abstractList)
+        //to send data to backend
+        // work needs to be done---------------------------------------------------------------------
     };
 
     const handleSubmit = async (e) => {
@@ -66,13 +103,13 @@ function CheckScore() {
                     // domain: formData.domain,
                 },
                 {
-                  headers: {
-                    // 'Authorization': 'Bearer your-token-here',
-                    'Content-Type': 'application/json',
-                  }
+                    headers: {
+                        // 'Authorization': 'your-token-here',
+                        'Content-Type': 'application/json',
+                    }
                 }
-              );
-          
+            );
+
             console.log(response.data);
             // setResponseMessage(response.data.message);
 
@@ -89,12 +126,7 @@ function CheckScore() {
             setMatchedText1(response.data[0][1]);
             setMatchedText2(response.data[1][1]);
             setMatchedText3(response.data[2][1]);
-            // setFormData({
-            //     paragraph: '',
-            //     title: '',
-            //     keyword: '',
-            //     domain: '',
-            // })
+            setAddButtonDisabled(false);
         } catch (err) {
             // setError(err.message);
             setError('Error sending paragraph. Please try again.' + err.message);
@@ -104,98 +136,157 @@ function CheckScore() {
             setMatchedText1('');
             setMatchedText2('');
             setMatchedText3('');
+
+            setAddButtonDisabled(false);
+            // to remove-------------------------------------------------------------------------------
+
+        }
+    };
+
+    const handleDelete = (index) => {
+        const updatedAbstractList = [...abstractList];
+        updatedAbstractList.splice(index, 1);
+        setAbstractList(updatedAbstractList);
+
+        if (updatedAbstractList.length === 0) {
+            setSendButtonDisabled(true);
         }
     };
 
 
     return (
-        <div className='flex flex-col items-center pt-36' >
+        <div className='flex flex-row pt-20 justify-evenly'>
+            <div className='flex flex-col items-center' >
+                <form onSubmit={handleSubmit} className="flex flex-col items-center">
+                    <div>
+                        <label className="text-sm font-medium text-gray-700">Title</label>
+                        <input type="text" name="title" value={formData.title} onChange={handleChange} className="mt-1 block px-4 py-2 border border-black rounded-md focus:outline-none focus:border-sky-blue-500 bg-gray-300 w-[500px]" placeholder="Enter Project Title" required />
+                    </div>
+                    <div>
+                        <label className="text-sm font-medium text-gray-700">Abstract</label>
 
-            <form onSubmit={handleSubmit} className="flex flex-col items-center">
-                <div>
-                    <label className="text-sm font-medium text-gray-700">Title</label>
-                    <input type="text" name="title" value={formData.title} onChange={handleChange} className="mt-1 block px-4 py-2 border border-black rounded-md focus:outline-none focus:border-sky-blue-500 bg-gray-300 w-[500px]" placeholder="Enter Project Title" required />
-                </div>
-                <div>
-                    <label className="text-sm font-medium text-gray-700">Abstract</label>
-                    {/* <input type="text" name="paragraph" value={formData.paragraph} onChange={handleChange} className="mt-1 block w-full px-4 py-2 border rounded-md focus:outline-none focus:border-sky-blue-500" placeholder="Enter Project Title" required /> */}
+                        <textarea
+                            value={formData.paragraph}
+                            name='paragraph'
+                            onChange={handleChange}
+                            rows="5"
+                            cols="50"
+                            placeholder="Type your paragraph here..."
+                            required
+                            className="mt-1 block px-4 py-2 border border-black rounded-md focus:outline-none focus:border-sky-blue-500 bg-gray-300 w-[500px] h-[200px] p-[10px]"
 
-                    <textarea
-                        value={formData.paragraph}
-                        name='paragraph'
-                        onChange={handleChange}
-                        rows="5"
-                        cols="50"
-                        placeholder="Type your paragraph here..."
-                        required
-                        className="mt-1 block px-4 py-2 border border-black rounded-md focus:outline-none focus:border-sky-blue-500 bg-gray-300 w-[500px] h-[200px] p-[10px]"
+                        />
+                    </div>
+                    <div>
+                        <label className="text-sm font-medium text-gray-700">Domain</label>
+                        <input type="text" name="domain" value={formData.domain} onChange={handleChange} className="mt-1 block px-4 py-2 border border-black rounded-md focus:outline-none focus:border-sky-blue-500 bg-gray-300 w-[500px]" placeholder="Enter Project domain" required />
+                    </div>
+                    <div>
+                        <label className="text-sm font-medium text-gray-700">keyword</label>
+                        <input type="text" name="keyword" value={formData.keyword} onChange={handleChange} className="mt-1 block px-4 py-2 border border-black rounded-md focus:outline-none focus:border-sky-blue-500 bg-gray-300 w-[500px]" placeholder="Enter Project keywords" required />
+                    </div>
 
-                        // className="mt-1 block w-full px-4 py-2 border rounded-md focus:outline-none focus:border-sky-blue-500"
-                        // style={{ width: '500px', height: '200px', backgroundColor: 'rgb(203 213 225)', border: '1px solid black', padding: '10px' }}
-                    />
-                </div>
-                <div>
-                    <label className="text-sm font-medium text-gray-700">Domain</label>
-                    <input type="text" name="domain" value={formData.domain} onChange={handleChange} className="mt-1 block px-4 py-2 border border-black rounded-md focus:outline-none focus:border-sky-blue-500 bg-gray-300 w-[500px]" placeholder="Enter Project domain" required />
-                </div>
-                <div>
-                    <label className="text-sm font-medium text-gray-700">keyword</label>
-                    <input type="text" name="keyword" value={formData.keyword} onChange={handleChange} className="mt-1 block px-4 py-2 border border-black rounded-md focus:outline-none focus:border-sky-blue-500 bg-gray-300 w-[500px]" placeholder="Enter Project keywords" required />
+
+                    <button
+                        type='submit'
+                        style={{
+                            width: '20%',
+                            backgroundColor: 'rgb(203 213 225)',
+                            border: '1px solid black',
+                            padding: '10px',
+                            margin: '10px',
+                        }}>
+                        Submit
+                    </button>
+                </form>
+
+                {error && <div style={{ color: 'red' }}>{error}</div>}
+
+
+
+                <div style={{ width: '500px', backgroundColor: 'rgb(203 213 225)', border: '1px solid black', padding: '10px' }}>
+                    <Accordion type="single" collapsible className="w-full">
+                        <AccordionItem value="item-1">
+                            <AccordionTrigger>{score1}</AccordionTrigger>
+                            <AccordionContent>
+                                {matchedText1}
+                            </AccordionContent>
+                        </AccordionItem>
+                        <AccordionItem value="item-2">
+                            <AccordionTrigger>{score2}</AccordionTrigger>
+                            <AccordionContent>
+                                {matchedText2}
+                            </AccordionContent>
+                        </AccordionItem>
+                        <AccordionItem value="item-3">
+                            <AccordionTrigger>{score3}</AccordionTrigger>
+                            <AccordionContent>
+                                {matchedText3}
+                            </AccordionContent>
+                        </AccordionItem>
+                    </Accordion>
                 </div>
 
-                
+                <div className='flex flex-row justify-between'>
+                    <button
+                        onClick={clear}
+                        style={{
+                            // width: '20%',
+                            backgroundColor: 'rgb(203 213 225)',
+                            border: '1px solid black',
+                            padding: '10px',
+                            margin: '10px',
+                        }}>
+                        Clear
+                    </button>
+                    <button
+                        onClick={add}
+                        style={{
+                            // width: '20%',
+                            backgroundColor: 'rgb(203 213 225)',
+                            border: '1px solid black',
+                            padding: '10px',
+                            margin: '10px',
+                        }}
+                        disabled={addButtonDisabled}
+                    >
+                        Add
+                    </button>
+                </div>
+
+
+
+            </div>
+
+            <div className='w-1/3 p-2 flex flex-col'>
+                <h1 className="text-3xl font-bold mb-4">Abstract list for faculty verification</h1>
+                <div className="bg-red-200 shadow-md rounded-xl p-4 h-80 overflow-auto border-2 border-black">
+                    {
+                        abstractList.map((abstract, index) => (
+                            <div key={index} className="bg-blue-200 shadow-md rounded-xl p-1 h-10 flex flex-row justify-between m-1 border border-black">
+                                <h3 className="text-2xl font-medium">{abstract.title}</h3>
+                                <button className='bg-blue-500 hover:bg-blue-700 text-white font-bold p-1 rounded'
+                                    onClick={() => handleDelete(index)}
+                                >Delete
+                                </button>
+                            </div>
+                        ))
+                    }
+                </div>
                 <button
-                    type='submit'
+                    onClick={send}
                     style={{
-                        width: '20%',
+                        // width: '20%',
                         backgroundColor: 'rgb(203 213 225)',
                         border: '1px solid black',
                         padding: '10px',
                         margin: '10px',
-                    }}>
-                    Submit
+                    }}
+                    disabled={sendButtonDisabled}
+                >
+                    Send
                 </button>
-            </form>
-
-            {error && <div style={{ color: 'red' }}>{error}</div>}
-
-
-
-            <div style={{ width: '500px', backgroundColor: 'rgb(203 213 225)', border: '1px solid black', padding: '10px' }}>
-                <Accordion type="single" collapsible className="w-full">
-                    <AccordionItem value="item-1">
-                        <AccordionTrigger>{score1}</AccordionTrigger>
-                        <AccordionContent>
-                            {matchedText1}
-                        </AccordionContent>
-                    </AccordionItem>
-                    <AccordionItem value="item-2">
-                        <AccordionTrigger>{score2}</AccordionTrigger>
-                        <AccordionContent>
-                            {matchedText2}
-                        </AccordionContent>
-                    </AccordionItem>
-                    <AccordionItem value="item-3">
-                        <AccordionTrigger>{score3}</AccordionTrigger>
-                        <AccordionContent>
-                            {matchedText3}
-                        </AccordionContent>
-                    </AccordionItem>
-                </Accordion>
             </div>
-
-            <button
-                onClick={next}
-                style={{
-                    width: '20%',
-                    backgroundColor: 'rgb(203 213 225)',
-                    border: '1px solid black',
-                    padding: '10px',
-                    margin: '10px',
-                }}>
-                Next
-            </button>
-
         </div>
     )
 }

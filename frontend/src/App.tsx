@@ -9,8 +9,11 @@ import CoordinatorForm from './components/CoordinatorForm';
 import Home from './components/Home';
 import RegisterComplete from './components/RegisterComplete';
 import Login from './components/Login';
-import StudentDashboard from './components/StudentDashboard';
+import StudentDashboard from './components/student/StudentDashboard.jsx';
 import InsertData from './components/InsertData';
+import TestPage from './components/TestPage';
+import AbstractComplete from './components/AbstractComplete';
+import TopicReview from './components/staff/TopicReview';
 function App() {
 
   const router = createBrowserRouter([
@@ -52,11 +55,23 @@ function App() {
     },
     {
       path: '/student/insertdata',
-      element: <InsertData />
+      element: <InsertData />//check for redundancy with /student/checkabstract
     },
     {
       path: '*',
       element: <Navigate to="/" replace />
+    },
+    {
+      path: '/test',
+      element: <TestPage />
+    },
+    {
+      path: '/student/abstractSubmissionComplete',
+      element: <AbstractComplete />
+    },
+    {
+      path: '/staff/topicReview',
+      element: <TopicReview />
     }
   ])
   

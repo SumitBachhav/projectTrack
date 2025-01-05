@@ -21,7 +21,7 @@ function RegisterComplete() {
           onClick={handleLoginClick}
           className="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none"
         >
-          Go to Login
+          Login
         </button>
       </div>
     </div>
