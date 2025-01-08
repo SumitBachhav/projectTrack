@@ -5,13 +5,10 @@ import {
     AccordionContent,
     AccordionItem,
     AccordionTrigger,
-} from "@/components/ui/accordion"
+} from "@/components/ui/accordion";
 import { useNavigate } from 'react-router-dom';
 
-
-
 function CheckScore() {
-
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
@@ -44,7 +41,7 @@ function CheckScore() {
             title: '',
             keyword: '',
             domain: '',
-        })
+        });
         setScore1('Please submit abstract to get similarity score and abstracts');
         setScore2('Please submit abstract to get similarity score and abstracts');
         setScore3('Please submit abstract to get similarity score and abstracts');
@@ -56,7 +53,6 @@ function CheckScore() {
     };
 
     const add = () => {
-        console.log("from add", formData)
         const listObject = {
             paragraph: formData.paragraph,
             title: formData.title,
@@ -68,17 +64,13 @@ function CheckScore() {
             matchedText1: matchedText1,
             matchedText2: matchedText2,
             matchedText3: matchedText3,
-            //instead of matchedText we can send id of abstract
-        }
+        };
         setAbstractList([...abstractList, listObject]);
         setSendButtonDisabled(false);
     };
 
     const send = () => {
         navigate('/student/abstractSubmissionComplete');
-        // console.log("from add", abstractList)
-        //to send data to backend
-        // work needs to be done---------------------------------------------------------------------
     };
 
     const handleSubmit = async (e) => {
@@ -90,35 +82,19 @@ function CheckScore() {
         setMatchedText2('Processing...');
         setMatchedText3('Processing...');
         setError('');
-        console.log(formData)
 
         try {
-            // const response = await axios.get(`/api/compare?raw_text=${paragraph}`);
             const response = await axios.post(
                 '/api/compareDatabase',
                 {
                     abstract: formData.paragraph,
-                    // title: formData.title,
-                    // keyword: formData.keyword,
-                    // domain: formData.domain,
                 },
                 {
                     headers: {
-                        // 'Authorization': 'your-token-here',
                         'Content-Type': 'application/json',
-                    }
+                    },
                 }
             );
-
-            console.log(response.data);
-            // setResponseMessage(response.data.message);
-
-            // let a = response.data[0][0].toFixed(5) * 100;
-            // let b = response.data[1][0].toFixed(5) * 100;
-            let cc = Math.round(Number(response.data[2][0]) * 100000) / 1000
-            // let d = response.data[0][1];
-            // let e = response.data[1][1];
-            // let f = response.data[2][1];
 
             setScore1(` ${Math.round(Number(response.data[0][0]) * 100000) / 1000} %`);
             setScore2(` ${Math.round(Number(response.data[1][0]) * 100000) / 1000} %`);
@@ -128,18 +104,13 @@ function CheckScore() {
             setMatchedText3(response.data[2][1]);
             setAddButtonDisabled(false);
         } catch (err) {
-            // setError(err.message);
-            setError('Error sending paragraph. Please try again.' + err.message);
+            setError('Error sending paragraph. Please try again.');
             setScore1('Please submit abstract to get similarity score and abstracts');
             setScore2('Please submit abstract to get similarity score and abstracts');
             setScore3('Please submit abstract to get similarity score and abstracts');
             setMatchedText1('');
             setMatchedText2('');
             setMatchedText3('');
-
-            setAddButtonDisabled(false);
-            // to remove-------------------------------------------------------------------------------
-
         }
     };
 
@@ -153,58 +124,70 @@ function CheckScore() {
         }
     };
 
-
     return (
-        <div className='flex flex-row pt-20 justify-evenly'>
-            <div className='flex flex-col items-center' >
-                <form onSubmit={handleSubmit} className="flex flex-col items-center">
+        <div className="flex flex-col md:flex-row pt-20 justify-evenly gap-8 bg-gray-100 min-h-screen">
+            <div className="flex flex-col items-center bg-white shadow-md rounded-lg p-6 m-1 mb-3">
+                <h1 className="text-2xl font-bold mb-4 text-gray-800">Submit Abstract</h1>
+                <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full max-w-md">
                     <div>
-                        <label className="text-sm font-medium text-gray-700">Title</label>
-                        <input type="text" name="title" value={formData.title} onChange={handleChange} className="mt-1 block px-4 py-2 border border-black rounded-md focus:outline-none focus:border-sky-blue-500 bg-gray-300 w-[500px]" placeholder="Enter Project Title" required />
-                    </div>
-                    <div>
-                        <label className="text-sm font-medium text-gray-700">Abstract</label>
-
-                        <textarea
-                            value={formData.paragraph}
-                            name='paragraph'
+                        <label className="block text-sm font-medium text-gray-700">Title</label>
+                        <input
+                            type="text"
+                            name="title"
+                            value={formData.title}
                             onChange={handleChange}
-                            rows="5"
-                            cols="50"
-                            placeholder="Type your paragraph here..."
+                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"
+                            placeholder="Enter Project Title"
                             required
-                            className="mt-1 block px-4 py-2 border border-black rounded-md focus:outline-none focus:border-sky-blue-500 bg-gray-300 w-[500px] h-[200px] p-[10px]"
-
                         />
                     </div>
                     <div>
-                        <label className="text-sm font-medium text-gray-700">Domain</label>
-                        <input type="text" name="domain" value={formData.domain} onChange={handleChange} className="mt-1 block px-4 py-2 border border-black rounded-md focus:outline-none focus:border-sky-blue-500 bg-gray-300 w-[500px]" placeholder="Enter Project domain" required />
+                        <label className="block text-sm font-medium text-gray-700">Abstract</label>
+                        <textarea
+                            name="paragraph"
+                            value={formData.paragraph}
+                            onChange={handleChange}
+                            rows="5"
+                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"
+                            placeholder="Type your abstract here..."
+                            required
+                        />
                     </div>
                     <div>
-                        <label className="text-sm font-medium text-gray-700">keyword</label>
-                        <input type="text" name="keyword" value={formData.keyword} onChange={handleChange} className="mt-1 block px-4 py-2 border border-black rounded-md focus:outline-none focus:border-sky-blue-500 bg-gray-300 w-[500px]" placeholder="Enter Project keywords" required />
+                        <label className="block text-sm font-medium text-gray-700">Domain</label>
+                        <input
+                            type="text"
+                            name="domain"
+                            value={formData.domain}
+                            onChange={handleChange}
+                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"
+                            placeholder="Enter Project Domain"
+                            required
+                        />
                     </div>
-
-
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Keywords</label>
+                        <input
+                            type="text"
+                            name="keyword"
+                            value={formData.keyword}
+                            onChange={handleChange}
+                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"
+                            placeholder="Enter Project Keywords"
+                            required
+                        />
+                    </div>
                     <button
-                        type='submit'
-                        style={{
-                            width: '20%',
-                            backgroundColor: 'rgb(203 213 225)',
-                            border: '1px solid black',
-                            padding: '10px',
-                            margin: '10px',
-                        }}>
+                        type="submit"
+                        className="w-full py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
                         Submit
                     </button>
                 </form>
 
-                {error && <div style={{ color: 'red' }}>{error}</div>}
+                {error && <div className="mt-4 text-red-500 text-center">{error}</div>}
 
-
-
-                <div style={{ width: '500px', backgroundColor: 'rgb(203 213 225)', border: '1px solid black', padding: '10px' }}>
+                <div className="w-full bg-gray-200 rounded-md shadow-md mt-6 p-4">
                     <Accordion type="single" collapsible className="w-full">
                         <AccordionItem value="item-1">
                             <AccordionTrigger>{score1}</AccordionTrigger>
@@ -227,69 +210,51 @@ function CheckScore() {
                     </Accordion>
                 </div>
 
-                <div className='flex flex-row justify-between'>
+                <div className="flex gap-4 mt-4">
                     <button
                         onClick={clear}
-                        style={{
-                            // width: '20%',
-                            backgroundColor: 'rgb(203 213 225)',
-                            border: '1px solid black',
-                            padding: '10px',
-                            margin: '10px',
-                        }}>
+                        className="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500"
+                    >
                         Clear
                     </button>
                     <button
                         onClick={add}
-                        style={{
-                            // width: '20%',
-                            backgroundColor: 'rgb(203 213 225)',
-                            border: '1px solid black',
-                            padding: '10px',
-                            margin: '10px',
-                        }}
+                        className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
                         disabled={addButtonDisabled}
                     >
                         Add
                     </button>
                 </div>
-
-
-
             </div>
 
-            <div className='w-1/3 p-2 flex flex-col'>
-                <h1 className="text-3xl font-bold mb-4">Abstract list for faculty verification</h1>
-                <div className="bg-red-200 shadow-md rounded-xl p-4 h-80 overflow-auto border-2 border-black">
-                    {
-                        abstractList.map((abstract, index) => (
-                            <div key={index} className="bg-blue-200 shadow-md rounded-xl p-1 h-10 flex flex-row justify-between m-1 border border-black">
-                                <h3 className="text-2xl font-medium">{abstract.title}</h3>
-                                <button className='bg-blue-500 hover:bg-blue-700 text-white font-bold p-1 rounded'
-                                    onClick={() => handleDelete(index)}
-                                >Delete
-                                </button>
-                            </div>
-                        ))
-                    }
+            <div className="w-full md:w-1/3 p-6 bg-white shadow-md rounded-lg m-1 mb-3">
+                <h2 className="text-xl font-bold mb-4 text-gray-800">Abstract List for Faculty Verification</h2>
+                <div className="bg-gray-100 p-4 rounded-md shadow-md h-80 overflow-y-auto border">
+                    {abstractList.map((abstract, index) => (
+                        <div
+                            key={index}
+                            className="flex justify-between items-center bg-gray-200 rounded-md p-2 mb-2 border"
+                        >
+                            <h3 className="text-lg font-medium text-gray-800">{abstract.title}</h3>
+                            <button
+                                onClick={() => handleDelete(index)}
+                                className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    ))}
                 </div>
                 <button
                     onClick={send}
-                    style={{
-                        // width: '20%',
-                        backgroundColor: 'rgb(203 213 225)',
-                        border: '1px solid black',
-                        padding: '10px',
-                        margin: '10px',
-                    }}
+                    className="w-full mt-4 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700"
                     disabled={sendButtonDisabled}
                 >
                     Send
                 </button>
             </div>
         </div>
-    )
+    );
 }
 
-export default CheckScore
-
+export default CheckScore;
