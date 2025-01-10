@@ -1,5 +1,5 @@
 import './App.css'
-import CheckScore from './components/CheckScore.jsx'
+import CheckScore from './components/student/CheckScore.jsx'
 import { Routes, Route, Navigate, createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Layout from './components/Layout';
 import Register from './components/Register';
@@ -12,9 +12,12 @@ import Login from './components/Login';
 import StudentDashboard from './components/student/StudentDashboard.jsx';
 import InsertData from './components/InsertData';
 import TestPage from './components/TestPage';
-import AbstractComplete from './components/AbstractComplete';
+import AbstractComplete from './components/student/AbstractComplete.jsx';
 import TopicReview from './components/staff/TopicReview';
 import TopicReviewOverview from './components/staff/TopicReviewOverview';
+import CheckIfApproved from './components/student/CheckIfApproved';
+
+
 function App() {
 
   const router = createBrowserRouter([
@@ -77,6 +80,10 @@ function App() {
     {
       path: '/staff/topicReviewOverview',
       element: <TopicReviewOverview />
+    },
+    {
+      path: '/student/checkIfApproved',
+      element: <CheckIfApproved />
     }
   ])
   

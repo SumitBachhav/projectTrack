@@ -1,0 +1,61 @@
+staff
+TopicReview
+
+Incoming Data
+--------------
+
+const TopicReviewDetails = {
+        items: [
+            {
+                stdAbsId: 1, title: 'title 1', abstract: 'abstract 1', domain: 'domain 1', keywords: 'keywords 1',
+                matched1: { percentage: 30, title: 'title 1', abstract: 'abstract 1', domain: 'domain 1', keywords: 'keywords 1' },
+                matched2: { percentage: 40, title: 'title 2', abstract: 'abstract 2', domain: 'domain 2', keywords: 'keywords 2' },
+                matched3: { percentage: 50, title: 'title 3', abstract: 'abstract 3', domain: 'domain 3', keywords: 'keywords 3' },
+                approved: false
+            },
+            {
+                stdAbsId: 2, title: 'title 2', abstract: 'abstract 2', domain: 'domain 2', keywords: 'keywords 2',
+                matched1: { percentage: 30, title: 'title 11', abstract: 'abstract 11', domain: 'domain 11', keywords: 'keywords 11' },
+                matched2: { percentage: 40, title: 'title 2', abstract: 'abstract 2', domain: 'domain 2', keywords: 'keywords 2' },
+                matched3: { percentage: 50, title: 'title 3', abstract: 'abstract 3', domain: 'domain 3', keywords: 'keywords 3' },
+                approved: false
+            },
+            {
+                stdAbsId: 3, title: 'title 3', abstract: 'abstract 3', domain: 'domain 3', keywords: 'keywords 3',
+                matched1: { percentage: 30, title: 'title 1', abstract: 'abstract 1', domain: 'domain 1', keywords: 'keywords 1' },
+                matched2: { percentage: 40, title: 'title 2', abstract: 'abstract 2', domain: 'domain 2', keywords: 'keywords 2' },
+                matched3: { percentage: 50, title: 'title 3', abstract: 'abstract 3', domain: 'domain 3', keywords: 'keywords 3' },
+                approved: false
+            },
+        ],
+        markAsDone: false,
+    }
+
+Outgoing Data
+--------------
+
+
+---------------------------------------------------------------------------------------------------------
+
+staff
+topic review overview
+
+Incoming Data
+--------------
+
+const data = [
+        { studentId: 1, status: 'Pending' },
+        { studentId: 2, status: 'Pending' },
+        { studentId: 3, status: 'Pending' },
+        { studentId: 4, status: 'Pending' },
+        { studentId: 5, status: 'Pending' },
+        { studentId: 6, status: 'Pending' },
+        { studentId: 7, status: 'Pending' },
+        { studentId: 8, status: 'Pending' },
+        { studentId: 9, status: 'Pending' },
+        { studentId: 10, status: 'Verified' },
+
+    ];
+
+Outgoing Data
+--------------
