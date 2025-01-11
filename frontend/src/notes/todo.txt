@@ -2,6 +2,8 @@ in main.py in /api/compareDatabase also send id of abstracts
 
 add check update in student dashboard
 
-/staff/topicReview/1 -> add comment section
 
 in checkifapproved add (look for a teammate to work with) button in noneapproved
+
+where is mark as done button in topic topicReview
+keep approved abstracts on the left side only

@@ -16,6 +16,8 @@ import AbstractComplete from './components/student/AbstractComplete.jsx';
 import TopicReview from './components/staff/TopicReview';
 import TopicReviewOverview from './components/staff/TopicReviewOverview';
 import CheckIfApproved from './components/student/CheckIfApproved';
+import ProjectSpecification from './components/student/ProjectSpecification';
+import InviteStuents from './components/student/InviteStuents';
 
 
 function App() {
@@ -84,6 +86,14 @@ function App() {
     {
       path: '/student/checkIfApproved',
       element: <CheckIfApproved />
+    },
+    {
+      path: '/student/projectSpecification',
+      element: <ProjectSpecification />
+    },
+    {
+      path: '/student/inviteStudents',
+      element: <InviteStuents />
     }
   ])
   
