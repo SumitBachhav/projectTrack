@@ -1,12 +1,48 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // Fake data for students and project requirements
 const studentsData = [
-    { name: 'Alice', domain: 'Frontend', skills: ['HTML', 'CSS', 'JavaScript'] },
-    { name: 'Bob', domain: 'Backend', skills: ['Node.js', 'Express', 'MongoDB'] },
-    { name: 'Charlie', domain: 'Data Science', skills: ['Python', 'Machine Learning', 'Pandas'] },
-    { name: 'David', domain: 'Frontend', skills: ['React', 'JavaScript', 'CSS'] },
-    { name: 'Eve', domain: 'Backend', skills: ['Node.js', 'MongoDB', 'Express'] },
+    { name: 'Alice', domain: ['Frontend', 'Data Science'], skills: ['HTML', 'CSS', 'JavaScript', 'Python', 'Machine Learning', 'Pandas'] },
+    { name: 'Bob', domain: ['Backend'], skills: ['Node.js', 'Express', 'MongoDB'] },
+    { name: 'Charlie', domain: ['Data Science'], skills: ['Python', 'Machine Learning', 'Pandas'] },
+    { name: 'David', domain: ['Frontend'], skills: ['React', 'JavaScript', 'CSS'] },
+    { name: 'Eve', domain: ['Backend'], skills: ['Node.js', 'MongoDB', 'Express'] },
+    { name: 'Alice', domain: ['Frontend', 'Data Science'], skills: ['HTML', 'CSS', 'JavaScript', 'Python', 'Machine Learning', 'Pandas'] },
+    { name: 'Bob', domain: ['Backend'], skills: ['Node.js', 'Express', 'MongoDB'] },
+    { name: 'Charlie', domain: ['Data Science'], skills: ['Python', 'Machine Learning', 'Pandas'] },
+    { name: 'David', domain: ['Frontend'], skills: ['React', 'JavaScript', 'CSS'] },
+    { name: 'Eve', domain: ['Backend'], skills: ['Node.js', 'MongoDB', 'Express'] },
+    { name: 'Alice', domain: ['Frontend', 'Data Science'], skills: ['HTML', 'CSS', 'JavaScript', 'Python', 'Machine Learning', 'Pandas'] },
+    { name: 'Bob', domain: ['Backend'], skills: ['Node.js', 'Express', 'MongoDB'] },
+    { name: 'Charlie', domain: ['Data Science'], skills: ['Python', 'Machine Learning', 'Pandas'] },
+    { name: 'David', domain: ['Frontend'], skills: ['React', 'JavaScript', 'CSS'] },
+    { name: 'Eve', domain: ['Backend'], skills: ['Node.js', 'MongoDB', 'Express'] },
+    { name: 'Alice', domain: ['Frontend', 'Data Science'], skills: ['HTML', 'CSS', 'JavaScript', 'Python', 'Machine Learning', 'Pandas'] },
+    { name: 'Bob', domain: ['Backend'], skills: ['Node.js', 'Express', 'MongoDB'] },
+    { name: 'Charlie', domain: ['Data Science'], skills: ['Python', 'Machine Learning', 'Pandas'] },
+    { name: 'David', domain: ['Frontend'], skills: ['React', 'JavaScript', 'CSS'] },
+    { name: 'Eve', domain: ['Backend'], skills: ['Node.js', 'MongoDB', 'Express'] },
+    { name: 'Alice', domain: ['Frontend', 'Data Science'], skills: ['HTML', 'CSS', 'JavaScript', 'Python', 'Machine Learning', 'Pandas'] },
+    { name: 'Bob', domain: ['Backend'], skills: ['Node.js', 'Express', 'MongoDB'] },
+    { name: 'Charlie', domain: ['Data Science'], skills: ['Python', 'Machine Learning', 'Pandas'] },
+    { name: 'David', domain: ['Frontend'], skills: ['React', 'JavaScript', 'CSS'] },
+    { name: 'Eve', domain: ['Backend'], skills: ['Node.js', 'MongoDB', 'Express'] },
+    { name: 'Alice', domain: ['Frontend', 'Data Science'], skills: ['HTML', 'CSS', 'JavaScript', 'Python', 'Machine Learning', 'Pandas'] },
+    { name: 'Bob', domain: ['Backend'], skills: ['Node.js', 'Express', 'MongoDB'] },
+    { name: 'Charlie', domain: ['Data Science'], skills: ['Python', 'Machine Learning', 'Pandas'] },
+    { name: 'David', domain: ['Frontend'], skills: ['React', 'JavaScript', 'CSS'] },
+    { name: 'Eve', domain: ['Backend'], skills: ['Node.js', 'MongoDB', 'Express'] },
+    { name: 'Alice', domain: ['Frontend', 'Data Science'], skills: ['HTML', 'CSS', 'JavaScript', 'Python', 'Machine Learning', 'Pandas'] },
+    { name: 'Bob', domain: ['Backend'], skills: ['Node.js', 'Express', 'MongoDB'] },
+    { name: 'Charlie', domain: ['Data Science'], skills: ['Python', 'Machine Learning', 'Pandas'] },
+    { name: 'David', domain: ['Frontend'], skills: ['React', 'JavaScript', 'CSS'] },
+    { name: 'Eve', domain: ['Backend'], skills: ['Node.js', 'MongoDB', 'Express'] },
+    { name: 'Alice', domain: ['Frontend', 'Data Science'], skills: ['HTML', 'CSS', 'JavaScript', 'Python', 'Machine Learning', 'Pandas'] },
+    { name: 'Bob', domain: ['Backend'], skills: ['Node.js', 'Express', 'MongoDB'] },
+    { name: 'Charlie', domain: ['Data Science'], skills: ['Python', 'Machine Learning', 'Pandas'] },
+    { name: 'David', domain: ['Frontend'], skills: ['React', 'JavaScript', 'CSS'] },
+    { name: 'Eve', domain: ['Backend'], skills: ['Node.js', 'MongoDB', 'Express'] },
 ];
 
 const projectRequirement = [
@@ -21,108 +57,213 @@ const projectRequirement = [
     {
         domain: 'Data Science',
         skills: ['Python', 'Machine Learning', 'Pandas'],
+    },
+    {
+        domain: 'Data Science',
+        skills: ['Python', 'Machine Learning', 'Pandas'],
+    },
+    {
+        domain: 'Data Science',
+        skills: ['Python', 'Machine Learning', 'Pandas'],
+    },
+    {
+        domain: 'Data Science',
+        skills: ['Python', 'Machine Learning', 'Pandas'],
+    },
+    {
+        domain: 'Data Science',
+        skills: ['Python', 'Machine Learning', 'Pandas'],
+    },
+    {
+        domain: 'Data Science',
+        skills: ['Python', 'Machine Learning', 'Pandas'],
+    },
+    {
+        domain: 'Data Science',
+        skills: ['Python', 'Machine Learning', 'Pandas'],
+    },
+    {
+        domain: 'Data Science',
+        skills: ['Python', 'Machine Learning', 'Pandas'],
+    },
+    {
+        domain: 'Data Science',
+        skills: ['Python', 'Machine Learning', 'Pandas'],
+    },
+    {
+        domain: 'Data Science',
+        skills: ['Python', 'Machine Learning', 'Pandas'],
+    },
+    {
+        domain: 'Data Science',
+        skills: ['Python', 'Machine Learning', 'Pandas'],
+    },
+    {
+        domain: 'Data Science',
+        skills: ['Python', 'Machine Learning', 'Pandas'],
+    },
+    {
+        domain: 'Data Science',
+        skills: ['Python', 'Machine Learning', 'Pandas'],
     }
 ]
 
 
 
 const InviteStuents = () => {
+
+    const navigate = useNavigate();
+
     const [selectedStudents, setSelectedStudents] = useState([]);
+    let selects = [];
 
-    const [skillIncluded, setSkillIncluded] = useState([
-        'CSS',
-        'javascript',
-    ]);
+    const [repeatedSkills, setRepeatedSkills] = useState([]);
 
-    // Handle selecting/deselecting a student
-    // const handleStudentSelection = (studentName) => {
-    //     setSelectedStudents((prevSelected) => {
-    //         if (prevSelected.includes(studentName)) {
-    //             return prevSelected.filter((name) => name !== studentName);
-    //         } else {
-    //             return [...prevSelected, studentName];
-    //         }
-    //     });
-    // };
+    const [selectedSkills, setselectedSkills] = useState([]);
 
-    // Filter students who have the required skills for the project
-    // const filterStudentsBySkills = () => {
-    //     return studentsData.filter((student) => {
-    //         return (
-    //             student.skills.some((skill) => projectRequirement.skills.includes(skill)) &&
-    //             projectRequirement.domains.includes(student.domain)
-    //         );
-    //     });
-    // };
 
-    // Determine if a domain should be dimmed
-    // const isDomainDimmed = (domain) => {
-    //     return selectedStudents.length > 0 && !studentsData.some((student) => student.name === selectedStudents[0] && student.domain === domain);
-    // };
 
-    const badge = (value) => {
+
+    const handleAddSkills = (skills) => {
+        let tempRepeatSkills = []
+        let tempSelectSkills = []
+        skills.forEach((skill) => {
+            if (!repeatedSkills.includes(skill)) {
+                if (selectedSkills.includes(skill)) {
+                    tempRepeatSkills.push(skill)
+                } else {
+                    tempSelectSkills.push(skill)
+                }
+            }
+        });
+        if (tempRepeatSkills.length > 0) {
+            setRepeatedSkills([...repeatedSkills, ...tempRepeatSkills]);
+        }
+        if (tempSelectSkills.length > 0) {
+            setselectedSkills([...selectedSkills, ...tempSelectSkills]);
+        }
+    }
+
+    const handleRemoveSkills = (skills) => {
+        let tempRepeatSkills = repeatedSkills;
+        let tempSelectSkills = selectedSkills;
+        skills.forEach((skill) => {
+            if (repeatedSkills.includes(skill)) {
+                tempRepeatSkills = tempRepeatSkills.filter((item) => item !== skill);
+            } else {
+                tempSelectSkills = tempSelectSkills.filter((item) => item !== skill);
+            }
+        });
+        if (tempRepeatSkills != repeatedSkills) {
+            setRepeatedSkills(tempRepeatSkills);
+        }
+        if (tempSelectSkills != selectedSkills) {
+            setselectedSkills(tempSelectSkills);
+        }
+    }
+
+    const handleStudentClick = (student) => {
+        if (selectedStudents.includes(student.name)) {
+            selects = selectedStudents.filter((item) => item !== student.name);
+            setSelectedStudents(selects);
+            handleRemoveSkills(student.skills);
+        } else {
+            selects = [...selectedStudents, student.name];
+            setSelectedStudents(selects);
+            handleAddSkills(student.skills);
+
+        }
+    };
+
+
+    const handleSendInvite = () => {
+        // send data to backend------------------------------------------------------------
+        // console.log('Selected Students:', selectedStudents);
+        // console.log('Selected Skills:', selectedSkills);
+        // console.log('Repeated Skills:', repeatedSkills);
+        if (selectedStudents.length > 0 && selectedStudents.length <= 6) {
+            alert('Invites sent successfully');
+            navigate('/student/dashboard');
+        } else {
+            alert('Please select at least 1 student and at most 6 students');
+        }
+    };
+
+
+
+    const domainCard = (value) => {
         return (
-            <span 
-                className = {` text-gray-800 ${skillIncluded.includes(value) ? 'bg-green-600 text-white' : 'bg-red-100'} text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300`}
-            >
-                {value}
-            </span>
+            <div className="rounded shadow-lg bg-white border m-4 border-gray-900">
+                <p className='font-bold'>{value}</p>
+                {studentsData.filter((item) => item.domain.includes(value)).map((item, index) => (
+                    <ul
+                        key={index}
+                    >
+                        <li
+
+                            className={`mb-2 p-2 border border-gray-300 rounded-md m-2 cursor-pointer bg-${selectedStudents.includes(item.name) ? 'green-600' : 'white'} text-${selectedStudents.includes(item.name) ? 'white' : 'black'}  `}
+                            onClick={() => handleStudentClick(item)}
+                        >
+                            {item.name}
+                        </li>
+                    </ul>
+                ))}
+            </div>
         )
     }
 
     return (
         <div className="p-6 mt-12">
-            <h1 className="text-3xl font-bold mb-6">Project Requirements</h1>
+            <h1 className="text-3xl font-bold mb-6">Invite Students</h1>
             <div className="mt-8">
                 <ul className="list-none p-0">
+                    <p className='text-2xl'>Project Requirements</p>
                     {projectRequirement.map((item, index) => (
                         <li key={index} className="mb-2 p-2 border border-gray-300 rounded-md">
-                            {badge(item.domain)} - {item.skills.map((skill) => badge(skill))}
+                            {item.skills.map((skill, index) => {
+                                return (
+                                    <span
+                                        key={index}
+                                        className={` text-gray-800 ${repeatedSkills.includes(skill) ? 'bg-red-600 text-white' : selectedSkills.includes(skill) ? 'bg-green-600 text-white' : 'bg-yellow-100'} text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300`}
+                                    >
+                                        {skill}
+                                    </span>
+                                )
+                            })}
                         </li>
                     ))}
                 </ul>
             </div>
-            {/* <div className="bg-gray-100 p-4 rounded-lg shadow-md mb-8">
-                <h3 className="text-xl font-semibold">Required Domains and Skills</h3>
-                <p><strong>Domains:</strong> {projectRequirement.domains.join(', ')}</p>
-                <p><strong>Skills:</strong> {projectRequirement.skills.join(', ')}</p>
-            </div> */}
+            <p className='mt-8 text-2xl'>Select Students</p>
+            <div className='flex flex-row overflow-auto'>
+                {projectRequirement.map((item, index) => (
+                    <div className=" bg-gray-100 w-1/4"
+                        key={index}>
 
-            {/* <div className="flex flex-wrap gap-6 mb-8">
-                {projectRequirement.domains.map((domain, index) => {
-                    const studentsInDomain = studentsData.filter((student) => student.domain === domain);
-                    return (
-                        <div
-                            key={index}
-                            className={`bg-white p-6 rounded-lg shadow-md w-1/3 ${isDomainDimmed(domain) ? 'opacity-50' : ''}`}
-                        >
-                            <h3 className="text-xl font-semibold">{domain} Domain</h3>
-                            <ul className="list-none p-0">
-                                {studentsInDomain.map((student) => (
-                                    <li
-                                        key={student.name}
-                                        className={`cursor-pointer p-2 rounded-md ${selectedStudents.includes(student.name) ? 'bg-blue-500 text-white' : 'hover:bg-gray-200'}`}
-                                        onClick={() => handleStudentSelection(student.name)}
-                                    >
-                                        {student.name}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    );
-                })}
-            </div> */}
+                        {
+                            domainCard(item.domain)
+                        }
+                    </div>
+                ))}
+            </div>
 
-            {/* <div className="mt-8">
-                <h3 className="text-xl font-semibold mb-4">Students who match project requirements</h3>
+            <div className="mt-8">
+                <p className='text-2xl'>Selected Students</p>
                 <ul className="list-none p-0">
-                    {filterStudentsBySkills().map((student) => (
-                        <li key={student.name} className="mb-2 p-2 border border-gray-300 rounded-md">
-                            {student.name} - {student.domain} ({student.skills.join(', ')})
+                    {selectedStudents.map((item, index) => (
+                        <li key={index} className="mb-2 p-2 border border-gray-300 rounded-md">
+                            {item}
                         </li>
                     ))}
                 </ul>
-            </div> */}
+            </div>
+
+            <button
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-8"
+                onClick={handleSendInvite}
+            >
+                Send Invite
+            </button>
         </div>
     );
 };

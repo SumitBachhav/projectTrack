@@ -7,3 +7,20 @@ in checkifapproved add (look for a teammate to work with) button in noneapproved
 
 where is mark as done button in topic topicReview
 keep approved abstracts on the left side only
+
+-----------------------------
+namimg convention
+Frontend
+Backend
+Data Science
+
+HTML
+CSS
+JavaScript
+Node.js
+MongoDB
+Express
+Python
+Machine Learning
+Pandas
+--------------------------------
