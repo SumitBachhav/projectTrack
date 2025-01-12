@@ -20,10 +20,17 @@ const CheckIfApproved = () => {
     // data to send to backend
     // accepted abstract, rejected abstract
 
-    const data = {
-        approvedList: [{ stdAbsId: 1, title: 'title 1' }, { stdAbsId: 2, title: 'title 2' }, { stdAbsId: 3, title: 'title 3' }],
-        comments: 'comment of two'
-    }
+    // const data = {
+    //     approvedList: [{ stdAbsId: 1, title: 'title 1' }, { stdAbsId: 2, title: 'title 2' }, { stdAbsId: 3, title: 'title 3' }],
+    //     comments: 'comment of two'
+    // }
+
+    const[data, setData] = useState({
+        approvedList: [],
+        comments: 'comment of none'
+    })
+
+    const[wait, setWait] = useState(false)
 
 
 
@@ -57,18 +64,6 @@ const CheckIfApproved = () => {
         }
     }
 
-    const handleSubmitDetailsClick2 = () => {
-        // navigate to submit project specification page
-            navigate('/student/projectSpecification');
-
-    }
-
-    const handleGoToInviteClick = () => {
-        navigate('/student/inviteStudents');
-    }
-
-
-
 
     const handleCheckboxChange = () => {
         // setIsChecked(event.target.checked);
@@ -91,6 +86,21 @@ const CheckIfApproved = () => {
         }
     }
 
+    const waitDisplay = () => {
+        return (
+
+            <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+                <p className="mb-4">Please wait while the faculty reviews your abstract</p>
+                <button
+                    onClick={() => navigate('/student/dashboard')}
+                    className="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none"
+                >
+                    Dashboard
+                </button>
+            </div>
+        )
+    }
+
     const noneApproved = () => {
         return (
 
@@ -99,10 +109,10 @@ const CheckIfApproved = () => {
                 <p className="mb-4">Your abstract has not been approved.</p>
                 {handleComment(data.comments)}
                 <button
-                    onClick={handleGoToInviteClick}
+                    onClick={() => navigate('/student/availableProjects')}
                     className="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none"
                 >
-                    Check for Groups
+                    Check for available projects
                 </button>
             </div>
         )
@@ -116,7 +126,7 @@ const CheckIfApproved = () => {
                 <p className="mb-4">{`Your abstract titled ${data.approvedList[0].title} has been approved`}.</p>
                 {handleComment(data.comments)}
                 <button
-                    onClick={handleSubmitDetailsClick2}
+                    onClick={() => navigate('/student/projectSpecification')}
                     className="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none"
                 >
                     Submit Project Specification
@@ -176,8 +186,9 @@ const CheckIfApproved = () => {
                 // noneApproved()
                 // oneApproved()
                 // moreThanOneApproved()
-                data.approvedList.length == 0 ? noneApproved() : data.approvedList.length == 1 ? oneApproved() : moreThanOneApproved()
-                
+                // data.approvedList.length == 0 ? noneApproved() : data.approvedList.length == 1 ? oneApproved() : moreThanOneApproved()
+            }
+            {wait ? waitDisplay() : data.approvedList.length == 0 ? noneApproved() : data.approvedList.length == 1 ? oneApproved() : moreThanOneApproved()
             }
         </div>
     )

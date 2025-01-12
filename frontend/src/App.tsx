@@ -18,6 +18,8 @@ import TopicReviewOverview from './components/staff/TopicReviewOverview';
 import CheckIfApproved from './components/student/CheckIfApproved';
 import ProjectSpecification from './components/student/ProjectSpecification';
 import InviteStuents from './components/student/InviteStuents';
+import AvailableProjects from './components/student/AvailableProjects';
+import AvailableGroups from './components/student/AvailableGroups';
 
 
 function App() {
@@ -94,6 +96,14 @@ function App() {
     {
       path: '/student/inviteStudents',
       element: <InviteStuents />
+    },
+    {
+      path: '/student/availableProjects',
+      element: <AvailableProjects />
+    },
+    {
+      path: '/student/availableGroups',
+      element: <AvailableGroups />
     }
   ])
   
