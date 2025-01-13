@@ -6,7 +6,7 @@ function AbstractComplete() {
     const navigate = useNavigate();
 
     const handleLoginClick = () => {
-        navigate('/login');
+        navigate('/student/dashboard');
     };
 
 

@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom';
 
 const ProjectSpecification = () => {
+
+    const navigate = useNavigate();
 
     const [domainSkills, setDomainSkills] = useState([
         { domain: '', skill: '' },
@@ -24,7 +27,19 @@ const ProjectSpecification = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log('Submitted Domain Skills:', domainSkills);
+        // let variable = false;
+        // domainSkills.forEach((entry) => {
+        //     if (entry.domain === '' || entry.skill === '') {
+        //         variable = true;
+        //     }
+        // })
+        // if (variable) {
+        //     alert('Please fill all the fields');
+        // } else {
+        //     navigate('/student/inviteStudents');
+        // }
+        navigate('/student/inviteStudents');
+
     };
 
 
@@ -46,6 +61,7 @@ const ProjectSpecification = () => {
                                     onChange={(e) => handleInputChange(index, e)}
                                     placeholder="Enter domain"
                                     className='m-2'
+                                    required
                                 />
                             </label>
                             <label>
@@ -57,6 +73,7 @@ const ProjectSpecification = () => {
                                     onChange={(e) => handleInputChange(index, e)}
                                     placeholder="Enter skill"
                                     className='m-2'
+                                    required
                                 />
                             </label>
                             <button
@@ -78,6 +95,9 @@ const ProjectSpecification = () => {
                         </button>
                     </div>
                     <button type="submit"
+                        // disabled={domainSkills[0].domain === '' ? true : false}
+                        // disabled={domainSkills[0].domain === '' || domainSkills[0].skill === '' ? true : false}
+                        // onClick={() => navigate('/student/inviteStudents')}
                         className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 m-2"
                     >
                         Submit

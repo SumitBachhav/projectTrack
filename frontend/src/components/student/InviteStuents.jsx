@@ -2,111 +2,219 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Fake data for students and project requirements
+// const studentsData = [
+//     { name: 'Alice', domain: ['Frontend', 'Data Science'], skills: ['HTML', 'CSS', 'JavaScript', 'Python', 'Machine Learning', 'Pandas'] },
+//     { name: 'Bob', domain: ['Backend'], skills: ['Node.js', 'Express', 'MongoDB'] },
+//     { name: 'Charlie', domain: ['Data Science'], skills: ['Python', 'Machine Learning', 'Pandas'] },
+//     { name: 'David', domain: ['Frontend'], skills: ['React', 'JavaScript', 'CSS'] },
+//     { name: 'Eve', domain: ['Backend'], skills: ['Node.js', 'MongoDB', 'Express'] },
+//     { name: 'Alice', domain: ['Frontend', 'Data Science'], skills: ['HTML', 'CSS', 'JavaScript', 'Python', 'Machine Learning', 'Pandas'] },
+//     { name: 'Bob', domain: ['Backend'], skills: ['Node.js', 'Express', 'MongoDB'] },
+//     { name: 'Charlie', domain: ['Data Science'], skills: ['Python', 'Machine Learning', 'Pandas'] },
+//     { name: 'David', domain: ['Frontend'], skills: ['React', 'JavaScript', 'CSS'] },
+//     { name: 'Eve', domain: ['Backend'], skills: ['Node.js', 'MongoDB', 'Express'] },
+//     { name: 'Alice', domain: ['Frontend', 'Data Science'], skills: ['HTML', 'CSS', 'JavaScript', 'Python', 'Machine Learning', 'Pandas'] },
+//     { name: 'Bob', domain: ['Backend'], skills: ['Node.js', 'Express', 'MongoDB'] },
+//     { name: 'Charlie', domain: ['Data Science'], skills: ['Python', 'Machine Learning', 'Pandas'] },
+//     { name: 'David', domain: ['Frontend'], skills: ['React', 'JavaScript', 'CSS'] },
+//     { name: 'Eve', domain: ['Backend'], skills: ['Node.js', 'MongoDB', 'Express'] },
+//     { name: 'Alice', domain: ['Frontend', 'Data Science'], skills: ['HTML', 'CSS', 'JavaScript', 'Python', 'Machine Learning', 'Pandas'] },
+//     { name: 'Bob', domain: ['Backend'], skills: ['Node.js', 'Express', 'MongoDB'] },
+//     { name: 'Charlie', domain: ['Data Science'], skills: ['Python', 'Machine Learning', 'Pandas'] },
+//     { name: 'David', domain: ['Frontend'], skills: ['React', 'JavaScript', 'CSS'] },
+//     { name: 'Eve', domain: ['Backend'], skills: ['Node.js', 'MongoDB', 'Express'] },
+//     { name: 'Alice', domain: ['Frontend', 'Data Science'], skills: ['HTML', 'CSS', 'JavaScript', 'Python', 'Machine Learning', 'Pandas'] },
+//     { name: 'Bob', domain: ['Backend'], skills: ['Node.js', 'Express', 'MongoDB'] },
+//     { name: 'Charlie', domain: ['Data Science'], skills: ['Python', 'Machine Learning', 'Pandas'] },
+//     { name: 'David', domain: ['Frontend'], skills: ['React', 'JavaScript', 'CSS'] },
+//     { name: 'Eve', domain: ['Backend'], skills: ['Node.js', 'MongoDB', 'Express'] },
+//     { name: 'Alice', domain: ['Frontend', 'Data Science'], skills: ['HTML', 'CSS', 'JavaScript', 'Python', 'Machine Learning', 'Pandas'] },
+//     { name: 'Bob', domain: ['Backend'], skills: ['Node.js', 'Express', 'MongoDB'] },
+//     { name: 'Charlie', domain: ['Data Science'], skills: ['Python', 'Machine Learning', 'Pandas'] },
+//     { name: 'David', domain: ['Frontend'], skills: ['React', 'JavaScript', 'CSS'] },
+//     { name: 'Eve', domain: ['Backend'], skills: ['Node.js', 'MongoDB', 'Express'] },
+//     { name: 'Alice', domain: ['Frontend', 'Data Science'], skills: ['HTML', 'CSS', 'JavaScript', 'Python', 'Machine Learning', 'Pandas'] },
+//     { name: 'Bob', domain: ['Backend'], skills: ['Node.js', 'Express', 'MongoDB'] },
+//     { name: 'Charlie', domain: ['Data Science'], skills: ['Python', 'Machine Learning', 'Pandas'] },
+//     { name: 'David', domain: ['Frontend'], skills: ['React', 'JavaScript', 'CSS'] },
+//     { name: 'Eve', domain: ['Backend'], skills: ['Node.js', 'MongoDB', 'Express'] },
+//     { name: 'Alice', domain: ['Frontend', 'Data Science'], skills: ['HTML', 'CSS', 'JavaScript', 'Python', 'Machine Learning', 'Pandas'] },
+//     { name: 'Bob', domain: ['Backend'], skills: ['Node.js', 'Express', 'MongoDB'] },
+//     { name: 'Charlie', domain: ['Data Science'], skills: ['Python', 'Machine Learning', 'Pandas'] },
+//     { name: 'David', domain: ['Frontend'], skills: ['React', 'JavaScript', 'CSS'] },
+//     { name: 'Eve', domain: ['Backend'], skills: ['Node.js', 'MongoDB', 'Express'] },
+// ];
+
 const studentsData = [
-    { name: 'Alice', domain: ['Frontend', 'Data Science'], skills: ['HTML', 'CSS', 'JavaScript', 'Python', 'Machine Learning', 'Pandas'] },
-    { name: 'Bob', domain: ['Backend'], skills: ['Node.js', 'Express', 'MongoDB'] },
-    { name: 'Charlie', domain: ['Data Science'], skills: ['Python', 'Machine Learning', 'Pandas'] },
-    { name: 'David', domain: ['Frontend'], skills: ['React', 'JavaScript', 'CSS'] },
-    { name: 'Eve', domain: ['Backend'], skills: ['Node.js', 'MongoDB', 'Express'] },
-    { name: 'Alice', domain: ['Frontend', 'Data Science'], skills: ['HTML', 'CSS', 'JavaScript', 'Python', 'Machine Learning', 'Pandas'] },
-    { name: 'Bob', domain: ['Backend'], skills: ['Node.js', 'Express', 'MongoDB'] },
-    { name: 'Charlie', domain: ['Data Science'], skills: ['Python', 'Machine Learning', 'Pandas'] },
-    { name: 'David', domain: ['Frontend'], skills: ['React', 'JavaScript', 'CSS'] },
-    { name: 'Eve', domain: ['Backend'], skills: ['Node.js', 'MongoDB', 'Express'] },
-    { name: 'Alice', domain: ['Frontend', 'Data Science'], skills: ['HTML', 'CSS', 'JavaScript', 'Python', 'Machine Learning', 'Pandas'] },
-    { name: 'Bob', domain: ['Backend'], skills: ['Node.js', 'Express', 'MongoDB'] },
-    { name: 'Charlie', domain: ['Data Science'], skills: ['Python', 'Machine Learning', 'Pandas'] },
-    { name: 'David', domain: ['Frontend'], skills: ['React', 'JavaScript', 'CSS'] },
-    { name: 'Eve', domain: ['Backend'], skills: ['Node.js', 'MongoDB', 'Express'] },
-    { name: 'Alice', domain: ['Frontend', 'Data Science'], skills: ['HTML', 'CSS', 'JavaScript', 'Python', 'Machine Learning', 'Pandas'] },
-    { name: 'Bob', domain: ['Backend'], skills: ['Node.js', 'Express', 'MongoDB'] },
-    { name: 'Charlie', domain: ['Data Science'], skills: ['Python', 'Machine Learning', 'Pandas'] },
-    { name: 'David', domain: ['Frontend'], skills: ['React', 'JavaScript', 'CSS'] },
-    { name: 'Eve', domain: ['Backend'], skills: ['Node.js', 'MongoDB', 'Express'] },
-    { name: 'Alice', domain: ['Frontend', 'Data Science'], skills: ['HTML', 'CSS', 'JavaScript', 'Python', 'Machine Learning', 'Pandas'] },
-    { name: 'Bob', domain: ['Backend'], skills: ['Node.js', 'Express', 'MongoDB'] },
-    { name: 'Charlie', domain: ['Data Science'], skills: ['Python', 'Machine Learning', 'Pandas'] },
-    { name: 'David', domain: ['Frontend'], skills: ['React', 'JavaScript', 'CSS'] },
-    { name: 'Eve', domain: ['Backend'], skills: ['Node.js', 'MongoDB', 'Express'] },
-    { name: 'Alice', domain: ['Frontend', 'Data Science'], skills: ['HTML', 'CSS', 'JavaScript', 'Python', 'Machine Learning', 'Pandas'] },
-    { name: 'Bob', domain: ['Backend'], skills: ['Node.js', 'Express', 'MongoDB'] },
-    { name: 'Charlie', domain: ['Data Science'], skills: ['Python', 'Machine Learning', 'Pandas'] },
-    { name: 'David', domain: ['Frontend'], skills: ['React', 'JavaScript', 'CSS'] },
-    { name: 'Eve', domain: ['Backend'], skills: ['Node.js', 'MongoDB', 'Express'] },
-    { name: 'Alice', domain: ['Frontend', 'Data Science'], skills: ['HTML', 'CSS', 'JavaScript', 'Python', 'Machine Learning', 'Pandas'] },
-    { name: 'Bob', domain: ['Backend'], skills: ['Node.js', 'Express', 'MongoDB'] },
-    { name: 'Charlie', domain: ['Data Science'], skills: ['Python', 'Machine Learning', 'Pandas'] },
-    { name: 'David', domain: ['Frontend'], skills: ['React', 'JavaScript', 'CSS'] },
-    { name: 'Eve', domain: ['Backend'], skills: ['Node.js', 'MongoDB', 'Express'] },
-    { name: 'Alice', domain: ['Frontend', 'Data Science'], skills: ['HTML', 'CSS', 'JavaScript', 'Python', 'Machine Learning', 'Pandas'] },
-    { name: 'Bob', domain: ['Backend'], skills: ['Node.js', 'Express', 'MongoDB'] },
-    { name: 'Charlie', domain: ['Data Science'], skills: ['Python', 'Machine Learning', 'Pandas'] },
-    { name: 'David', domain: ['Frontend'], skills: ['React', 'JavaScript', 'CSS'] },
-    { name: 'Eve', domain: ['Backend'], skills: ['Node.js', 'MongoDB', 'Express'] },
+    { 
+        name: 'Alice', 
+        domain: ['Frontend', 'Data Science'], 
+        skills: ['HTML', 'CSS', 'JavaScript', 'Python', 'Machine Learning', 'Pandas', 'D3.js'] 
+    },
+    { 
+        name: 'Bob', 
+        domain: ['Backend', 'DevOps'], 
+        skills: ['Node.js', 'Express', 'MongoDB', 'Docker', 'AWS', 'CI/CD'] 
+    },
+    { 
+        name: 'Charlie', 
+        domain: ['Data Science', 'AI'], 
+        skills: ['Python', 'Machine Learning', 'Pandas', 'NumPy', 'TensorFlow', 'Keras'] 
+    },
+    { 
+        name: 'David', 
+        domain: ['Frontend', 'UI/UX Design'], 
+        skills: ['React', 'JavaScript', 'CSS', 'Figma', 'Adobe XD', 'Wireframing'] 
+    },
+    { 
+        name: 'Eve', 
+        domain: ['Backend', 'Cloud Computing'], 
+        skills: ['Node.js', 'MongoDB', 'Express', 'AWS', 'Azure', 'Docker'] 
+    },
+    { 
+        name: 'Frank', 
+        domain: ['Mobile Development'], 
+        skills: ['React Native', 'Java', 'Android', 'Swift', 'Firebase'] 
+    },
+    { 
+        name: 'Grace', 
+        domain: ['Cybersecurity', 'Backend'], 
+        skills: ['Penetration Testing', 'Python', 'Linux', 'Wireshark', 'Network Security'] 
+    },
+    { 
+        name: 'Hannah', 
+        domain: ['Frontend', 'UI/UX Design'], 
+        skills: ['HTML', 'CSS', 'JavaScript', 'Vue.js', 'Sketch', 'User Research'] 
+    },
+    { 
+        name: 'Ivy', 
+        domain: ['Cloud Computing', 'DevOps'], 
+        skills: ['AWS', 'Docker', 'Kubernetes', 'Terraform', 'CI/CD', 'Linux'] 
+    },
+    { 
+        name: 'Jack', 
+        domain: ['Game Development'], 
+        skills: ['Unity', 'C#', 'Game Design', '3D Modeling', 'VR/AR'] 
+    },
+    { 
+        name: 'Lily', 
+        domain: ['Data Science', 'Business Analytics'], 
+        skills: ['R', 'Machine Learning', 'SQL', 'Tableau', 'Power BI', 'Data Visualization'] 
+    },
+    { 
+        name: 'Mason', 
+        domain: ['Backend', 'Blockchain'], 
+        skills: ['Node.js', 'Express', 'MongoDB', 'Ethereum', 'Smart Contracts', 'Solidity'] 
+    }
 ];
+
+
+
+// const projectRequirement = [
+//     {
+//         domain: 'Frontend',
+//         skills: ['JavaScript', 'Node.js', 'CSS'],
+//     },
+//     {
+//         domain: 'Backend',
+//         skills: ['Node.js', 'MongoDB', 'Express'],
+//     },
+//     {
+//         domain: 'Data Science',
+//         skills: ['Python', 'Machine Learning', 'Pandas'],
+//     },
+//     {
+//         domain: 'Data Science',
+//         skills: ['Python', 'Machine Learning', 'Pandas'],
+//     },
+//     {
+//         domain: 'Data Science',
+//         skills: ['Python', 'Machine Learning', 'Pandas'],
+//     },
+//     {
+//         domain: 'Data Science',
+//         skills: ['Python', 'Machine Learning', 'Pandas'],
+//     },
+//     {
+//         domain: 'Data Science',
+//         skills: ['Python', 'Machine Learning', 'Pandas'],
+//     },
+//     {
+//         domain: 'Data Science',
+//         skills: ['Python', 'Machine Learning', 'Pandas'],
+//     },
+//     {
+//         domain: 'Data Science',
+//         skills: ['Python', 'Machine Learning', 'Pandas'],
+//     },
+//     {
+//         domain: 'Data Science',
+//         skills: ['Python', 'Machine Learning', 'Pandas'],
+//     },
+//     {
+//         domain: 'Data Science',
+//         skills: ['Python', 'Machine Learning', 'Pandas'],
+//     },
+//     {
+//         domain: 'Data Science',
+//         skills: ['Python', 'Machine Learning', 'Pandas'],
+//     },
+//     {
+//         domain: 'Data Science',
+//         skills: ['Python', 'Machine Learning', 'Pandas'],
+//     },
+//     {
+//         domain: 'Data Science',
+//         skills: ['Python', 'Machine Learning', 'Pandas'],
+//     },
+//     {
+//         domain: 'Data Science',
+//         skills: ['Python', 'Machine Learning', 'Pandas'],
+//     }
+// ]
 
 const projectRequirement = [
     {
         domain: 'Frontend',
-        skills: ['JavaScript', 'Node.js', 'CSS'],
+        skills: ['JavaScript', 'React', 'CSS', 'HTML'],
     },
     {
         domain: 'Backend',
-        skills: ['Node.js', 'MongoDB', 'Express'],
+        skills: ['Node.js', 'MongoDB', 'Express', 'RESTful APIs'],
     },
     {
         domain: 'Data Science',
-        skills: ['Python', 'Machine Learning', 'Pandas'],
+        skills: ['Python', 'Machine Learning', 'Pandas', 'NumPy'],
     },
     {
-        domain: 'Data Science',
-        skills: ['Python', 'Machine Learning', 'Pandas'],
+        domain: 'UI/UX Design',
+        skills: ['Figma', 'Sketch', 'Adobe XD', 'Wireframing'],
     },
     {
-        domain: 'Data Science',
-        skills: ['Python', 'Machine Learning', 'Pandas'],
+        domain: 'Mobile Development',
+        skills: ['React Native', 'Swift', 'Android', 'Firebase'],
     },
     {
-        domain: 'Data Science',
-        skills: ['Python', 'Machine Learning', 'Pandas'],
+        domain: 'Cloud Computing',
+        skills: ['AWS', 'Azure', 'Docker', 'Kubernetes'],
     },
     {
-        domain: 'Data Science',
-        skills: ['Python', 'Machine Learning', 'Pandas'],
+        domain: 'DevOps',
+        skills: ['CI/CD', 'Docker', 'Kubernetes', 'Jenkins'],
     },
     {
-        domain: 'Data Science',
-        skills: ['Python', 'Machine Learning', 'Pandas'],
+        domain: 'Game Development',
+        skills: ['Unity', 'C#', '3D Modeling', 'Game Design'],
     },
     {
-        domain: 'Data Science',
-        skills: ['Python', 'Machine Learning', 'Pandas'],
+        domain: 'Cybersecurity',
+        skills: ['Penetration Testing', 'Firewalls', 'Cryptography', 'Ethical Hacking'],
     },
     {
-        domain: 'Data Science',
-        skills: ['Python', 'Machine Learning', 'Pandas'],
-    },
-    {
-        domain: 'Data Science',
-        skills: ['Python', 'Machine Learning', 'Pandas'],
-    },
-    {
-        domain: 'Data Science',
-        skills: ['Python', 'Machine Learning', 'Pandas'],
-    },
-    {
-        domain: 'Data Science',
-        skills: ['Python', 'Machine Learning', 'Pandas'],
-    },
-    {
-        domain: 'Data Science',
-        skills: ['Python', 'Machine Learning', 'Pandas'],
-    },
-    {
-        domain: 'Data Science',
-        skills: ['Python', 'Machine Learning', 'Pandas'],
+        domain: 'Digital Marketing',
+        skills: ['SEO', 'Google Ads', 'Content Marketing', 'Social Media Marketing'],
     }
-]
+];
 
 
 
@@ -220,7 +328,7 @@ const InviteStuents = () => {
                     <p className='text-2xl'>Project Requirements</p>
                     {projectRequirement.map((item, index) => (
                         <li key={index} className="mb-2 p-2 border border-gray-300 rounded-md">
-                            {item.skills.map((skill, index) => {
+                            {item.domain} - {item.skills.map((skill, index) => {
                                 return (
                                     <span
                                         key={index}

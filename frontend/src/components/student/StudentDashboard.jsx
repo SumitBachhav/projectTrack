@@ -39,9 +39,23 @@ const StudentDashboard = () => {
       {/* Submit Button */}
       <button
         onClick={handleSubmit}
-        className="w-full py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200"
+        className="w-full py-3 bg-blue-600 text-white font-semibold rounded-xl m-2 hover:bg-blue-700 transition duration-200"
       >
         Submit Abstract
+      </button>
+
+      <button
+        onClick={() => navigate('/student/checkIfApproved')}
+        className="w-full py-3 bg-blue-600 text-white font-semibold m-2 rounded-xl hover:bg-blue-700 transition duration-200"
+      >
+        Check if abstract is approved
+      </button>
+
+      <button
+        onClick={() => navigate('/student/invitesAndRequests')}
+        className="w-full py-3 bg-blue-600 text-white font-semibold m-2 rounded-xl hover:bg-blue-700 transition duration-200"
+      >
+        Invites and Requests
       </button>
 
       {/* Message */}

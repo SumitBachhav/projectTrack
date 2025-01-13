@@ -13,43 +13,84 @@ const AvailableProjects = () => {
 
     const navigate = useNavigate();
 
+    // const data = [
+    //     {
+    //         stdAbsId: 1,
+    //         title: "Title 1",
+    //         abstract: "Abstract 1",
+    //         domain: "Domain 1",
+    //         keywords: "Keywords 1",
+    //     },
+    //     {
+    //         stdAbsId: 2,
+    //         title: "Title 2",
+    //         abstract: "Abstract 2",
+    //         domain: "Domain 2",
+    //         keywords: "Keywords 2",
+    //     },
+    //     {
+    //         stdAbsId: 3,
+    //         title: "Title 3",
+    //         abstract: "Abstract 3",
+    //         domain: "Domain 3",
+    //         keywords: "Keywords 3",
+    //     },
+    //     {
+    //         stdAbsId: 4,
+    //         title: "Title 4",
+    //         abstract: "Abstract 4",
+    //         domain: "Domain 4",
+    //         keywords: "Keywords 4",
+    //     },
+    //     {
+    //         stdAbsId: 5,
+    //         title: "Title 5",
+    //         abstract: "Abstract 5",
+    //         domain: "Domain 5",
+    //         keywords: "Keywords 5",
+    //     }
+    // ];
+
+
     const data = [
         {
             stdAbsId: 1,
-            title: "Title 1",
-            abstract: "Abstract 1",
-            domain: "Domain 1",
-            keywords: "Keywords 1",
+            title: "Understanding Quantum Mechanics",
+            abstract: "This paper explores the fundamental principles of quantum mechanics and its real-world applications.",
+            domain: "Physics",
+            keywords: "Quantum Mechanics, Physics, Science, Quantum Computing",
         },
         {
             stdAbsId: 2,
-            title: "Title 2",
-            abstract: "Abstract 2",
-            domain: "Domain 2",
-            keywords: "Keywords 2",
+            title: "AI in Healthcare: Opportunities and Challenges",
+            abstract: "A comprehensive study on the role of artificial intelligence in healthcare, covering both its potentials and risks.",
+            domain: "Technology",
+            keywords: "AI, Healthcare, Machine Learning, Data Science",
         },
         {
             stdAbsId: 3,
-            title: "Title 3",
-            abstract: "Abstract 3",
-            domain: "Domain 3",
-            keywords: "Keywords 3",
+            title: "Renewable Energy Sources: A Global Perspective",
+            abstract: "This research analyzes various renewable energy sources and their impact on global sustainability efforts.",
+            domain: "Environmental Science",
+            keywords: "Renewable Energy, Sustainability, Solar Power, Wind Energy",
         },
         {
             stdAbsId: 4,
-            title: "Title 4",
-            abstract: "Abstract 4",
-            domain: "Domain 4",
-            keywords: "Keywords 4",
+            title: "Cybersecurity in the Age of Digital Transformation",
+            abstract: "An in-depth look at how digital transformation is shaping the landscape of cybersecurity and the future of protection methods.",
+            domain: "Cybersecurity",
+            keywords: "Cybersecurity, Digital Transformation, Data Protection, Hacking",
         },
         {
             stdAbsId: 5,
-            title: "Title 5",
-            abstract: "Abstract 5",
-            domain: "Domain 5",
-            keywords: "Keywords 5",
+            title: "Blockchain Technology: The Future of Finance",
+            abstract: "This paper provides insights into blockchain technology and its revolutionary potential in reshaping the financial industry.",
+            domain: "Finance/Technology",
+            keywords: "Blockchain, Cryptocurrency, Finance, Technology, Decentralized Finance",
         }
     ];
+    
+
 
     const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedName, setSelectedName] = useState(null);

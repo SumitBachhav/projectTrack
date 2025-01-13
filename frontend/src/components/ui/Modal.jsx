@@ -1,8 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Modal component
 const Modal = ({ isOpen, closeModal, names, onSelect }) => {
   const [selectedName, setSelectedName] = useState(null);
+
+  const navigate = useNavigate();
 
   // Handle click on a name
   const handleSelect = (name) => {
@@ -14,7 +17,8 @@ const Modal = ({ isOpen, closeModal, names, onSelect }) => {
     if (selectedName) {
       onSelect(selectedName);
     }
-    closeModal(); // Close the modal after selection
+    //closeModal(); // Close the modal after selection
+    navigate("/student/inviteStudents");
   };
 
   // If modal is not open, return null to avoid rendering
@@ -23,7 +27,7 @@ const Modal = ({ isOpen, closeModal, names, onSelect }) => {
   return (
     <div className="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 flex justify-center items-center">
       <div className="bg-white p-6 rounded-lg min-w-[300px] text-center">
-        <h3 className="text-lg font-semibold mb-4">Select a Name</h3>
+        <h3 className="text-lg font-semibold mb-4">Select one project</h3>
         <ul className="list-none p-0 m-0 max-h-52 overflow-y-auto">
           {names.map((name, index) => (
             <li

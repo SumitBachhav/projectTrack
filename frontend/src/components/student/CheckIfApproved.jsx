@@ -4,33 +4,29 @@ import { useNavigate } from 'react-router-dom';
 
 const CheckIfApproved = () => {
 
-        const navigate = useNavigate();
-    
-
-    // const data = {
-    //     approvedList: [],
-    //     comments: 'comment of none'
-    // }
-
-    // const data = {
-    //     approvedList: [{ stdAbsId: 1, title: 'title 1' }],
-    //     comments: 'comment of one'
-    // }
+    const navigate = useNavigate();
 
     // data to send to backend
     // accepted abstract, rejected abstract
 
-    // const data = {
-    //     approvedList: [{ stdAbsId: 1, title: 'title 1' }, { stdAbsId: 2, title: 'title 2' }, { stdAbsId: 3, title: 'title 3' }],
-    //     comments: 'comment of two'
-    // }
+    const [data, setData] = useState(
+        // {
+        // approvedList: [],
+        // comments: 'comment of none'
+        // }
 
-    const[data, setData] = useState({
-        approvedList: [],
-        comments: 'comment of none'
-    })
+        {
+            approvedList: [{ stdAbsId: 1, title: 'title 1' }],
+            comments: 'comment of one'
+        }
 
-    const[wait, setWait] = useState(false)
+        // {
+        //     approvedList: [{ stdAbsId: 1, title: 'title 1' }, { stdAbsId: 2, title: 'title 2' }, { stdAbsId: 3, title: 'title 3' }],
+        //     comments: 'comment of two'
+        // }
+    )
+
+    const [wait, setWait] = useState(false)
 
 
 
@@ -59,7 +55,7 @@ const CheckIfApproved = () => {
             setError('')
             navigate('/student/projectSpecification');
 
-        }else{
+        } else {
             setError('Please select a title')
         }
     }

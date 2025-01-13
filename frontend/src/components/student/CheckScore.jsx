@@ -133,7 +133,7 @@ function CheckScore() {
 
     return (
         <div className="flex flex-col md:flex-row pt-20 justify-evenly gap-8 bg-gray-100 min-h-screen">
-            <div className="flex flex-col items-center bg-white shadow-md rounded-lg p-6 m-1 mb-3">
+            <div className="flex flex-col items-center bg-white shadow-md rounded-lg p-6 m-1 mb-3 w-1/3">
                 <h1 className="text-2xl font-bold mb-4 text-gray-800">Submit Abstract</h1>
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full max-w-md">
                     <div>
