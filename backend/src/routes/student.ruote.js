@@ -1,36 +1,25 @@
 import { Router } from "express";
-// import { 
-//     loginUser, 
-//     logoutUser, 
-//     registerUser, 
-//     refreshAccessToken, 
-//     changeCurrentPassword, 
-//     getCurrentUser, 
-//     updateUserAvatar, 
-//     updateUserCoverImage, 
-//     getUserChannelProfile, 
-//     getWatchHistory, 
-//     updateAccountDetails
-// } from "../controllers/user.controller.js";
-// import {upload} from "../middlewares/multer.middleware.js"
-// import { verifyJWT } from "../middlewares/auth.middleware.js";
-
+import { check, submitTempAbstract, tempUser } from "../controllers/student.controller.js";
 
 const router = Router()
 
-// router.route("/register").post(
-//     // upload.fields([
-//     //     {
-//     //         name: "avatar",
-//     //         maxCount: 1
-//     //     }, 
-//     //     {
-//     //         name: "coverImage",
-//     //         maxCount: 1
-//     //     }
-//     // ]),
-//     registerUser
-//     )
+router.route("/check").get(
+    // upload.fields([
+    //     {
+    //         name: "avatar",
+    //         maxCount: 1
+    //     }, 
+    //     {
+    //         name: "coverImage",
+    //         maxCount: 1
+    //     }
+    // ]),
+    check
+)
+
+router.route("/tempUser").get(tempUser)
+
+router.route("/submitTempAbstract").post(submitTempAbstract)
 
 // router.route("/login").post(loginUser)
 

@@ -70,9 +70,13 @@ function CheckScore() {
         };
         setAbstractList([...abstractList, listObject]);
         setSendButtonDisabled(false);
+        clear();
     };
 
-    const send = () => {
+    // sending data to backend ----------------------------------------------------------
+    const send = async () => {
+        let x = await axios.post('http://localhost:4000/backendApi/v1/student/submitTempAbstract', abstractList);
+        console.log(x);
         navigate('/student/abstractSubmissionComplete');
     };
 
@@ -86,6 +90,7 @@ function CheckScore() {
         setMatchedText3('Processing...');
         setError('');
 
+        // getting data from fastapi----------------------------------------------------------
         try {
             const response = await axios.post(
                 '/api/compareDatabase',
@@ -105,10 +110,9 @@ function CheckScore() {
             setMatchedText1(response.data[0][1]);
             setMatchedText2(response.data[1][1]);
             setMatchedText3(response.data[2][1]);
-            // setMatchedId1(response.data[0][2]);
-            // setMatchedId2(response.data[1][2]);
-            // setMatchedId3(response.data[2][2]);
-            // waiting for changes in backend-----------------------------------------
+            setMatchedId1(response.data[0][2]);
+            setMatchedId2(response.data[1][2]);
+            setMatchedId3(response.data[2][2]);
             setAddButtonDisabled(false);
         } catch (err) {
             setError('Error sending abstract. Please try again.');
