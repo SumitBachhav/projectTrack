@@ -21,6 +21,7 @@ import InviteStuents from './components/student/InviteStuents';
 import AvailableProjects from './components/student/AvailableProjects';
 import AvailableGroups from './components/student/AvailableGroups';
 import InvitesAndRequests from './components/student/InvitesAndRequests';
+import SubmittedAbstractPage from './components/student/SubmittedAbstractPage';
 
 
 function App() {
@@ -109,6 +110,10 @@ function App() {
     {
       path: '/student/invitesAndRequests',
       element: <InvitesAndRequests />
+    },
+    {
+      path: '/student/submittedAbstracts',
+      element: <SubmittedAbstractPage />
     },
   ])
   

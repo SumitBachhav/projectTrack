@@ -12,16 +12,16 @@ function TopicReviewOverview() {
     };
 
     const data = [
-        { studentId: 1, status: 'Pending' },
-        { studentId: 2, status: 'Pending' },
-        { studentId: 3, status: 'Pending' },
-        { studentId: 4, status: 'Pending' },
-        { studentId: 5, status: 'Pending' },
-        { studentId: 6, status: 'Pending' },
-        { studentId: 7, status: 'Pending' },
-        { studentId: 8, status: 'Pending' },
-        { studentId: 9, status: 'Pending' },
-        { studentId: 10, status: 'Verified' },
+        { studentId: 1012401, status: 'Verified' },
+        { studentId: 1012402, status: 'Pending' },
+        { studentId: 1012403, status: 'Pending' },
+        { studentId: 1012404, status: 'Pending' },
+        { studentId: 1012405, status: 'Pending' },
+        { studentId: 1012406, status: 'Pending' },
+        { studentId: 1012407, status: 'Pending' },
+        { studentId: 1012408, status: 'Pending' },
+        { studentId: 1012409, status: 'Pending' },
+        { studentId: 10124010, status: 'Verified' },
 
     ];
 

@@ -194,26 +194,26 @@ const projectRequirement = [
         domain: 'Mobile Development',
         skills: ['React Native', 'Swift', 'Android', 'Firebase'],
     },
-    {
-        domain: 'Cloud Computing',
-        skills: ['AWS', 'Azure', 'Docker', 'Kubernetes'],
-    },
-    {
-        domain: 'DevOps',
-        skills: ['CI/CD', 'Docker', 'Kubernetes', 'Jenkins'],
-    },
-    {
-        domain: 'Game Development',
-        skills: ['Unity', 'C#', '3D Modeling', 'Game Design'],
-    },
-    {
-        domain: 'Cybersecurity',
-        skills: ['Penetration Testing', 'Firewalls', 'Cryptography', 'Ethical Hacking'],
-    },
-    {
-        domain: 'Digital Marketing',
-        skills: ['SEO', 'Google Ads', 'Content Marketing', 'Social Media Marketing'],
-    }
+    // {
+    //     domain: 'Cloud Computing',
+    //     skills: ['AWS', 'Azure', 'Docker', 'Kubernetes'],
+    // },
+    // {
+    //     domain: 'DevOps',
+    //     skills: ['CI/CD', 'Docker', 'Kubernetes', 'Jenkins'],
+    // },
+    // {
+    //     domain: 'Game Development',
+    //     skills: ['Unity', 'C#', '3D Modeling', 'Game Design'],
+    // },
+    // {
+    //     domain: 'Cybersecurity',
+    //     skills: ['Penetration Testing', 'Firewalls', 'Cryptography', 'Ethical Hacking'],
+    // },
+    // {
+    //     domain: 'Digital Marketing',
+    //     skills: ['SEO', 'Google Ads', 'Content Marketing', 'Social Media Marketing'],
+    // }
 ];
 
 

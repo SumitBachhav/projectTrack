@@ -5,7 +5,7 @@ const InvitesAndRequests = () => {
     const data = {
         InvitationSent: [],
         InvitationReceived: [],
-        Requests: []
+        Requests: [{name: "Alice", domain: ["Frontend", "Data Science"], skills: ["HTML", "CSS", "JavaScript", "Python", "Machine Learning", "Pandas"]}],
     }
 
 

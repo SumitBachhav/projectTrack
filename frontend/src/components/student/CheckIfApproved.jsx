@@ -10,19 +10,19 @@ const CheckIfApproved = () => {
     // accepted abstract, rejected abstract
 
     const [data, setData] = useState(
-        // {
-        // approvedList: [],
-        // comments: 'comment of none'
-        // }
-
         {
-            approvedList: [{ stdAbsId: 1, title: 'title 1' }],
-            comments: 'comment of one'
+        approvedList: [],
+        comments: 'comment of staff'
         }
 
         // {
-        //     approvedList: [{ stdAbsId: 1, title: 'title 1' }, { stdAbsId: 2, title: 'title 2' }, { stdAbsId: 3, title: 'title 3' }],
-        //     comments: 'comment of two'
+        //     approvedList: [{ stdAbsId: 1, title: 'title 1' }],
+        //     comments: 'comment of one'
+        // }
+
+        // {
+        //     approvedList: [{ stdAbsId: 1, title: 'A secure Iot-based modern health care system using body sensor networks.' }, { stdAbsId: 2, title: 'Skin Cancer Diagnosis Using AI' }, { stdAbsId: 3, title: 'Data Science Use In Spotify ' }],
+        //     comments: 'comment from staff'
         // }
     )
 
@@ -73,11 +73,11 @@ const CheckIfApproved = () => {
     const handleComment = (comment) => {
         if (comment.length == '0') {
             return (
-                <p className="mb-4">Comments: none</p>
+                <p className="mb-4"><strong>Comments:</strong>  none</p>
             )
         } else {
             return (
-                <p className="mb-4">Comments: {comment}</p>
+                <p className="mb-4"><strong>Comments: </strong>{comment}</p>
             )
         }
     }
@@ -135,7 +135,7 @@ const CheckIfApproved = () => {
         return (
 
             <div className="bg-white p-6 rounded-lg shadow-lg text-center flex flex-col">
-                <p className="text-2xl font-bold mb-4">Success!</p>
+                <p className="text-2xl font-bold mb-4 text-green-600">Success!</p>
                 <p className="mb-4">Your multiple abstracts have been approved.</p>
                 {handleComment(data.comments)}
                 <p className="mb-4 mt-4">select which one you want to use</p>
@@ -145,7 +145,7 @@ const CheckIfApproved = () => {
                             <li
                                 key={index}
                                 onClick={() => handleItemClick(item)}
-                                className={`cursor-pointer p-2 rounded-lg transition-all ${selectedItem === item.stdAbsId
+                                className={`cursor-pointer p-3 rounded-xl transition-all ${selectedItem === item.stdAbsId
                                     ? 'bg-gray-500 text-white'
                                     : 'bg-gray-200 hover:bg-gray-300'
                                     }`}
