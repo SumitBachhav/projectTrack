@@ -75,7 +75,8 @@ function CheckScore() {
 
     // sending data to backend ----------------------------------------------------------
     const send = async () => {
-        let x = await axios.post('http://localhost:4000/backendApi/v1/student/submitTempAbstract', abstractList);
+        // let x = await axios.post('http://localhost:4000/backendApi/v1/student/submitTempAbstract', abstractList);
+        let x = await axios.post('/api/v1/student/submitTempAbstract', abstractList);
         console.log(x);
         navigate('/student/abstractSubmissionComplete');
     };
@@ -93,7 +94,7 @@ function CheckScore() {
         // getting data from fastapi----------------------------------------------------------
         try {
             const response = await axios.post(
-                '/api/compareDatabase',
+                'http://localhost:8000/compareDatabase',
                 {
                     abstract: formData.abstract,
                 },
@@ -269,3 +270,32 @@ function CheckScore() {
 }
 
 export default CheckScore;
+
+
+/*
+
+recieving data from backend -------------------------------------------------------
+
+
+
+
+sending data to backend -----------------------------------------------------------
+
+    [{
+    const listObject = {
+        abstract: formData.abstract,
+        title: formData.title,
+        keyword: formData.keyword,
+        domain: formData.domain,
+        score1: score1,
+        score2: score2,
+        score3: score3,
+        matchedId1: matchedId1,
+        matchedId2: matchedId2,
+        matchedId3: matchedId3,
+    }]
+        
+
+
+
+*/
