@@ -6,8 +6,18 @@ import { Abstract } from "../models/abstract.model.js"
 // import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
 
-const check = asyncHandler( async (req, res) => {
-    res.send("Hello")
+const reset = asyncHandler( async (req, res) => {
+    await Student.updateOne( { name: "testName" }, 
+        { $set: { 
+            submittedAbstracts: [],
+            acceptedByStaffAbstracts: [],
+            finalizedAbstract: "",
+            donatedAbstracts: []
+        
+        } } ) 
+        return res.status(201).json(
+            new ApiResponse(200, {}, "user reset complete")
+        )
 })
 
 const tempUser = asyncHandler( async (req, res) => {
@@ -47,7 +57,7 @@ const submitTempAbstract = asyncHandler( async (req, res) => {
 })
 
 export {
-    check,
+    reset,
     submitTempAbstract,
     tempUser
 }

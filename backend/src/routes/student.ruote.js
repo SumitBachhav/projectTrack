@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { check, submitTempAbstract, tempUser } from "../controllers/student.controller.js";
+import { reset, submitTempAbstract, tempUser } from "../controllers/student.controller.js";
 
 const router = Router()
 
-router.route("/check").get(
+router.route("/reset").get(
     // upload.fields([
     //     {
     //         name: "avatar",
@@ -14,7 +14,7 @@ router.route("/check").get(
     //         maxCount: 1
     //     }
     // ]),
-    check
+    reset
 )
 
 router.route("/tempUser").get(tempUser)

@@ -1,10 +1,9 @@
 import mongoose, { Schema } from "mongoose";
 
 const abstractSchema = new Schema({
-    userID: {
-        // type: Schema.Types.ObjectId,
-        // ref: "User"
-        type: String
+    ownerId: {
+        type: Schema.Types.ObjectId,
+        ref: "Student"
     },
     title: {
         type: String,
@@ -26,35 +25,30 @@ const abstractSchema = new Schema({
             required: true,
         }
     ],
-    // status: {
+    requirements: [{
+        domain: {
+            type: String,
+        },
+        skills: [{
+            type: String
+        }]
+    }],
+    //TODO: check if this is correct ref vid - 6 at 25 min
+    // scores: [{
     //     type: String,
-    //     enum: ["pending", "accepted", "rejected"],
-    //     default: "pending"
-    // },
-    score1: {
-        type: String,
-        required: true,
-    },
-    score2: {
-        type: String,
-        required: true,
-    },
-    score3: {
-        type: String,
-        required: true,
-    },
-    matchedId1: {
-        type: String,
-        required: true,
-    },
-    matchedId2: {
-        type: String,
-        required: true,
-    },
-    matchedId3: {
-        type: String,
-        required: true,
-    },
+    // }],
+    // matchedIds: [{
+    //     type: String,
+    // }],
+    matched: [{
+        score: {
+            type: Number,
+        },
+        abstractId: {
+            type: Schema.Types.ObjectId,
+            ref: "Abstract",
+        }
+    }],
 },
     {
         timestamps: true
