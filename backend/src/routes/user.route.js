@@ -1,24 +1,25 @@
 import { Router } from "express";
-// import { 
-//     loginUser, 
-//     logoutUser, 
-//     registerUser, 
-//     refreshAccessToken, 
-//     changeCurrentPassword, 
+import { 
+    loginUser, 
+    logoutUser, 
+    registerUser, 
+    registerStudent,
+    refreshAccessToken, 
+    changeCurrentPassword, 
 //     getCurrentUser, 
 //     updateUserAvatar, 
 //     updateUserCoverImage, 
 //     getUserChannelProfile, 
 //     getWatchHistory, 
 //     updateAccountDetails
-// } from "../controllers/user.controller.js";
+} from "../controllers/user.controller.js";
 // import {upload} from "../middlewares/multer.middleware.js"
-// import { verifyJWT } from "../middlewares/auth.middleware.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 
 const router = Router()
 
-// router.route("/register").post(
+router.route("/register").post(
 //     // upload.fields([
 //     //     {
 //     //         name: "avatar",
@@ -29,15 +30,16 @@ const router = Router()
 //     //         maxCount: 1
 //     //     }
 //     // ]),
-//     registerUser
-//     )
+    registerUser
+    )
 
-// router.route("/login").post(loginUser)
+router.route("/login").post(loginUser)
 
 //secured routes
-// router.route("/logout").post(verifyJWT,  logoutUser)
-// router.route("/refresh-token").post(refreshAccessToken)
-// router.route("/change-password").post(verifyJWT, changeCurrentPassword)
+router.route("/logout").post(verifyJWT,  logoutUser)
+router.route("/refresh-token").post(refreshAccessToken)
+router.route("/change-password").post(verifyJWT, changeCurrentPassword)
+router.route("/register-student").post(verifyJWT, registerStudent)
 // router.route("/current-user").get(verifyJWT, getCurrentUser)
 // router.route("/update-account").patch(verifyJWT, updateAccountDetails)
 

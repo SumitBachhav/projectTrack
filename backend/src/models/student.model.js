@@ -1,9 +1,17 @@
 import mongoose, { Schema } from "mongoose";
 
 const studentSchema = new Schema({
-    userID: {
+    id: {
         type: Schema.Types.ObjectId,
-        ref: "User"
+        ref: "User",
+        required: true
+    },
+    userID: {
+        type: String,
+        required: true,
+        unique: true,
+        lowercase: true,
+        trim: true,
     },
     year: {
         type: Number,
@@ -22,9 +30,10 @@ const studentSchema = new Schema({
         ref: "Skill"
     }],
     certificates: [{
-        type: Schema.Types.ObjectId,
-        ref: "Certificates"
+        // type: Schema.Types.ObjectId,
+        // ref: "Certificates"
         // TODO: add certificate schema
+        type: String
     }],
     github: {
       type: String,
