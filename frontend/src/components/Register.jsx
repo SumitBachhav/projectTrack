@@ -1,5 +1,6 @@
 // Register.jsx
 import React, { useState } from 'react';
+import axios from 'axios';
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -7,7 +8,8 @@ const Register = () => {
         email: '',
         password: '',
         confirmPassword: '',
-        role: '',
+        userId: '',
+        role: ''
     });
 
     const handleChange = (e) => {
@@ -15,9 +17,28 @@ const Register = () => {
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleSubmit = (e) => {
+    const sendData = async () => {
+        let obj = { 
+            name: formData.name, 
+            email: formData.email, 
+            password: formData.password, 
+            userId: formData.userId,
+            role: formData.role, 
+        };
+        let x = await axios.post('/api/v1/user/register', obj);
+        console.log(x);
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(formData); // Replace with a fetch request to send data to the backend
+
+        if (formData.password !== formData.confirmPassword) {
+            alert('Passwords do not match');
+            return;
+        }
+
+        await sendData();
+        // console.log(formData); // Replace with a fetch request to send data to the backend
 
         if (formData.role === "student") {
             window.location.href = '/register/student';
@@ -47,6 +68,10 @@ const Register = () => {
                 <div>
                     <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
                     <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} className="mt-1 block w-full px-4 py-2 border rounded-md focus:outline-none focus:border-sky-blue-500" placeholder="Confirm your password" required />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">UserId</label>
+                    <input type="text" name="userId" value={formData.userId} onChange={handleChange} className="mt-1 block w-full px-4 py-2 border rounded-md focus:outline-none focus:border-sky-blue-500" placeholder="Enter your userId" required />
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-gray-700">Role</label>
