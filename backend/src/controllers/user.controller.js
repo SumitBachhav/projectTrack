@@ -228,11 +228,11 @@ const changeCurrentPassword = asyncHandler(async(req, res) => {
 
 const registerStudent = asyncHandler(async (req, res) => {
 
-    const { userID, year, division, department, skills, certificates, github  } = req.body
+    const { userID, year, division, department, certificates, github  } = req.body
 
     if (
         // [userID, year, division, department, skills, certificates, github].some((field) => field?.trim() === "")
-        [userID, year, division, department, github].some((field) => field?.trim() === "")
+        [userID, year, division, department, certificates, github].some((field) => field?.trim() === "")
     ) {
         throw new ApiError(400, "All fields are required")
     }
@@ -250,7 +250,6 @@ const registerStudent = asyncHandler(async (req, res) => {
         year,
         division,
         department,
-        skills,
         certificates,
         github
     })

@@ -1,25 +1,11 @@
 import { Router } from "express";
-import { reset, submitTempAbstract, tempUser } from "../controllers/student.controller.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
+import { submitSkills } from "../controllers/student.controller.js";
 
 const router = Router()
 
-router.route("/reset").get(
-    // upload.fields([
-    //     {
-    //         name: "avatar",
-    //         maxCount: 1
-    //     }, 
-    //     {
-    //         name: "coverImage",
-    //         maxCount: 1
-    //     }
-    // ]),
-    reset
-)
+router.route("/submitSkills").post(verifyJWT, submitSkills)
 
-router.route("/tempUser").get(tempUser)
-
-router.route("/submitTempAbstract").post(submitTempAbstract)
 
 // router.route("/login").post(loginUser)
 
