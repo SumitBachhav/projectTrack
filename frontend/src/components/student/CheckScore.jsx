@@ -59,14 +59,27 @@ function CheckScore() {
         const listObject = {
             abstract: formData.abstract,
             title: formData.title,
-            keyword: formData.keyword,
             domain: formData.domain,
-            score1: score1,
-            score2: score2,
-            score3: score3,
-            matchedId1: matchedId1,
-            matchedId2: matchedId2,
-            matchedId3: matchedId3,
+            keywords: formData.keyword,
+            matched : [{
+                "score": score1,
+                "abstractId": matchedId1
+              },
+              {
+                "score": score2,
+                "abstractId": matchedId2
+              },
+              {
+                "score": score3,
+                "abstractId": matchedId3
+              }
+            ],
+            // score1: score1,
+            // score2: score2,
+            // score3: score3,
+            // matchedId1: matchedId1,
+            // matchedId2: matchedId2,
+            // matchedId3: matchedId3,
         };
         setAbstractList([...abstractList, listObject]);
         setSendButtonDisabled(false);
@@ -75,9 +88,8 @@ function CheckScore() {
 
     // sending data to backend ----------------------------------------------------------
     const send = async () => {
-        // let x = await axios.post('http://localhost:4000/backendApi/v1/student/submitTempAbstract', abstractList);
-        let x = await axios.post('/api/v1/student/submitTempAbstract', abstractList);
-        console.log(x);
+        // let x = await axios.post('/api/v1/student/submitTempAbstract', abstractList);
+        // console.log(x);
         navigate('/student/abstractSubmissionComplete');
     };
 

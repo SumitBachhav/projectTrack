@@ -23,6 +23,7 @@ import AvailableGroups from './components/student/AvailableGroups';
 import InvitesAndRequests from './components/student/InvitesAndRequests';
 import SubmittedAbstractPage from './components/student/SubmittedAbstractPage';
 import GroupMembers from './components/student/GroupMembers';
+import SubmitSkill from './components/student/SubmitSkill';
 
 
 function App() {
@@ -119,6 +120,10 @@ function App() {
     {
       path: 'student/groupMembers',
       element: <GroupMembers />
+    },
+    {
+      path: 'student/submitSkill',
+      element: <SubmitSkill />
     }
   ])
   
