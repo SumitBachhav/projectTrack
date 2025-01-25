@@ -1,10 +1,15 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
-import { submitSkills } from "../controllers/student.controller.js";
+import { findStudent } from "../middlewares/findStudent.middleware.js";
+import { check, reset, submitSkills, submitAbstracts } from "../controllers/student.controller.js";
 
 const router = Router()
 
-router.route("/submitSkills").post(verifyJWT, submitSkills)
+
+router.route("/check").get(findStudent, check)
+router.route("/reset").get(findStudent, reset)
+router.route("/submitSkills").post(findStudent, submitSkills)
+router.route("/submitAbstracts").post(findStudent, submitAbstracts)
 
 
 // router.route("/login").post(loginUser)
