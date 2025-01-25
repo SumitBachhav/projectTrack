@@ -60,7 +60,8 @@ const registerUser = asyncHandler(async (req, res) => {
         name,
         email,
         password,
-        role
+        role,
+        childId: "none"
     })
 
     const createdUser = await User.findById(user._id).select(
@@ -260,7 +261,7 @@ const registerStudent = asyncHandler(async (req, res) => {
         division,
         department,
         certificates,
-        github
+        github,
     })
 
     const createdStudent = await Student.findById(student._id)
@@ -269,7 +270,7 @@ const registerStudent = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Something went wrong while registering the student")
     }
 
-    User.updateOne({ _id: req.user._id }, { $set: { childId: createdStudent._id } }, { new: true }).catch((error) => {
+    await User.updateOne({ _id: req.user._id }, { $set: { childId: createdStudent._id } }, { new: true }).catch((error) => {
         throw new ApiError(500, `Something went wrong while updating user - ${error.message}`)
     })
 
