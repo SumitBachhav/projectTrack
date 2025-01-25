@@ -156,6 +156,15 @@ const logoutUser = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, {}, "User logged Out"))
 })
 
+const check = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user._id)
+    const student = await Student.findById(user?.childId);
+
+    res.status(200).json({
+        success: true,
+        message: `your user id is ${student?.userID}`
+    })
+})
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
     const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
@@ -260,6 +269,10 @@ const registerStudent = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Something went wrong while registering the student")
     }
 
+    User.updateOne({ _id: req.user._id }, { $set: { childId: createdStudent._id } }, { new: true }).catch((error) => {
+        throw new ApiError(500, `Something went wrong while updating user - ${error.message}`)
+    })
+
     return res.status(201).json(
         // new ApiResponse(200, createdUser, "User registered Successfully")
         new ApiResponse(200, {}, "Student registered Successfully")
@@ -275,4 +288,5 @@ export {
     logoutUser,
     refreshAccessToken,
     changeCurrentPassword,
+    check
 }

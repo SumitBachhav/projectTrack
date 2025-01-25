@@ -28,6 +28,9 @@ const userSchema = new Schema({
         enum: ['student', 'staff', 'coordinator'],
         required: true,
     },
+    childId: {
+        type: String
+    }
 },
     {
         timestamps: true

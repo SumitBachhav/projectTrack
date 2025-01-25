@@ -6,6 +6,7 @@ import {
     registerStudent,
     refreshAccessToken, 
     changeCurrentPassword, 
+    check
 //     getCurrentUser, 
 //     updateUserAvatar, 
 //     updateUserCoverImage, 
@@ -34,6 +35,7 @@ router.route("/register").post(
     )
 
 router.route("/login").post(loginUser)
+router.route("/check").get(verifyJWT, check)
 
 //secured routes
 router.route("/logout").get(verifyJWT, logoutUser)
