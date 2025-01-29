@@ -49,6 +49,11 @@ const abstractSchema = new Schema({
             ref: "Abstract",
         }
     }],
+    status: {
+        type: String,
+        enum: ['pending', 'accepted', 'rejected', 'completed'],
+        default: 'pending'
+    },
 },
     {
         timestamps: true

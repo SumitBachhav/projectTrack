@@ -67,7 +67,7 @@ const submitSkills = asyncHandler(async (req, res) => {
 
             // Push valid skill data to the insert array
             skillsToInsert.push({
-                ownerId: req.user._id,
+                ownerId: req.student._id,
                 domain,
                 skills,
                 experience: experience || 0,
@@ -85,6 +85,8 @@ const submitSkills = asyncHandler(async (req, res) => {
         throw new ApiError(500, `Something went wrong while submitting the skill - ${error.message}`);
     }
 });
+// TODO : update student with submitted skills
+
 
 const submitAbstracts = asyncHandler(async (req, res) => {
     const AbstractData = req.body;

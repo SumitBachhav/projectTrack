@@ -1,22 +1,27 @@
 import mongoose, { Schema } from "mongoose";
 
 const staffSchema = new Schema({
-    userID: {
+    id: {
         type: Schema.Types.ObjectId,
-        ref: "User"
+        ref: "User",
+        required: true
+    },
+    userID: {
+        type: String,
+        required: true,
+        unique: true,
+        lowercase: true,
+        trim: true,
     },
     department: {
         type: String,
         enum: ['computer', 'civil', 'mechanical', 'electrical', 'it'],
     },
-    expertise: [{
-        type: Schema.Types.ObjectId,
-        ref: "Skill"
+    expertiseDomain: [{
+        type: String,
+        required: true
     }],
-    otherSkills: [{
-        type: Schema.Types.ObjectId,
-        ref: "Skill"
-    }],
+    otherDomain: [String],
     groups: [{
         type: Schema.Types.ObjectId,
         ref: "Group"

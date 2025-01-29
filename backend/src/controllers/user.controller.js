@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js"
 import { User } from "../models/user.model.js"
 import { Skill} from "../models/skill.model.js"
 import { Student } from "../models/student.model.js";
+import { Staff } from "../models/staff.model.js";
 // import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
@@ -247,7 +248,7 @@ const registerStudent = asyncHandler(async (req, res) => {
         throw new ApiError(400, "All fields are required")
     }
 
-    const existedStudent = await User.findOne({ userID })
+    const existedStudent = await Student.findOne({ userID })
 
     if (existedStudent) {
         throw new ApiError(409, "student with userID already exists")
@@ -280,7 +281,51 @@ const registerStudent = asyncHandler(async (req, res) => {
     )
 
 })
-// TODO: WRITE CODE 
+// TODO: work needs to be done for github and certificates
+
+const registerStaff = asyncHandler(async (req, res) => {
+
+    // const { userID, department, expertise, otherSkills  } = req.body
+    const { userID, department } = req.body
+
+    if (
+        [userID, department].some((field) => field?.trim() === "")
+    ) {
+        throw new ApiError(400, "All fields are required")
+    }
+
+    const existedStaff = await Staff.findOne({ userID })
+
+    if (existedStaff) {
+        throw new ApiError(409, "staff with userID already exists")
+    }
+
+
+    const staff = await Staff.create({
+        id: req.user._id,
+        userID: userID.toLowerCase(),
+        department,
+        // expertise,
+        // otherSkills,
+    })
+    // TODO: scrape scholar api for expertise
+
+    const createdStaff = await Staff.findById(staff._id)
+
+    if (!createdStaff) {
+        throw new ApiError(500, `Something went wrong while registering the staff - ${error.message}`)
+    }
+
+    await User.updateOne({ _id: req.user._id }, { $set: { childId: createdStaff._id } }, { new: true }).catch((error) => {
+        throw new ApiError(500, `Something went wrong while updating user - ${error.message}`)
+    })
+
+    return res.status(201).json(
+        // new ApiResponse(200, createdUser, "User registered Successfully")
+        new ApiResponse(200, {}, "Staff registered Successfully")
+    )
+
+})
 
 export {
     registerUser,
@@ -289,5 +334,6 @@ export {
     logoutUser,
     refreshAccessToken,
     changeCurrentPassword,
-    check
+    check,
+    registerStaff
 }
