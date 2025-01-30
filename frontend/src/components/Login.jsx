@@ -25,7 +25,7 @@ const Login = () => {
     // Here you can implement real login logic like an API call
 
     // If login is successful, navigate to the home page (or wherever you want)
-    navigate('/student/dashboard');
+    navigate('/register-student');
   };
 
   return (
