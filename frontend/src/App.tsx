@@ -1,6 +1,8 @@
 import './App.css'
 import CheckScore from './components/student/CheckScore.jsx'
-import { Routes, Route, Navigate, createBrowserRouter, RouterProvider } from 'react-router-dom';
+import RegisterStudent from './components/RegisterStudent';
+import { Routes, Route, Navigate, createBrowserRouter, 
+RouterProvider } from 'react-router-dom';
 import Layout from './components/Layout';
 import Register from './components/Register';
 import StudentForm from './components/StudentForm';
@@ -122,9 +124,13 @@ function App() {
       element: <GroupMembers />
     },
     {
-      path: 'student/submitSkill',
+      path: '/student/submitSkills',
       element: <SubmitSkill />
-    }
+    },
+    {
+      path: '/register-student',
+      element: <RegisterStudent />
+    },
   ])
   
 

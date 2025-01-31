@@ -1,6 +1,9 @@
 import React, { useState } from "react";
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const SkillSetSubmission = () => {
+    const navigate = useNavigate();
     const [currentFormData, setCurrentFormData] = useState({
         domain: "",
         skills: [],
@@ -56,10 +59,16 @@ const SkillSetSubmission = () => {
         setSubmittedDomains(submittedDomains.filter((d) => d !== deletedSkillSet.domain));
     };
 
-    const handleFinalSubmit = () => {
-        console.log("Final Submitted Data:", allSkills);
-        alert("All skill sets submitted successfully!");
-        // Logic to send data to the database goes here
+    const handleFinalSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            await axios.post('http://localhost:4000/api/v1/student/submitSkills', allSkills);
+            alert('Skills submitted successfully!');
+            navigate('/student/dashboard');  // Navigate to dashboard after successful submission
+        } catch (error) {
+            console.error('Skill Set Submission error:', error);
+            alert('Skill Set Submission failed. Please try again.');
+        }
     };
 
     return (
