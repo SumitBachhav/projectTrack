@@ -117,6 +117,12 @@ const loginUser = asyncHandler(async (req, res) => {
         secure: true
     }
 
+    const data = {
+        name: loggedInUser.name,
+        role: loggedInUser.role,
+        childId: loggedInUser.childId
+    }
+
     return res
         .status(200)
         .cookie("accessToken", accessToken, options)
@@ -125,7 +131,7 @@ const loginUser = asyncHandler(async (req, res) => {
             new ApiResponse(
                 200,
                 {
-                    user: loggedInUser, accessToken, refreshToken
+                    user: data, accessToken, refreshToken
                 },
                 "User logged In Successfully"
             )
@@ -159,12 +165,12 @@ const logoutUser = asyncHandler(async (req, res) => {
 })
 
 const check = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id)
-    const student = await Student.findById(user?.childId);
+    // const user = await User.findById(req.user._id)
+    // const student = await Student.findById(user?.childId);
 
     res.status(200).json({
         success: true,
-        message: `your user id is ${student?.userID}`
+        message: `your user id is ${req.user?.userID}`
     })
 })
 
@@ -259,8 +265,8 @@ const registerStudent = asyncHandler(async (req, res) => {
         id: req.user._id,
         userID: userID.toLowerCase(),
         year,
-        division,
-        department,
+        division: division.toLowerCase(),
+        department : department.toLowerCase(),
         certificates,
         github,
     })

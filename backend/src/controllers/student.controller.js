@@ -47,37 +47,44 @@ const submitSkills = asyncHandler(async (req, res) => {
     const skillsData = req.body;
 
     try {
-        // Prepare an array for the skills to be inserted
         const skillsToInsert = [];
         const existingDomains = new Set();
 
-        // Check the skills data and prepare the insert array
-        for (let singelData of skillsData) {
-            const { domain, skills, experience } = singelData;
+        for (let singleData of skillsData) {
+            const { domain, skills, experience } = singleData;
 
-            if ([domain, skills].some((field) => field?.trim() === "")) {
-                throw new ApiError(400, "All fields are required");
+            // Check if domain or skills are missing or empty
+            if (!domain.trim() || !Array.isArray(skills) || skills.length === 0) {
+                throw new ApiError(400, "All fields are required and at least one skill must be selected");
             }
 
-            // Check if the domain already exists for the user
+            // Avoid duplicate domains
             if (existingDomains.has(domain)) {
-                continue;  // Skip this entry if domain already exists
+                continue;
             }
             existingDomains.add(domain);
 
-            // Push valid skill data to the insert array
+            // Add valid skill data to the insert array
             skillsToInsert.push({
-                ownerId: req.student._id,
+                ownerId: req.user._id,
                 domain,
                 skills,
                 experience: experience || 0,
             });
         }
 
-        // Insert the skills in bulk
+        // Insert skills in bulk if there are valid entries
+        if (skillsToInsert.length === 0) {
+            throw new ApiError(400, "No valid skill sets to insert");
+        }
+
         const insertedSkills = await Skill.insertMany(skillsToInsert, { ordered: true });
 
-        // Return success response if insert was successful
+        const skillIds = insertedSkills.map(skill => skill._id);
+        await Student.findByIdAndUpdate(req.user._id, {
+            $addToSet: { skills: { $each: skillIds } }
+        });
+
         return res.status(201).json(
             new ApiResponse(200, {}, "Skills registered successfully")
         );
@@ -85,6 +92,7 @@ const submitSkills = asyncHandler(async (req, res) => {
         throw new ApiError(500, `Something went wrong while submitting the skill - ${error.message}`);
     }
 });
+
 // TODO : update student with submitted skills
 
 
@@ -157,6 +165,28 @@ const submitAbstracts = asyncHandler(async (req, res) => {
     }
 });
 
+const studentDashboard = asyncHandler(async (req, res) => {
+
+
+    const data = {
+        skillSubmitted: req.user.skills.length > 0,
+    }
+
+
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                {
+                    data
+                },
+                "User dashboard loaded Successfully"
+            )
+        )
+});
+
 
 
 export {
@@ -164,4 +194,5 @@ export {
     reset,
     submitSkills,
     submitAbstracts,
+    studentDashboard
 }

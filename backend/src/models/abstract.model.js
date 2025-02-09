@@ -13,6 +13,10 @@ const abstractSchema = new Schema({
         type: String,
         required: true,
     },
+    abstract_e: {
+        type: String,
+        required: true,
+    },
     domain: [
         {
             type: String,
