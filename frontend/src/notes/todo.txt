@@ -17,3 +17,7 @@ Python
 Machine Learning
 Pandas
 --------------------------------
+
+have a dropdown of selectable for domain in coordinator uploadAbstracts and student checkScore
+
+have admin data schema - contains array of systemData, and skills and domains

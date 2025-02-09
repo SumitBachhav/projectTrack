@@ -1,18 +1,19 @@
-// src/components/Login.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Login = () => {
   // State to manage form data (email and password)
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  
+  const [isLoading, setIsLoading] = useState(false);
+
   // Hook to navigate to another page after successful login
   const navigate = useNavigate();
-  
+
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Basic validation: Check if fields are not empty
@@ -21,20 +22,72 @@ const Login = () => {
       return;
     }
 
-    // Simulate a login process
-    // Here you can implement real login logic like an API call
+    setIsLoading(true);
+    setError('');
 
-    // If login is successful, navigate to the home page (or wherever you want)
-    navigate('/register-student');
+    try {
+      const response = await axios.post('/api/v1/user/login', {
+        email,
+        password,
+      }, {
+        withCredentials: true,  // Ensure cookies are sent with requests
+      });
+
+      // Assuming the backend sends the user info after successful login
+      const { success, data, message } = await response.data;
+
+      if (success) {
+        // Login successful
+        console.log('Login successful');
+        // console.log('User:', data.user);
+
+        const user = data.user;
+        console.log(user)
+
+        // Redirect to another page after successful login
+        if (user.childId == 'none') {
+          if (user.role == 'coordinator') {
+            navigate('/coordinator/uploadAbstracts');
+          }
+          else if (user.role == 'student') {
+            console.log("navigating to student registration page");
+            navigate('/register-student', { state: { user } });
+          } else if (user.role == 'staff') {
+            console.log("navigating to staff registration page");
+            navigate('/register-student');
+          }
+        } else {
+          if (user.role == 'student') {
+            console.log("navigating to student dashboard");
+            navigate('/student/dashboard');
+
+          } else if (user.role == 'staff') {
+            // console.log("navigating to student page");
+            navigate('/register-student');
+          }
+          // TODO: Navigate to the appropriate page based on user role
+        }
+      } else {
+        setError(message || 'Something went wrong');
+      }
+    } catch (err) {
+      if (err.response) {
+        // The server responded with an error
+        setError(err.response.data.message || 'Something went wrong');
+      } else {
+        // Network error or request timeout
+        setError('Network error, please try again later');
+      }
+      console.error('Login error:', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-        
-        {/* Error message */}
-        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
         {/* Login Form */}
         <form onSubmit={handleSubmit}>
@@ -65,14 +118,15 @@ const Login = () => {
           <button
             type="submit"
             className="w-full py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none"
+            disabled={isLoading}
           >
-            Login
+            {isLoading ? 'Logging in...' : 'Login'}
           </button>
         </form>
 
-        <div className="mt-4 text-center">
-          <p className="text-sm">Don't have an account? <a href="/register" className="text-blue-500 hover:underline">Register</a></p>
-        </div>
+        {/* Error message */}
+        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+
       </div>
     </div>
   );

@@ -1,24 +1,42 @@
 import React, { useState } from 'react';
 import { Menu, X, LogIn } from 'lucide-react';
+import axios from 'axios';
+
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const navLinks = [
-    { href: '#features', text: 'Features' },
-    { href: '#roles', text: 'Roles' },
-    { href: '#benefits', text: 'Benefits' },
-    { href: '/register', text: 'Register' },
-  ];
 
-  const NavLink = ({ href, children }) => (
-    <a
-      href={href}
-      className="text-gray-100 hover:text-white px-4 py-2 rounded-lg transition-colors hover:bg-blue-700"
-    >
-      {children}
-    </a>
-  );
+  const handleLogout = async () => {
+    try {
+      await axios.get('/api/v1/user/logout', {}, { withCredentials: true });
+      console.log('Logout successful');
+
+      // Clear any local state or data if necessary
+      // localStorage.removeItem('user');  // Optionally, clear user data from localStorage
+
+      // Redirect to login page after logout
+      return window.location.href = '/login';
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
+  };
+
+  // const navLinks = [
+  //   { href: '#features', text: 'Features' },
+  //   { href: '#roles', text: 'Roles' },
+  //   { href: '#benefits', text: 'Benefits' },
+  //   { href: '/register', text: 'Register' },
+  // ];
+
+  // const NavLink = ({ href, children }) => (
+  //   <a
+  //     href={href}
+  //     className="text-gray-100 hover:text-white px-4 py-2 rounded-lg transition-colors hover:bg-blue-700"
+  //   >
+  //     {children}
+  //   </a>
+  // );
 
   return (
     <nav className="bg-gradient-to-r from-blue-600 to-blue-800 fixed w-full z-50">
@@ -33,11 +51,11 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-2">
-            {navLinks.map((link) => (
+            {/* {navLinks.map((link) => (
               <NavLink key={link.text} href={link.href}>
                 {link.text}
               </NavLink>
-            ))}
+            ))} */}
             <a
               href="/login"
               className="ml-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full 
@@ -46,6 +64,11 @@ const Navbar = () => {
               <LogIn className="w-4 h-4 mr-2" />
               Login
             </a>
+            <button
+              className="flex items-center px-3 py-2 text-gray-100 hover:text-white rounded-md hover:bg-blue-700 transition-colors"
+              onClick={handleLogout}
+            >Logout
+            </button>
           </div>
 
           {/* Mobile menu button */}
@@ -67,7 +90,7 @@ const Navbar = () => {
         {isOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1">
-              {navLinks.map((link) => (
+              {/* {navLinks.map((link) => (
                 <a
                   key={link.text}
                   href={link.href}
@@ -75,7 +98,7 @@ const Navbar = () => {
                 >
                   {link.text}
                 </a>
-              ))}
+              ))} */}
               <a
                 href="/login"
                 className="flex items-center px-3 py-2 text-gray-100 hover:text-white rounded-md hover:bg-blue-700 transition-colors"
@@ -83,6 +106,11 @@ const Navbar = () => {
                 <LogIn className="w-4 h-4 mr-2" />
                 Login
               </a>
+              <button
+                className="flex items-center px-3 py-2 text-gray-100 hover:text-white rounded-md hover:bg-blue-700 transition-colors"
+                onClick={handleLogout}
+              >Logout
+              </button>
             </div>
           </div>
         )}

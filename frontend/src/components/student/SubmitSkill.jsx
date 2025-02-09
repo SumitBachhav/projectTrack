@@ -18,7 +18,7 @@ const SkillSetSubmission = () => {
         "Web Development": ["HTML", "CSS", "JavaScript", "React", "Node.js"],
         "Data Science": ["Python", "R", "Pandas", "NumPy", "TensorFlow"],
         "UI/UX Design": ["Figma", "Adobe XD", "Sketch", "InVision"],
-        DevOps: ["Docker", "Kubernetes", "Jenkins", "AWS", "Terraform"],
+        "DevOps": ["Docker", "Kubernetes", "Jenkins", "AWS", "Terraform"],
     };
 
     const handleDomainChange = (e) => {
@@ -48,6 +48,10 @@ const SkillSetSubmission = () => {
 
     const handleAddSkillSet = (e) => {
         e.preventDefault();
+        if (currentFormData.skills.length === 0) {
+            alert("Please select at least one skill before submitting.");
+            return;
+        }
         setAllSkills([...allSkills, currentFormData]);
         setSubmittedDomains([...submittedDomains, currentFormData.domain]);
         setCurrentFormData({ domain: "", skills: [], experience: "" });
@@ -62,7 +66,8 @@ const SkillSetSubmission = () => {
     const handleFinalSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:4000/api/v1/student/submitSkills', allSkills);
+            console.log(allSkills);
+            await axios.post('/api/v1/student/submitSkills', allSkills);
             alert('Skills submitted successfully!');
             navigate('/student/dashboard');  // Navigate to dashboard after successful submission
         } catch (error) {
@@ -72,7 +77,7 @@ const SkillSetSubmission = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
+        <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4 mt-10">
             <div className="flex flex-col lg:flex-row gap-8 w-full max-w-5xl">
                 {/* Form Section */}
                 <div className="bg-white shadow-lg rounded-lg p-8 w-full lg:w-2/3">
@@ -176,27 +181,27 @@ const SkillSetSubmission = () => {
                         <ul className="space-y-4">
                             {allSkills.map((skillSet, index) => (
                                 <li
-                                key={index}
-                                className="p-4 border border-gray-300 rounded-lg shadow-sm flex items-center justify-between"
-                              >
-                                <div>
-                                  <h3 className="text-lg font-semibold text-gray-700">
-                                    {skillSet.domain}
-                                  </h3>
-                                  <p className="text-sm text-gray-600">
-                                    Skills: {skillSet.skills.join(", ")}
-                                  </p>
-                                  <p className="text-sm text-gray-600">
-                                    Experience: {skillSet.experience} years
-                                  </p>
-                                </div>
-                                <button
-                                  onClick={() => handleDeleteSkillSet(index)}
-                                  className="bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-3 rounded-lg shadow-md focus:ring-2 focus:ring-red-400 focus:ring-offset-2 ml-auto"
+                                    key={index}
+                                    className="p-4 border border-gray-300 rounded-lg shadow-sm flex items-center justify-between"
                                 >
-                                  Delete
-                                </button>
-                              </li>
+                                    <div>
+                                        <h3 className="text-lg font-semibold text-gray-700">
+                                            {skillSet.domain}
+                                        </h3>
+                                        <p className="text-sm text-gray-600">
+                                            Skills: {skillSet.skills.join(", ")}
+                                        </p>
+                                        <p className="text-sm text-gray-600">
+                                            Experience: {skillSet.experience} years
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={() => handleDeleteSkillSet(index)}
+                                        className="bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-3 rounded-lg shadow-md focus:ring-2 focus:ring-red-400 focus:ring-offset-2 ml-auto"
+                                    >
+                                        Delete
+                                    </button>
+                                </li>
                             ))}
                         </ul>
                     )}
@@ -209,7 +214,7 @@ const SkillSetSubmission = () => {
                     onClick={handleFinalSubmit}
                     className="mt-6 bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-6 rounded-lg shadow-md focus:ring-2 focus:ring-green-400 focus:ring-offset-2"
                 >
-                    Final Submit
+                    Submit
                 </button>
             )}
         </div>

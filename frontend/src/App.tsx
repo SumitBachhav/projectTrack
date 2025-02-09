@@ -26,6 +26,7 @@ import InvitesAndRequests from './components/student/InvitesAndRequests';
 import SubmittedAbstractPage from './components/student/SubmittedAbstractPage';
 import GroupMembers from './components/student/GroupMembers';
 import SubmitSkill from './components/student/SubmitSkill';
+import UploadAbstracts from './components/coordinator/UploadAbstracts';
 
 
 function App() {
@@ -130,6 +131,10 @@ function App() {
     {
       path: '/register-student',
       element: <RegisterStudent />
+    },
+    {
+      path: '/coordinator/uploadAbstracts',
+      element: <UploadAbstracts />
     },
   ])
   

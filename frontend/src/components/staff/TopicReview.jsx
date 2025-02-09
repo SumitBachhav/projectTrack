@@ -17,7 +17,7 @@ const TopicReview = () => {
                 matched1: { percentage: 98, title: "Skin Cancer Diagnosis Using AI", abstract: "Skin cancer is common and early detection is critical for effective treatment. This presentation explores the use of Artificial Intelligence (AI) in diagnosing skin cancer by analyzing dermoscopic images. AI techniques, such as deep learning, can improve diagnostic accuracy and speed compared to traditional methods which depended on human experts. In this seminar we will explore methodology, objectives, advantages disadvantages of this technique.", domain: "Artificial Intelligence", keywords: "Artificial Intelligence, Deep learning, Neural network" },
                 matched2: { percentage: 51, title: "AI In Finance: Revolutionizing The Industry", abstract: "Artificial Intelligence (AI) is revolutionizing the financial industry by enhancing efficiency, accuracy, and decision-making capabilities across various sectors. AI technologies, such as machine learning, natural language processing (NLP), and deep learning, are increasingly being applied in areas like portfolio management, fraud detection, risk assessment, and algorithmic trading. These advancements enable financial institutions to process vast amounts of data quickly, automate complex tasks, and provide personalized services. AI-driven innovations, including robo-advisors, credit scoring systems, and RegTech solutions, are transforming how financial services are delivered, improving customer experience while reducing operational costs. As AI continues to evolve, its potential to disrupt and reshape the financial landscape remains significant.", domain: "Artificial Intelligence", keywords: "Finance, ML, AI, Portfolio Management,, Fraud Detection  " },
                 matched3: { percentage: 47, title: "AI FITNESS USING DEEP LEARNING", abstract: "Abstract C", domain: "Fitness", keywords: "Cnn rnn ai deeplearning" },
-                approved: false,
+                abstractStatus: false,
             },
             {
                 stdAbsId: 2,
@@ -28,7 +28,7 @@ const TopicReview = () => {
                 matched1: { percentage: 30, title: "Title X", abstract: "Abstract X", domain: "Domain X", keywords: "Keywords X" },
                 matched2: { percentage: 25, title: "Title Y", abstract: "Abstract Y", domain: "Domain Y", keywords: "Keywords Y" },
                 matched3: { percentage: 18, title: "Title Z", abstract: "Abstract Z", domain: "Domain Z", keywords: "Keywords Z" },
-                approved: false,
+                abstractStatus: false,
             },
         ],
     };
@@ -163,3 +163,20 @@ const TopicReview = () => {
 };
 
 export default TopicReview;
+
+
+/*
+send (usestate)
+student id
+
+send (submit)
+student id
+approved list
+
+recieve (usestate)
+student submitted abstract
+
+
+
+
+*/

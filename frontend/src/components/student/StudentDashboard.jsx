@@ -1,23 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';  // Make sure to install axios if you haven't
 
 const StudentDashboard = () => {
-  const [abstract, setAbstract] = useState('');
-  // const [message, setMessage] = useState('');
-  
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);  // To show a loading state while fetching data
 
-  // Function to handle form submission
-  const handleSubmit = () => {
-    // if (abstract.trim()) {
-    //   // Placeholder for submitting the abstract (e.g., API call or logic to handle submission)
-    //   setMessage('Abstract submitted successfully!');
-    //   setAbstract('');
-    // } else {
-    //   setMessage('Please enter a valid abstract.');
-    // }
-    navigate('/student/checkabstract');
-  };
+  useEffect(() => {
+    const checkSkillSubmission = async () => {
+      try {
+        // Replace with your actual API endpoint
+        const response = await axios.get('/api/v1/student/studentDashboard');
+        
+        const { success, data, message } = await response.data;
+
+        if (!success) {
+          console.error('Error checking skill submission:', message);
+          // Handle error accordingly, maybe show an error message
+          return;
+        }
+
+        // console.log(data)
+        const userData = data.data;
+
+        if (!userData.skillSubmitted) {
+          navigate('/student/submitSkills');
+        } else {
+          setLoading(false);  // Only stop loading if skill is submitted
+        }
+
+      } catch (error) {
+        console.error('Error checking skill submission:', error);
+        // Handle error accordingly, maybe show an error message
+      }
+    };
+
+    checkSkillSubmission();
+  }, [navigate]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p className="text-lg text-gray-700">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-gray-100 min-h-screen p-6 mt-12">
@@ -29,27 +56,14 @@ const StudentDashboard = () => {
         <div className="bg-blue-50 p-6 rounded-lg shadow-sm mb-8">
           <h2 className="text-2xl font-semibold text-gray-800 mb-4">Submit Your Abstract</h2>
           <p className="text-gray-600 mb-4">Once you submit your abstract, it will be reviewed by the panel. You can check the status of your abstract below.</p>
-          
-          {/* Abstract Textarea */}
-          {/* <textarea
-            value={abstract}
-            onChange={handleInputChange}
-            placeholder="Enter your abstract here..."
-            className="w-full h-40 p-4 border-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500 mb-6 text-lg"
-          /> */}
 
           {/* Submit Button */}
           <button
-            onClick={handleSubmit}
+            onClick={() => navigate('/student/checkabstract')}
             className="w-full py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200"
           >
             Submit Abstract
           </button>
-
-          {/* Message */}
-          {/* {message && (
-            <p className="mt-4 text-lg text-center text-gray-800">{message}</p>
-          )} */}
         </div>
 
         {/* Status Overview */}
@@ -78,10 +92,10 @@ const StudentDashboard = () => {
             </button>
           </div>
 
-          {/* Rejected Abstracts */}
+          {/* Invites and Requests */}
           <div className="bg-red-50 p-6 rounded-lg shadow-md">
             <h3 className="text-xl font-semibold text-gray-700 mb-4">Invites and Requests</h3>
-            <p className="text-lg text-gray-500">Check your invites and requests.<br/> 1 pending request !</p>
+            <p className="text-lg text-gray-500">Check your invites and requests.<br/> 1 pending request!</p>
             <button
               onClick={() => navigate('/student/invitesAndRequests')}
               className="mt-4 w-full py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-200"

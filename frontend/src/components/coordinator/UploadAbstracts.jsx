@@ -1,14 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from "@/components/ui/accordion";
 import { useNavigate } from 'react-router-dom';
 
-function CheckScore() {
+function UploadAbstracts() {
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
@@ -18,22 +12,10 @@ function CheckScore() {
         domain: '',
     });
 
-    const [score1, setScore1] = useState('Please submit abstract to get similarity score and abstracts');
-    const [score2, setScore2] = useState('Please submit abstract to get similarity score and abstracts');
-    const [score3, setScore3] = useState('Please submit abstract to get similarity score and abstracts');
-    const [matchedText1, setMatchedText1] = useState('');
-    const [matchedText2, setMatchedText2] = useState('');
-    const [matchedText3, setMatchedText3] = useState('');
-    const [matchedId1, setMatchedId1] = useState('');
-    const [matchedId2, setMatchedId2] = useState('');
-    const [matchedId3, setMatchedId3] = useState('');
-    const [title1, setTitle1] = useState('');
-    const [title2, setTitle2] = useState('');
-    const [title3, setTitle3] = useState('');
+
     const [error, setError] = useState('');
 
     const [abstractList, setAbstractList] = useState([]);
-    const [addButtonDisabled, setAddButtonDisabled] = useState(true);
     const [sendButtonDisabled, setSendButtonDisabled] = useState(true);
 
     const handleChange = (e) => {
@@ -48,77 +30,30 @@ function CheckScore() {
             keyword: '',
             domain: '',
         });
-        setScore1('Please submit abstract to get similarity score and abstracts');
-        setScore2('Please submit abstract to get similarity score and abstracts');
-        setScore3('Please submit abstract to get similarity score and abstracts');
-        setMatchedText1('');
-        setMatchedText2('');
-        setMatchedText3('');
-        setTitle1('');
-        setTitle2('');
-        setTitle3('');
-        setError('');
-        setAddButtonDisabled(true);
-    };
 
-    const add = () => {
-        const listObject = {
-            abstract: formData.abstract,
-            title: formData.title,
-            domain: formData.domain,
-            keywords: formData.keyword,
-            matched : [{
-                "score": score1,
-                "abstractId": matchedId1
-              },
-              {
-                "score": score2,
-                "abstractId": matchedId2
-              },
-              {
-                "score": score3,
-                "abstractId": matchedId3
-              }
-            ],
-            // score1: score1,
-            // score2: score2,
-            // score3: score3,
-            // matchedId1: matchedId1,
-            // matchedId2: matchedId2,
-            // matchedId3: matchedId3,
-        };
-        setAbstractList([...abstractList, listObject]);
-        setSendButtonDisabled(false);
-        clear();
+
+        setError('');
     };
 
     // sending data to backend ----------------------------------------------------------
     const send = async () => {
-        // let x = await axios.post('/api/v1/student/submitTempAbstract', abstractList);
-        // console.log(x);
-        navigate('/student/abstractSubmissionComplete');
-    };
+        // try {
+        //     let x = await axios.post('/api/v1/coordinator/submitAbstracts', abstractList);
+        //     console.log(x);
+        //     // navigate('/student/abstractSubmissionComplete');
+        //     alert('Abstracts submitted successfully!');
+        //     setAbstractList([]);
+        //     setSendButtonDisabled(true);
+        // } catch (error) {
+        //     console.error('Abstract Submission error:', error);
+        // }
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setScore1('Processing...');
-        setScore2('Processing...');
-        setScore3('Processing...');
-        setMatchedText1('Processing...');
-        setMatchedText2('Processing...');
-        setMatchedText3('Processing...');
-        setTitle1('');
-        setTitle2('');
-        setTitle3('');
-        setError('');
+        console.log(abstractList)
 
-        // getting data from fastapi----------------------------------------------------------
         try {
             const response = await axios.post(
-                'http://localhost:8000/compareDatabase',
-                {
-                    abstract: formData.abstract,
-                },
+                'http://localhost:8000/api/insert2',
+                abstractList,
                 {
                     headers: {
                         'Content-Type': 'application/json',
@@ -126,33 +61,29 @@ function CheckScore() {
                 }
             );
 
-            console.log(response);
 
-            setTitle1(response.data[0][0]);
-            setTitle2(response.data[1][0]);
-            setTitle3(response.data[2][0]);
-            setScore1(` ${Math.round(Number(response.data[0][1]) * 100000) / 1000} %`);
-            setScore2(` ${Math.round(Number(response.data[1][1]) * 100000) / 1000} %`);
-            setScore3(` ${Math.round(Number(response.data[2][1]) * 100000) / 1000} %`);
-            setMatchedText1(response.data[0][2]);
-            setMatchedText2(response.data[1][2]);
-            setMatchedText3(response.data[2][2]);
-            setMatchedId1(response.data[0][3]);
-            setMatchedId2(response.data[1][3]);
-            setMatchedId3(response.data[2][3]);
-            setAddButtonDisabled(false);
-        } catch (err) {
-            setError('Error sending abstract. Please try again.', err);
-            setScore1('Please submit abstract to get similarity score and abstracts');
-            setScore2('Please submit abstract to get similarity score and abstracts');
-            setScore3('Please submit abstract to get similarity score and abstracts');
-            setMatchedText1('');
-            setMatchedText2('');
-            setMatchedText3('');
-            setTitle1('');
-            setTitle2('');
-            setTitle3('');
+            alert('Abstracts submitted successfully!');
+            setAbstractList([]);
+            setSendButtonDisabled(true);
+        } catch (error) {
+            console.log("error", error);
         }
+
+
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+        const listObject = {
+            abstract: formData.abstract,
+            title: formData.title,
+            domain: formData.domain,
+            keywords: formData.keyword,
+        };
+        setAbstractList([...abstractList, listObject]);
+        setSendButtonDisabled(false);
+        clear();
     };
 
     const handleDelete = (index) => {
@@ -222,34 +153,12 @@ function CheckScore() {
                         type="submit"
                         className="w-full py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
-                        Submit
+                        Add
                     </button>
                 </form>
 
                 {error && <div className="mt-4 text-red-500 text-center">{error}</div>}
 
-                <div className="w-full bg-gray-200 rounded-md shadow-md mt-6 p-4">
-                    <Accordion type="single" collapsible className="w-full">
-                        <AccordionItem value="item-1">
-                            <AccordionTrigger>{`${score1}  ${title1}`}</AccordionTrigger>
-                            <AccordionContent>
-                                {matchedText1}
-                            </AccordionContent>
-                        </AccordionItem>
-                        <AccordionItem value="item-2">
-                            <AccordionTrigger>{`${score2}  ${title2}`}</AccordionTrigger>
-                            <AccordionContent>
-                                {matchedText2}
-                            </AccordionContent>
-                        </AccordionItem>
-                        <AccordionItem value="item-3">
-                            <AccordionTrigger>{`${score3}  ${title3}`}</AccordionTrigger>
-                            <AccordionContent>
-                                {matchedText3}
-                            </AccordionContent>
-                        </AccordionItem>
-                    </Accordion>
-                </div>
 
                 <div className="flex gap-4 mt-4">
                     <button
@@ -258,18 +167,11 @@ function CheckScore() {
                     >
                         Clear
                     </button>
-                    <button
-                        onClick={add}
-                        className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-                        disabled={addButtonDisabled}
-                    >
-                        Add
-                    </button>
                 </div>
             </div>
 
             <div className="w-full md:w-1/3 p-6 bg-white shadow-md rounded-lg m-1 mb-3">
-                <h2 className="text-xl font-bold mb-4 text-gray-800">Abstract List for Faculty Verification</h2>
+                <h2 className="text-xl font-bold mb-4 text-gray-800">Abstracts</h2>
                 <div className="bg-gray-100 p-4 rounded-md shadow-md h-80 overflow-y-auto border">
                     {abstractList.map((localAbstract, index) => (
                         <div
@@ -298,7 +200,7 @@ function CheckScore() {
     );
 }
 
-export default CheckScore;
+export default UploadAbstracts;
 
 
 /*
