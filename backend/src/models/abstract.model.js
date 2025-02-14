@@ -55,7 +55,7 @@ const abstractSchema = new Schema({
     }],
     status: {
         type: String,
-        enum: ['pending', 'accepted', 'rejected', 'completed'],
+        enum: ['pending', 'submitted', 'accepted', 'rejected', 'completed'],
         default: 'pending'
     },
 },

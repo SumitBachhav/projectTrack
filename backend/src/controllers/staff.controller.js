@@ -25,36 +25,31 @@ const check = asyncHandler(async (req, res) => {
     })
 })
 
-// const reset = asyncHandler(async (req, res) => {
+const reset = asyncHandler(async (req, res) => {
 
-//     await Student.updateOne({ _id: req.student._id }, {
-//         $set: {
-//             // skills: [],
-//             submittedAbstracts: [],
-//             // certificates: [],
-//             // github: "",
-//             // groupId: "",
-//             // acceptedByStaffAbstracts: [],
-//             // finalizedAbstract: "",
-//             // donatedAbstracts: [],
-//             // invites: { sent: [], received: [] },
-//             // requests: { sent: [], received: [] },
-//         }
-//     })
-//         .catch((error) => {
-//             throw new ApiError(500, `Something went wrong while reseting the student - ${error.message}`);
-//         });
+    await Staff.updateOne({ _id: req.user._id }, {
+        $set: {
+            // userID: [],
+            // department: [],
+            // expertiseDomain: [],
+            // groups: [],
+            verificationAssigned: [],
+        }
+    })
+        .catch((error) => {
+            throw new ApiError(500, `Something went wrong while reseting the student - ${error.message}`);
+        });
 
-//     res.status(200).json({
-//         success: true,
-//         message: "reset successfull"
-//     })
-// })
+    res.status(200).json({
+        success: true,
+        message: "reset successfull"
+    })
+})
 
 const verifyAbstractStudentList = asyncHandler(async (req, res) => {
 
    try {
-     const staff = await Staff.findOne({ _id: req.staff._id }).populate("verificationAssigned");
+     const staff = await Staff.findById(req.user._id).populate("verificationAssigned");
      
      if (!staff) {
          throw new ApiError(404, "Staff not found");
@@ -232,14 +227,57 @@ const donateAbstracts = asyncHandler(async (req, res) => {
     }
 });
 
+const updateStaffExpertise = async (req, res, next) => {
+    try {
+        const  staffId  = req.user._id;
+        const { expertiseDomains } = req.body; // Array of domains from request body
+
+        // Step 1: Validate input
+        if (!Array.isArray(expertiseDomains) || expertiseDomains.length === 0) {
+            throw new ApiError(400, 'Expertise domains must be a non-empty array.');
+        }
+
+        // Define allowed domains (customize based on your application's needs)
+        const allowedDomains = ['iot', 'cyber security', 'artificial intelligence', 'data science', 'cybersecurity', 'iot', 'cloud computing'];
+        // const allowedDomains = ['ai', 'machine learning', 'web development', 'data science', 'cybersecurity', 'iot', 'cloud computing'];
+
+        // Filter and validate domains
+        const validatedDomains = expertiseDomains.filter(domain =>
+            typeof domain === 'string' &&
+            allowedDomains.includes(domain.toLowerCase())
+        );
+
+        if (validatedDomains.length === 0) {
+            throw new ApiError(400, 'No valid domains provided. Ensure they match allowed domains.');
+        }
+
+        // Step 2: Update staff expertise in the database
+        const updatedStaff = await Staff.findByIdAndUpdate(
+            staffId,
+            { $set: { expertiseDomain: validatedDomains } },
+            // { new: true, runValidators: true }
+        );
+
+        if (!updatedStaff) {
+            throw new ApiError(404, 'Staff member not found.');
+        }
+
+        // Step 3: Respond with success
+        res.status(200).json(new ApiResponse(200, updatedStaff, 'Expertise domains updated successfully.'));
+    } catch (error) {
+        next(error); // Pass error to the error handling middleware
+    }
+};
+
 
 
 export {
     check,
-    // reset,
+    reset,
     getSubmittedAbstracts,
     setVirifiedAbstract,
     verifyAbstractStudentList,
     donateAbstracts,
+    updateStaffExpertise
 
 }

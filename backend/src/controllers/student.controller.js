@@ -12,13 +12,13 @@ import mongoose from "mongoose";
 const check = asyncHandler(async (req, res) => {
     res.status(200).json({
         success: true,
-        message: `your user id is ${req.student.userID}`
+        message: `your user id is ${req.user.userID}`
     })
 })
 
 const reset = asyncHandler(async (req, res) => {
 
-    await Student.updateOne({ _id: req.student._id }, {
+    await Student.updateOne({ _id: req.user._id }, {
         $set: {
             // skills: [],
             submittedAbstracts: [],
@@ -115,11 +115,12 @@ const submitAbstracts = asyncHandler(async (req, res) => {
         };
 
         for (let singleData of AbstractData) {
-            const { title, abstract, domain, keywords, matched } = singleData;
+            const { title, abstract, domain, keywords, matched, embedding } = singleData;
 
             // Validate required fields
             validateField(title, "Title");
             validateField(abstract, "Abstract");
+            validateField(embedding, "Embedding");
 
             // Validate domain and keywords arrays
             if (Array.isArray(domain) && domain.length === 0) {
@@ -130,12 +131,14 @@ const submitAbstracts = asyncHandler(async (req, res) => {
             }
 
             abstractToInsert.push({
-                ownerId: req.student._id,
+                ownerId: req.user._id,
                 title,
                 abstract,
                 domain,
                 keywords,
-                matched: matched || -1, // Default matched to -1 if not provided
+                matched: matched,
+                abstract_e: embedding,
+                status: "pending"
             });
         }
 
@@ -151,7 +154,7 @@ const submitAbstracts = asyncHandler(async (req, res) => {
 
         // Update student with submitted abstracts
         await Student.updateOne(
-            { _id: req.student._id },
+            { _id: req.user._id },
             { $push: { submittedAbstracts: { $each: ids } } }
         );
 

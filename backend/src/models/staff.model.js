@@ -21,7 +21,6 @@ const staffSchema = new Schema({
         type: String,
         required: true
     }],
-    otherDomain: [String],
     groups: [{
         type: Schema.Types.ObjectId,
         ref: "Group"
