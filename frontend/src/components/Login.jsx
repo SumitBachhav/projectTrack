@@ -54,7 +54,7 @@ const Login = () => {
             navigate('/register-student', { state: { user } });
           } else if (user.role == 'staff') {
             console.log("navigating to staff registration page");
-            navigate('/register-student');
+            navigate('/register-staff', { state: { user } });
           }
         } else {
           if (user.role == 'student') {
@@ -62,8 +62,7 @@ const Login = () => {
             navigate('/student/dashboard');
 
           } else if (user.role == 'staff') {
-            // console.log("navigating to student page");
-            navigate('/register-student');
+            navigate('/staff/dashboard');
           }
           // TODO: Navigate to the appropriate page based on user role
         }

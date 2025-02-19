@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -13,13 +13,32 @@ const SkillSetSubmission = () => {
     const [allSkills, setAllSkills] = useState([]);
     const [submittedDomains, setSubmittedDomains] = useState([]);
 
-    const domains = ["Web Development", "Data Science", "UI/UX Design", "DevOps"];
-    const skillOptions = {
-        "Web Development": ["HTML", "CSS", "JavaScript", "React", "Node.js"],
-        "Data Science": ["Python", "R", "Pandas", "NumPy", "TensorFlow"],
-        "UI/UX Design": ["Figma", "Adobe XD", "Sketch", "InVision"],
-        "DevOps": ["Docker", "Kubernetes", "Jenkins", "AWS", "Terraform"],
-    };
+    const [domains, setDomains] = useState([]);
+    const [skillOptions, setSkillOptions] = useState([]);
+
+    useEffect(() => {
+        const fetchDomainsAndSkills = async () => {
+            try {
+                const response = await axios.get('/api/v1/user/getDomainsAndSkills');
+                setSkillOptions(response.data.data.domainsWithSkills);
+                console.log(response.data.data.domainsWithSkills);
+                let d = Object.keys(response.data.data.domainsWithSkills);
+                setDomains(d);
+            } catch (error) {
+                console.error('Error fetching domains:', error);
+            }
+        };
+
+        fetchDomainsAndSkills();
+    }, []);
+
+    // const domains = ["Web Development", "Data Science", "UI/UX Design", "DevOps"];
+    // const skillOptions = {
+    //     "Web Development": ["HTML", "CSS", "JavaScript", "React", "Node.js"],
+    //     "Data Science": ["Python", "R", "Pandas", "NumPy", "TensorFlow"],
+    //     "UI/UX Design": ["Figma", "Adobe XD", "Sketch", "InVision"],
+    //     "DevOps": ["Docker", "Kubernetes", "Jenkins", "AWS", "Terraform"],
+    // }; 
 
     const handleDomainChange = (e) => {
         const domain = e.target.value;

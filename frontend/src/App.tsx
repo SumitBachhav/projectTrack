@@ -5,7 +5,6 @@ import { Routes, Route, Navigate, createBrowserRouter,
 RouterProvider } from 'react-router-dom';
 import Layout from './components/Layout';
 import Register from './components/Register';
-import StudentForm from './components/StudentForm';
 import StaffForm from './components/StaffForm';
 import CoordinatorForm from './components/CoordinatorForm';
 import Home from './components/Home';
@@ -27,6 +26,8 @@ import SubmittedAbstractPage from './components/student/SubmittedAbstractPage';
 import GroupMembers from './components/student/GroupMembers';
 import SubmitSkill from './components/student/SubmitSkill';
 import UploadAbstracts from './components/coordinator/UploadAbstracts';
+import StaffDashboard from './components/staff/StaffDashboard';
+import RegisterStaff from './components/RegisterStaff';
 
 
 function App() {
@@ -41,11 +42,7 @@ function App() {
       element: <Register />
     },
     {
-      path: '/register/student',
-      element: <StudentForm />
-    },
-    {
-      path: '/register/staff',
+      path: '/staff/submitSkills',
       element: <StaffForm />
     },
     {
@@ -136,6 +133,14 @@ function App() {
       path: '/coordinator/uploadAbstracts',
       element: <UploadAbstracts />
     },
+    {
+      path: '/staff/dashboard',
+      element: <StaffDashboard />
+    },
+    {
+      path: '/register-staff',
+      element: <RegisterStaff />
+    }
   ])
   
 

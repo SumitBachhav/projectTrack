@@ -35,6 +35,7 @@ function CheckScore() {
     const [abstractList, setAbstractList] = useState([]);
     const [addButtonDisabled, setAddButtonDisabled] = useState(true);
     const [sendButtonDisabled, setSendButtonDisabled] = useState(true);
+    const [embedding, setEmbedding] = useState('');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -58,6 +59,7 @@ function CheckScore() {
         setTitle2('');
         setTitle3('');
         setError('');
+        setEmbedding('');
         setAddButtonDisabled(true);
     };
 
@@ -67,19 +69,20 @@ function CheckScore() {
             title: formData.title,
             domain: formData.domain,
             keywords: formData.keyword,
-            matched : [{
+            matched: [{
                 "score": score1,
                 "abstractId": matchedId1
-              },
-              {
+            },
+            {
                 "score": score2,
                 "abstractId": matchedId2
-              },
-              {
+            },
+            {
                 "score": score3,
                 "abstractId": matchedId3
-              }
+            }
             ],
+            embedding: embedding
             // score1: score1,
             // score2: score2,
             // score3: score3,
@@ -94,9 +97,14 @@ function CheckScore() {
 
     // sending data to backend ----------------------------------------------------------
     const send = async () => {
-        // let x = await axios.post('/api/v1/student/submitTempAbstract', abstractList);
-        // console.log(x);
-        navigate('/student/abstractSubmissionComplete');
+        try {
+            // console.log(abstractList)
+            await axios.post('/api/v1/student/submitAbstracts', abstractList);
+            setAbstractList([]);
+            navigate('/student/abstractSubmissionComplete');
+        } catch (error) {
+            console.log("something went wrong while submitting the abstracts to backend", error);
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -111,6 +119,7 @@ function CheckScore() {
         setTitle2('');
         setTitle3('');
         setError('');
+        setEmbedding('');
 
         // getting data from fastapi----------------------------------------------------------
         try {
@@ -131,15 +140,16 @@ function CheckScore() {
             setTitle1(response.data[0][0]);
             setTitle2(response.data[1][0]);
             setTitle3(response.data[2][0]);
-            setScore1(` ${Math.round(Number(response.data[0][1]) * 100000) / 1000} %`);
-            setScore2(` ${Math.round(Number(response.data[1][1]) * 100000) / 1000} %`);
-            setScore3(` ${Math.round(Number(response.data[2][1]) * 100000) / 1000} %`);
+            setScore1(` ${Math.round(Number(response.data[0][1]) * 100000) / 1000}`);
+            setScore2(` ${Math.round(Number(response.data[1][1]) * 100000) / 1000}`);
+            setScore3(` ${Math.round(Number(response.data[2][1]) * 100000) / 1000}`);
             setMatchedText1(response.data[0][2]);
             setMatchedText2(response.data[1][2]);
             setMatchedText3(response.data[2][2]);
             setMatchedId1(response.data[0][3]);
             setMatchedId2(response.data[1][3]);
             setMatchedId3(response.data[2][3]);
+            setEmbedding(response.data[3]);
             setAddButtonDisabled(false);
         } catch (err) {
             setError('Error sending abstract. Please try again.', err);
@@ -231,20 +241,29 @@ function CheckScore() {
                 <div className="w-full bg-gray-200 rounded-md shadow-md mt-6 p-4">
                     <Accordion type="single" collapsible className="w-full">
                         <AccordionItem value="item-1">
-                            <AccordionTrigger>{`${score1}  ${title1}`}</AccordionTrigger>
+                            <AccordionTrigger>{`${score1} %`}</AccordionTrigger>
                             <AccordionContent>
+                                <strong>{title1}</strong>
+                                <br />
+                                <br />
                                 {matchedText1}
                             </AccordionContent>
                         </AccordionItem>
                         <AccordionItem value="item-2">
-                            <AccordionTrigger>{`${score2}  ${title2}`}</AccordionTrigger>
+                            <AccordionTrigger>{`${score2} %`}</AccordionTrigger>
                             <AccordionContent>
+                                <strong>{title2}</strong>
+                                <br />
+                                <br />
                                 {matchedText2}
                             </AccordionContent>
                         </AccordionItem>
                         <AccordionItem value="item-3">
-                            <AccordionTrigger>{`${score3}  ${title3}`}</AccordionTrigger>
+                            <AccordionTrigger>{`${score3} %`}</AccordionTrigger>
                             <AccordionContent>
+                                <strong>{title3}</strong>
+                                <br />
+                                <br />
                                 {matchedText3}
                             </AccordionContent>
                         </AccordionItem>
