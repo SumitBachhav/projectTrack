@@ -227,35 +227,32 @@ const donateAbstracts = asyncHandler(async (req, res) => {
     }
 });
 
-const updateStaffExpertise = async (req, res, next) => {
+const setStaffExpertise = async (req, res, next) => {
     try {
-        const  staffId  = req.user._id;
-        const { expertiseDomains } = req.body; // Array of domains from request body
+        const staffId = req.user._id;
+        const  expertiseDomains = req.body; // Array of domains from request body
 
         // Step 1: Validate input
+        // console.log(expertiseDomains)
         if (!Array.isArray(expertiseDomains) || expertiseDomains.length === 0) {
             throw new ApiError(400, 'Expertise domains must be a non-empty array.');
         }
 
-        // Define allowed domains (customize based on your application's needs)
-        const allowedDomains = ['iot', 'cyber security', 'artificial intelligence', 'data science', 'cybersecurity', 'iot', 'cloud computing'];
-        // const allowedDomains = ['ai', 'machine learning', 'web development', 'data science', 'cybersecurity', 'iot', 'cloud computing'];
-
-        // Filter and validate domains
-        const validatedDomains = expertiseDomains.filter(domain =>
-            typeof domain === 'string' &&
-            allowedDomains.includes(domain.toLowerCase())
-        );
-
-        if (validatedDomains.length === 0) {
-            throw new ApiError(400, 'No valid domains provided. Ensure they match allowed domains.');
+        // Validate each domain object
+        for (const domainObj of expertiseDomains) {
+            if (!domainObj.domain || typeof domainObj.domain !== 'string') {
+                throw new ApiError(400, 'Each domain must have a valid domain name.');
+            }
+            if (!domainObj.experience || isNaN(domainObj.experience)) {
+                throw new ApiError(400, 'Each domain must have a valid experience as a number.');
+            }
         }
 
         // Step 2: Update staff expertise in the database
         const updatedStaff = await Staff.findByIdAndUpdate(
             staffId,
-            { $set: { expertiseDomain: validatedDomains } },
-            // { new: true, runValidators: true }
+            { $set: { expertiseDomain: expertiseDomains.map(d => ({ domain: d.domain, experience: parseInt(d.experience) })) } },
+            { new: true, runValidators: true }
         );
 
         if (!updatedStaff) {
@@ -263,13 +260,35 @@ const updateStaffExpertise = async (req, res, next) => {
         }
 
         // Step 3: Respond with success
-        res.status(200).json(new ApiResponse(200, updatedStaff, 'Expertise domains updated successfully.'));
+        res.status(200).json(new ApiResponse(200, [], 'Expertise domains updated successfully.'));
     } catch (error) {
         next(error); // Pass error to the error handling middleware
     }
 };
 
+//TODO
 
+const staffDashboard = asyncHandler(async (req, res) => {
+
+
+    const data = {
+        skillSubmitted: req.user.expertiseDomain.length > 0,
+    }
+
+
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                {
+                    data
+                },
+                "User dashboard loaded Successfully"
+            )
+        )
+});
 
 export {
     check,
@@ -278,6 +297,7 @@ export {
     setVirifiedAbstract,
     verifyAbstractStudentList,
     donateAbstracts,
-    updateStaffExpertise
+    setStaffExpertise,
+    staffDashboard
 
 }

@@ -119,7 +119,7 @@ const assignAbstractsToStaffLogic = async () => {
                     continue;  // Skip staff who already reached the limit
                 }
 
-                const expertiseDomains = staff.expertiseDomain.map(domain => domain.toLowerCase());
+                const expertiseDomains = staff.expertiseDomain.map(item => item.domain.toLowerCase());
                 const abstractDomains = abstract.domain.map(domain => domain.toLowerCase());
 
                 const hasMatchingDomain = abstractDomains.some(domain => expertiseDomains.includes(domain));

@@ -7,7 +7,9 @@ import {
     // refreshAccessToken, 
     changeCurrentPassword, 
     check,
-    registerStaff
+    registerStaff,
+    getDomains,
+    getDomainsAndSkills
 
 } from "../controllers/user.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
@@ -34,6 +36,12 @@ router.route("/register-student").post(verifyJWT, refreshTokenMiddleware,
 
 router.route("/register-staff").post(verifyJWT, refreshTokenMiddleware, 
     registerStaff)
+    
+router.route("/getDomains").get(verifyJWT, refreshTokenMiddleware, 
+    getDomains)
+
+router.route("/getDomainsAndSkills").get(verifyJWT, refreshTokenMiddleware, 
+    getDomainsAndSkills)
 
 
 export default router

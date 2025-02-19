@@ -17,9 +17,18 @@ const staffSchema = new Schema({
         type: String,
         enum: ['computer', 'civil', 'mechanical', 'electrical', 'it'],
     },
+    googleScholar: {
+        type: String
+    },
     expertiseDomain: [{
-        type: String,
-        required: true
+        domain: {
+            type: String,
+            required: true
+        },
+        experience: {
+            type: Number,
+            required: true
+        }
     }],
     groups: [{
         type: Schema.Types.ObjectId,

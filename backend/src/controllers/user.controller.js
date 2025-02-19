@@ -8,6 +8,7 @@ import { Staff } from "../models/staff.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
+import { domainsWithSkills } from "../utils/Constants.js";
 
 
 const generateAccessAndRefereshTokens = async (userId) => {
@@ -292,10 +293,10 @@ const registerStudent = asyncHandler(async (req, res) => {
 const registerStaff = asyncHandler(async (req, res) => {
 
     // const { userID, department, expertise, otherSkills  } = req.body
-    const { userID, department } = req.body
+    const { userID, department, googleScholar } = req.body
 
     if (
-        [userID, department].some((field) => field?.trim() === "")
+        [userID, department, googleScholar].some((field) => field?.trim() === "")
     ) {
         throw new ApiError(400, "All fields are required")
     }
@@ -310,7 +311,7 @@ const registerStaff = asyncHandler(async (req, res) => {
     const staff = await Staff.create({
         id: req.user._id,
         userID: userID.toLowerCase(),
-        department,
+        department : department.toLowerCase(),
         // expertise,
         // otherSkills,
     })
@@ -333,6 +334,35 @@ const registerStaff = asyncHandler(async (req, res) => {
 
 })
 
+const getDomains = asyncHandler(async (req, res) => {
+
+    const domains = Object.keys(domainsWithSkills);
+
+    res.status(200).json(
+        new ApiResponse(
+            200,
+            {
+                domains
+            },
+            "Domains fetched successfully"
+        )
+    )
+})
+
+const getDomainsAndSkills = asyncHandler(async (req, res) => {
+
+    res.status(200).json(
+        new ApiResponse(
+            200,
+            {
+                domainsWithSkills
+            },
+            "Domains with skills fetched successfully"
+        )
+    )
+})
+
+
 export {
     registerUser,
     registerStudent,
@@ -341,5 +371,7 @@ export {
     refreshAccessToken,
     changeCurrentPassword,
     check,
-    registerStaff
+    registerStaff,
+    getDomains,
+    getDomainsAndSkills,
 }

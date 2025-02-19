@@ -8,7 +8,8 @@ import {
     getSubmittedAbstracts, 
     setVirifiedAbstract, 
     verifyAbstractStudentList, 
-    updateStaffExpertise 
+    setStaffExpertise,
+    staffDashboard
 } from "../controllers/staff.controller.js";
 
 const router = Router()
@@ -19,7 +20,8 @@ router.route("/reset").get(verifyJWT, refreshTokenMiddleware, reset)
 router.route("/studentListToVerify").get(verifyJWT, refreshTokenMiddleware, verifyAbstractStudentList)
 router.route("/getSubmittedAbstracts").post(verifyJWT, refreshTokenMiddleware, getSubmittedAbstracts)
 router.route("/setVirifiedAbstract").post(verifyJWT, refreshTokenMiddleware, setVirifiedAbstract)
-router.route("/updateStaffExpertise").post(verifyJWT, refreshTokenMiddleware, updateStaffExpertise)
+router.route("/setStaffExpertise").post(verifyJWT, refreshTokenMiddleware, setStaffExpertise)
+router.route("/staffDashboard").get(verifyJWT, refreshTokenMiddleware, staffDashboard)
 
 
 
