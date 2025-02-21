@@ -46,7 +46,7 @@ const reset = asyncHandler(async (req, res) => {
     })
 })
 
-const verifyAbstractStudentList = asyncHandler(async (req, res) => {
+const toVerifyAbstractList = asyncHandler(async (req, res) => {
 
    try {
      const staff = await Staff.findById(req.user._id).populate("verificationAssigned");
@@ -60,7 +60,8 @@ const verifyAbstractStudentList = asyncHandler(async (req, res) => {
      for (let x of staff.verificationAssigned){
          data.push({
              id: x._id,
-             userID: x.userID,
+             title: x.title,
+             status: x.status
          })
      }
 
@@ -77,48 +78,53 @@ const verifyAbstractStudentList = asyncHandler(async (req, res) => {
 })
 
 
-const getSubmittedAbstracts = asyncHandler(async (req, res) => {
-    const { studentId } = req.body;
+const getAbstractDetail = asyncHandler(async (req, res) => {
+    const { abstractId } = req.body;
 
-    const student = await Student.findById(studentId).lean();
-    if (!student) {
-        throw new ApiError(404, "Student not found");
+    const abstractData = await Abstract.findById(abstractId);
+    if (!abstractData) {
+        throw new ApiError(404, "Abstract not found");
     }
 
-    const abstractIds = student.submittedAbstracts || [];
-    if (abstractIds.length === 0) {
-        return res.status(200).json(new ApiResponse(200, [], "No abstracts submitted"));
-    }
+    const matchedAbstractIds = abstractData.matched.map(m => m.abstractId);
+    // console.log('matchedAbstractIds', matchedAbstractIds);
 
-    const abstracts = await Abstract.find({ _id: { $in: abstractIds } }).lean();
-    const matchedAbstractIds = abstracts.flatMap(a => a.matched.map(m => m.abstractId));
     const matchedAbstracts = await Abstract.find({ _id: { $in: matchedAbstractIds } }).lean();
+    // console.log('matchedAbstracts', matchedAbstracts);
 
     const matchedMap = matchedAbstracts.reduce((acc, abs) => {
         acc[abs._id] = abs;
         return acc;
     }, {});
 
-    const data = abstracts.map(abstract => ({
-        abstractId: abstract._id,
-        title: abstract.title,
-        abstract: abstract.abstract,
-        domain: abstract.domain,
-        keywords: abstract.keywords,
-        matched: abstract.matched.map(m => {
+    // console.log('matchedMap', matchedMap);
+
+    const data = {
+        ownerId: abstractData.ownerId,
+        abstractId: abstractData._id,
+        title: abstractData.title,
+        abstract: abstractData.abstract,
+        domain: abstractData.domain,
+        keywords: abstractData.keywords,
+        matched: abstractData.matched.map(m => {
+
             const matchedAbs = matchedMap[m.abstractId];
-            return matchedAbs
-                ? {
-                      title: matchedAbs.title,
-                      abstract: matchedAbs.abstract,
-                      domain: matchedAbs.domain,
-                      keywords: matchedAbs.keywords,
-                      abstractStatus: matchedAbs.status,
-                  }
-                : null;
-        }).filter(Boolean),
-        abstractStatus: abstract.status,
-    }));
+            const absData = {
+                title: matchedAbs.title,
+                abstract: matchedAbs.abstract,
+                domain: matchedAbs.domain,
+                keywords: matchedAbs.keywords,
+                ownerId: matchedAbs.ownerId
+            }
+            const score = m.score;
+
+            return {
+                ...absData, score
+            }
+        }),
+        abstractStatus: abstractData.status,
+        comments: abstractData.comments
+    };
 
     res.status(200).json(new ApiResponse(200, data, "Abstracts fetched successfully"));
 });
@@ -293,9 +299,9 @@ const staffDashboard = asyncHandler(async (req, res) => {
 export {
     check,
     reset,
-    getSubmittedAbstracts,
+    toVerifyAbstractList,
     setVirifiedAbstract,
-    verifyAbstractStudentList,
+    getAbstractDetail,
     donateAbstracts,
     setStaffExpertise,
     staffDashboard

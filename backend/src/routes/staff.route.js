@@ -5,9 +5,9 @@ import { refreshTokenMiddleware } from "../middlewares/refreshToken.middleware.j
 import { 
     check,
     reset,
-    getSubmittedAbstracts, 
+    getAbstractDetail, 
     setVirifiedAbstract, 
-    verifyAbstractStudentList, 
+    toVerifyAbstractList, 
     setStaffExpertise,
     staffDashboard
 } from "../controllers/staff.controller.js";
@@ -17,8 +17,8 @@ const router = Router()
 
 router.route("/check").get(verifyJWT, refreshTokenMiddleware, check)
 router.route("/reset").get(verifyJWT, refreshTokenMiddleware, reset)
-router.route("/studentListToVerify").get(verifyJWT, refreshTokenMiddleware, verifyAbstractStudentList)
-router.route("/getSubmittedAbstracts").post(verifyJWT, refreshTokenMiddleware, getSubmittedAbstracts)
+router.route("/toVerifyAbstractList").get(verifyJWT, refreshTokenMiddleware, toVerifyAbstractList)
+router.route("/getAbstractDetail").get(verifyJWT, refreshTokenMiddleware, getAbstractDetail)
 router.route("/setVirifiedAbstract").post(verifyJWT, refreshTokenMiddleware, setVirifiedAbstract)
 router.route("/setStaffExpertise").post(verifyJWT, refreshTokenMiddleware, setStaffExpertise)
 router.route("/staffDashboard").get(verifyJWT, refreshTokenMiddleware, staffDashboard)

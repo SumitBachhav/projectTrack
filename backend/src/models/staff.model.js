@@ -36,7 +36,7 @@ const staffSchema = new Schema({
     }],
     verificationAssigned: [{
         type: Schema.Types.ObjectId,
-        ref: "Student"
+        ref: "Abstract"
     }]
 
 },

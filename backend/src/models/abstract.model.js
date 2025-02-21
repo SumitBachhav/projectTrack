@@ -3,7 +3,7 @@ import mongoose, { Schema } from "mongoose";
 const abstractSchema = new Schema({
     ownerId: {
         type: Schema.Types.ObjectId,
-        ref: "Student"
+        ref: "User"
     },
     title: {
         type: String,
@@ -55,9 +55,12 @@ const abstractSchema = new Schema({
     }],
     status: {
         type: String,
-        enum: ['pending', 'submitted', 'accepted', 'rejected', 'completed'],
+        enum: ['pending', 'submitted', 'revision', 'accepted', 'rejected', 'completed'],
         default: 'pending'
     },
+    comments: [{
+        type: String
+    }]
 },
     {
         timestamps: true

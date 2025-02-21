@@ -103,9 +103,10 @@ const assignAbstractsToStaffLogic = async () => {
         const totalStaff = staffMembers.length;
         const maxAbstractsPerStaff = Math.floor(totalAbstracts / totalStaff);
 
-        const staffAssignments = new Map(); // To track assigned abstracts for each staff
+        const staffAssignments = new Map(); // Track assigned abstracts for each staff
         staffMembers.forEach(staff => staffAssignments.set(staff._id.toString(), []));
 
+        const assignedAbstracts = new Set(); // Track abstracts that get assigned
         const unassignedAbstracts = [];
 
         // Step 2: Assign abstracts based on domain expertise with a limit
@@ -113,10 +114,10 @@ const assignAbstractsToStaffLogic = async () => {
             let assigned = false;
 
             for (const staff of staffMembers) {
-                const assignedAbstracts = staffAssignments.get(staff._id.toString());
+                const assignedList = staffAssignments.get(staff._id.toString());
 
-                if (assignedAbstracts.length >= maxAbstractsPerStaff) {
-                    continue;  // Skip staff who already reached the limit
+                if (assignedList.length >= maxAbstractsPerStaff) {
+                    continue; // Skip staff who already reached the limit
                 }
 
                 const expertiseDomains = staff.expertiseDomain.map(item => item.domain.toLowerCase());
@@ -125,7 +126,8 @@ const assignAbstractsToStaffLogic = async () => {
                 const hasMatchingDomain = abstractDomains.some(domain => expertiseDomains.includes(domain));
 
                 if (hasMatchingDomain) {
-                    assignedAbstracts.push(abstract._id);
+                    assignedList.push(abstract._id);
+                    assignedAbstracts.add(abstract._id);
                     assigned = true;
                     break; // Stop after assigning to the first matching staff
                 }
@@ -140,27 +142,34 @@ const assignAbstractsToStaffLogic = async () => {
         let staffIndex = 0;
         while (unassignedAbstracts.length > 0) {
             const staff = staffMembers[staffIndex];
-            const assignedAbstracts = staffAssignments.get(staff._id.toString());
+            const assignedList = staffAssignments.get(staff._id.toString());
 
             // Ensure no staff exceeds the limit by more than one (for uneven distribution)
-            if (assignedAbstracts.length < maxAbstractsPerStaff + 1) {
-                assignedAbstracts.push(unassignedAbstracts.pop());
+            if (assignedList.length < maxAbstractsPerStaff + 1) {
+                const abstractId = unassignedAbstracts.pop();
+                assignedList.push(abstractId);
+                assignedAbstracts.add(abstractId);
             }
 
             staffIndex = (staffIndex + 1) % totalStaff;
         }
 
         // Step 4: Update staff records with assigned abstracts
-        const updatePromises = staffMembers.map(staff => {
-            const assignedAbstracts = staffAssignments.get(staff._id.toString());
+        const staffUpdatePromises = staffMembers.map(staff => {
+            const assignedList = staffAssignments.get(staff._id.toString());
             return Staff.findByIdAndUpdate(staff._id, {
-                $set: { verificationAssigned: assignedAbstracts }
+                $set: { verificationAssigned: assignedList }
             });
         });
 
-        await Promise.all(updatePromises);
+        // Step 5: Update abstract statuses to 'submitted'
+        const abstractUpdatePromises = Array.from(assignedAbstracts).map(abstractId => 
+            Abstract.findByIdAndUpdate(abstractId, { $set: { status: 'submitted' } })
+        );
 
-        console.log('Abstracts assigned successfully!');
+        await Promise.all([...staffUpdatePromises, ...abstractUpdatePromises]);
+
+        console.log('Abstracts assigned and statuses updated successfully!');
     } catch (error) {
         console.error('Error assigning abstracts:', error.message);
     }
@@ -168,8 +177,9 @@ const assignAbstractsToStaffLogic = async () => {
 
 const assignAbstractsToStaff = asyncHandler(async (req, res) => {
     await assignAbstractsToStaffLogic();
-    return res.status(200).json(new ApiResponse(200, {}, "Abstracts assigned successfully!"));
+    return res.status(200).json(new ApiResponse(200, {}, "Abstracts assigned and statuses updated successfully!"));
 });
+
 
 
 export {
