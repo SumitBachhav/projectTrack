@@ -130,45 +130,33 @@ const getAbstractDetail = asyncHandler(async (req, res) => {
 });
 
 
-const setVirifiedAbstract = asyncHandler(async (req, res) => {
+const updateAbstractReview = asyncHandler(async (req, res) => {
+    const { reviewedAbstractId, status, comments } = req.body;
 
-    const { ApprovedAbstractIds, studentId } = req.body;
-
-    if (Array.isArray(ApprovedAbstractIds) && ApprovedAbstractIds.length > 0) {
-        // await Abstract.updateMany({ _id: { $in: AbstractIds } }, { $set: { status: "verified" } });
-        const student = await Student.findById(studentId);
-
-        if (!student) {
-            throw new ApiError(404, "Student not found");
-        }
-
-        const abstractIds = student.submittedAbstracts;
-
-        try {
-            for (let abstractId of abstractIds) {
-                if (abstractId in ApprovedAbstractIds) {
-                    await Abstract.updateOne({ _id: abstractId }, { $set: { status: "accepted" } });
-                }else{
-                    await Abstract.updateOne({ _id: abstractId }, { $set: { status: "rejected" } });
-                }
-            }
-        } catch (error) {
-            throw new ApiError(500, "Error while updating abstracts");
-        }
-
-        
-        try {
-            await Student.updateOne({ _id: studentId }, { $set: { acceptedByStaffAbstracts: ApprovedAbstractIds } });
-        } catch (error) {
-            throw new ApiError(500, "Error while updating student");
-        }
+    if (!reviewedAbstractId || !status) {
+        throw new ApiError(400, "Reviewed Abstract ID and status are required.");
     }
 
-    res.status(200).json(
-        new ApiResponse(200, {}, "Abstracts updated successfully")
-    )
+    const validStatuses = ['pending', 'submitted', 'revision', 'accepted', 'rejected', 'completed'];
+    if (!validStatuses.includes(status)) {
+        throw new ApiError(400, "Invalid status value.");
+    }
 
+    const abstract = await Abstract.findById(reviewedAbstractId);
+    if (!abstract) {
+        throw new ApiError(404, "Abstract not found.");
+    }
+
+    abstract.status = status;
+    if (comments) {
+        abstract.comments.push(comments);
+    }
+
+    await abstract.save();
+
+    res.status(200).json(new ApiResponse(200, "Abstract review updated successfully", abstract));
 });
+
 
 //TODO: update topic review page and overview page
 
@@ -300,7 +288,7 @@ export {
     check,
     reset,
     toVerifyAbstractList,
-    setVirifiedAbstract,
+    updateAbstractReview,
     getAbstractDetail,
     donateAbstracts,
     setStaffExpertise,

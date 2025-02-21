@@ -6,7 +6,7 @@ import {
     check,
     reset,
     getAbstractDetail, 
-    setVirifiedAbstract, 
+    updateAbstractReview, 
     toVerifyAbstractList, 
     setStaffExpertise,
     staffDashboard
@@ -19,7 +19,7 @@ router.route("/check").get(verifyJWT, refreshTokenMiddleware, check)
 router.route("/reset").get(verifyJWT, refreshTokenMiddleware, reset)
 router.route("/toVerifyAbstractList").get(verifyJWT, refreshTokenMiddleware, toVerifyAbstractList)
 router.route("/getAbstractDetail").get(verifyJWT, refreshTokenMiddleware, getAbstractDetail)
-router.route("/setVirifiedAbstract").post(verifyJWT, refreshTokenMiddleware, setVirifiedAbstract)
+router.route("/updateAbstractReview").post(verifyJWT, refreshTokenMiddleware, updateAbstractReview)
 router.route("/setStaffExpertise").post(verifyJWT, refreshTokenMiddleware, setStaffExpertise)
 router.route("/staffDashboard").get(verifyJWT, refreshTokenMiddleware, staffDashboard)
 
