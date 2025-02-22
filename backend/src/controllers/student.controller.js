@@ -131,7 +131,7 @@ const submitAbstracts = asyncHandler(async (req, res) => {
             }
 
             abstractToInsert.push({
-                ownerId: req.user._id,
+                ownerId: req.mainId,
                 title,
                 abstract,
                 domain,
@@ -167,6 +167,37 @@ const submitAbstracts = asyncHandler(async (req, res) => {
         throw new ApiError(500, `Something went wrong while submitting the abstract - ${error.message}`);
     }
 });
+
+export const getSubmittedAbstract = asyncHandler(async (req, res) => {
+    const abstracts = await Abstract.find({ ownerId: req.mainId});
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {
+                abstracts
+            },
+            "Abstracts loaded Successfully"
+        )
+    )
+})
+
+export const getApprovedAbstract = asyncHandler(async (req, res) => {
+    const abstracts = await Abstract.find({ ownerId: req.mainId, status: "accepted"});
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {
+                abstracts
+            },
+            "Abstracts loaded Successfully"
+        )
+    )
+})
+
 
 const studentDashboard = asyncHandler(async (req, res) => {
 

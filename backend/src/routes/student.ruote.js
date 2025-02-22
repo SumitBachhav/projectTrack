@@ -6,7 +6,9 @@ import { check,
     reset, 
     submitSkills, 
     submitAbstracts,
-    studentDashboard
+    studentDashboard,
+    getSubmittedAbstract,
+    getApprovedAbstract
  } from "../controllers/student.controller.js";
 
 const router = Router()
@@ -17,6 +19,8 @@ router.route("/reset").get(verifyJWT, refreshTokenMiddleware, reset)
 router.route("/submitSkills").post(verifyJWT, refreshTokenMiddleware, submitSkills)
 router.route("/submitAbstracts").post(verifyJWT, refreshTokenMiddleware, submitAbstracts)
 router.route("/studentDashboard").get(verifyJWT, refreshTokenMiddleware, studentDashboard)
+router.route("/getSubmittedAbstract").get(verifyJWT, refreshTokenMiddleware, getSubmittedAbstract)
+router.route("/getApprovedAbstract").get(verifyJWT, refreshTokenMiddleware, getApprovedAbstract)
 
 
 // router.route("/login").post(loginUser)

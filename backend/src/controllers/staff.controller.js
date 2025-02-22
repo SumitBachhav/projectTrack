@@ -154,6 +154,16 @@ const updateAbstractReview = asyncHandler(async (req, res) => {
 
     await abstract.save();
 
+    if (status === 'accepted') {
+        const student = await Student.findOne({ id: abstract.ownerId });
+        if (student) {
+            student.acceptedByStaffAbstracts.push(reviewedAbstractId);
+            await student.save();
+        }else{
+            throw new ApiError(404, "Student not found.");
+        }
+    }
+
     res.status(200).json(new ApiResponse(200, "Abstract review updated successfully", abstract));
 });
 

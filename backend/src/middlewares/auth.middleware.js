@@ -27,6 +27,7 @@ export const verifyJWT = asyncHandler(async(req, _, next) => {
         // console.log(user)
     
         req.user = user;
+        req.mainId = decodedToken?._id;
         next()
     } catch (error) {
         if (error.name === "TokenExpiredError") {

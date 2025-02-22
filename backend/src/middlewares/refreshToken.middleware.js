@@ -59,6 +59,8 @@ export const refreshTokenMiddleware = async (req, res, next) => {
 
         // Attach user data to request for downstream middleware/controllers
         req.user = loggedInuser;
+        req.mainId = decoded?._id;
+
         next();
 
     } catch (error) {
