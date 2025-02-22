@@ -1,161 +1,167 @@
-import React, { useState } from "react";
-import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const TopicReview = () => {
-    const { studentId } = useParams();
+    const { state } = useLocation();
+    const { abstractId } = state || {};
     const navigate = useNavigate();
 
-    const TopicReviewDetails = {
-        items: [
-            {
-                stdAbsId: 1,
-                title: "AI-Driven Diagnosis of Skin Cancer",
-                abstract: "Skin cancer is widespread, and early detection is essential for successful treatment. This presentation examines how Artificial Intelligence (AI) can assist in diagnosing skin cancer by analyzing dermoscopic images. AI methods, particularly deep learning, can enhance diagnostic precision and efficiency over traditional approaches that rely on human experts. In this seminar, we will discuss the methodology, goals, and the pros and cons of this technique.",
-                domain: "Artificial Intelligence",
-                keywords: "Artificial Intelligence, Deep learning, Neural network",
-                matched1: { percentage: 98, title: "Skin Cancer Diagnosis Using AI", abstract: "Skin cancer is common and early detection is critical for effective treatment. This presentation explores the use of Artificial Intelligence (AI) in diagnosing skin cancer by analyzing dermoscopic images. AI techniques, such as deep learning, can improve diagnostic accuracy and speed compared to traditional methods which depended on human experts. In this seminar we will explore methodology, objectives, advantages disadvantages of this technique.", domain: "Artificial Intelligence", keywords: "Artificial Intelligence, Deep learning, Neural network" },
-                matched2: { percentage: 51, title: "AI In Finance: Revolutionizing The Industry", abstract: "Artificial Intelligence (AI) is revolutionizing the financial industry by enhancing efficiency, accuracy, and decision-making capabilities across various sectors. AI technologies, such as machine learning, natural language processing (NLP), and deep learning, are increasingly being applied in areas like portfolio management, fraud detection, risk assessment, and algorithmic trading. These advancements enable financial institutions to process vast amounts of data quickly, automate complex tasks, and provide personalized services. AI-driven innovations, including robo-advisors, credit scoring systems, and RegTech solutions, are transforming how financial services are delivered, improving customer experience while reducing operational costs. As AI continues to evolve, its potential to disrupt and reshape the financial landscape remains significant.", domain: "Artificial Intelligence", keywords: "Finance, ML, AI, Portfolio Management,, Fraud Detection  " },
-                matched3: { percentage: 47, title: "AI FITNESS USING DEEP LEARNING", abstract: "Abstract C", domain: "Fitness", keywords: "Cnn rnn ai deeplearning" },
-                abstractStatus: false,
-            },
-            {
-                stdAbsId: 2,
-                title: "RECOGNISING AND RECREATING VOICE USING ML",
-                abstract: "Abstract 2",
-                domain: "Domain 2",
-                keywords: "Keywords 2",
-                matched1: { percentage: 30, title: "Title X", abstract: "Abstract X", domain: "Domain X", keywords: "Keywords X" },
-                matched2: { percentage: 25, title: "Title Y", abstract: "Abstract Y", domain: "Domain Y", keywords: "Keywords Y" },
-                matched3: { percentage: 18, title: "Title Z", abstract: "Abstract Z", domain: "Domain Z", keywords: "Keywords Z" },
-                abstractStatus: false,
-            },
-        ],
+
+    const [abstractData, setAbstractData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [action, setAction] = useState(""); // Track selected action
+    const [comment, setComment] = useState(""); // Track comment
+    const [actionError, setActionError] = useState(""); // Action-specific errors
+
+    useEffect(() => {
+        if (!abstractId) return;
+
+        const fetchAbstractDetails = async () => {
+            try {
+                setLoading(true);
+                const response = await axios.post("/api/v1/staff/getAbstractDetail", {
+                    abstractId: abstractId.trim().toString(),
+                });
+                setAbstractData(response.data.data);
+            } catch (error) {
+                setError(error.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchAbstractDetails();
+    }, [abstractId]);
+
+    // Handle action selection
+    const handleAction = (selectedAction) => {
+        setAction(selectedAction);
+        setComment(""); // Clear comment on action change
+        setActionError(""); // Clear previous errors
     };
 
-    const [items] = useState(TopicReviewDetails.items);
-    const [selectedItem, setSelectedItem] = useState(items[0].stdAbsId);
-    const [approvedList, setApprovedList] = useState([]);
-
-    const handleItemClick = (item) => {
-        setSelectedItem(item.stdAbsId);
-    };
-
-    const handleApproveClick = (item) => {
-        if (approvedList.includes(item.stdAbsId)) {
-            setApprovedList(approvedList.filter((id) => id !== item.stdAbsId));
-        } else {
-            setApprovedList([...approvedList, item.stdAbsId]);
+    // Handle form submission
+    const handleSubmit = async () => {
+        if (action === "revision" && !comment.trim()) {
+            setActionError("Comment is required for revision.");
+            return;
         }
+
+        try {
+            setLoading(true);
+            const response = await axios.post("/api/v1/staff/updateAbstractReview", {
+                reviewedAbstractId: abstractId,
+                status: action,
+                comments: comment
+            });
+            navigate('/staff/topicReviewOverview')
+        } catch (error) {
+            setError(error.message);
+        } finally {
+            setLoading(false);
+        }
+
+        alert(`Abstract ${action} successfully!`);
+        setAction("");
+        setComment("");
+        setActionError("");
     };
 
-    const handleSubmit = () => {
-        // Handle the submit action (e.g., sending the approved abstracts to the server)
-        // console.log("Approved Abstracts Submitted:", approvedList);
-        navigate(`/staff/topicReviewOverview`);
-    };
-
-    const handleViewAbstract = (abstract) => {
-        // Handle the view abstract action (e.g., showing more details or navigating to a detailed view)
-        alert(`Viewing Abstract: ${abstract}`);
-    };
+    // Render loading, error, or content
+    if (loading) return <p className="text-center text-gray-600">Loading abstract details...</p>;
+    if (error) return <p className="text-center text-red-600">Error: {error}</p>;
+    if (!abstractData) return <p className="text-center text-gray-600">No abstract data found.</p>;
 
     return (
-        <div className="flex flex-col lg:flex-row items-start mt-10 justify-center min-h-screen bg-gray-100 p-8 gap-8">
-            {/* Left Section */}
-            <div className="w-full lg:w-1/2 bg-white shadow-lg rounded-lg p-6 space-y-6">
-                <h2 className="text-2xl font-bold text-gray-700">Submitted Abstracts</h2>
-                <ul className="space-y-3">
-                    {items.map((item) => (
-                        <li
-                            key={item.stdAbsId}
-                            onClick={() => handleItemClick(item)}
-                            className={`p-4 rounded-lg cursor-pointer transition-all ${selectedItem === item.stdAbsId ? "bg-blue-500 text-white" : "bg-gray-200 hover:bg-gray-300"
-                                }`}
-                        >
-                            {item.title}
-                        </li>
-                    ))}
-                </ul>
+        <div className="min-h-screen mt-14 flex items-center justify-center bg-gradient-to-r from-blue-400 to-gray-300 p-6">
+            <div className="max-w-3xl w-full p-6 bg-white/90 backdrop-blur-lg shadow-2xl rounded-2xl border border-gray-200">
+                <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">📄 Abstract Details</h2>
 
-                {selectedItem && (
-                    <div className="p-4 bg-gray-50 rounded-lg">
-                        <h3 className="text-xl font-semibold text-gray-700">Details</h3>
-                        <p className="mt-2">
-                            <strong>Title:</strong> {items.find((item) => item.stdAbsId === selectedItem).title}
-                        </p>
-                        <p className="mt-2">
-                            <strong>Abstract:</strong> {items.find((item) => item.stdAbsId === selectedItem).abstract}
-                        </p>
-                        <p className="mt-2">
-                            <strong>Domain:</strong> {items.find((item) => item.stdAbsId === selectedItem).domain}
-                        </p>
-                        <p className="mt-2">
-                            <strong>Keywords:</strong> {items.find((item) => item.stdAbsId === selectedItem).keywords}
-                        </p>
-
-                        {/* View Abstract Button */}
-                        {/* <button
-                            onClick={() => handleViewAbstract(items.find((item) => item.stdAbsId === selectedItem).abstract)}
-                            className="mt-4 py-2 px-4 bg-blue-400 text-white rounded-lg hover:bg-blue-600 transition-all"
-                        >
-                            View Abstract
-                        </button> */}
+                {/* Abstract Details */}
+                <div className="bg-white shadow-lg rounded-lg p-6">
+                    <h3 className="text-2xl font-semibold text-gray-800 mb-4">{abstractData.title}</h3>
+                    <p className="text-gray-600 mb-4">{abstractData.abstract}</p>
+                    <div className="mb-4">
+                        <strong className="text-gray-700">📌 Domain:</strong>{" "}
+                        <span className="text-blue-600">{abstractData.domain.join(", ")}</span>
                     </div>
-                )}
+                    <div className="mb-4">
+                        <strong className="text-gray-700">🔑 Keywords:</strong>{" "}
+                        <span className="text-blue-600">{abstractData.keywords.join(", ")}</span>
+                    </div>
+                    <div className="mb-6">
+                        <strong className="text-gray-700">📊 Status:</strong>{" "}
+                        <span className="px-3 py-1 rounded-full text-white bg-yellow-500">
+                            {abstractData.abstractStatus}
+                        </span>
+                    </div>
 
-                {/* Approved Abstracts and Submit Button */}
-                <h2 className="text-2xl font-bold text-gray-700 mt-6">Approved Abstracts</h2>
-                <ul className="space-y-3">
-                    {items.map((item) => (
-                        <li
-                            key={item.stdAbsId}
-                            onClick={() => handleApproveClick(item)}
-                            className={`p-4 rounded-lg cursor-pointer transition-all ${approvedList.includes(item.stdAbsId) ? "bg-green-500 text-white" : "bg-gray-200 hover:bg-gray-300"
+                    {/* Matched Abstracts Section */}
+                    <h3 className="text-2xl font-semibold text-gray-800 mb-4">🔍 Matched Abstracts</h3>
+                    {abstractData.matched?.length ? (
+                        <div className="space-y-4">
+                            {abstractData.matched.map((match, index) => (
+                                <div key={index} className="border p-4 rounded-lg bg-gray-100 shadow-md">
+                                    <h4 className="text-lg font-semibold text-gray-900">{match.title}</h4>
+                                    <p className="text-gray-700 mb-2">{match.abstract}</p>
+                                    <div className="text-gray-600">
+                                        <strong className="text-gray-700">📌 Domain:</strong> {match.domain}
+                                    </div>
+                                    <div className="text-gray-600">
+                                        <strong className="text-gray-700">🔑 Keywords:</strong> {match.keywords}
+                                    </div>
+                                    <div className="text-gray-600">
+                                        <strong className="text-gray-700">📊 Score:</strong>{" "}
+                                        <span className="px-2 py-1 rounded-md bg-blue-500 text-white">{match.score}</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-gray-600">No matched abstracts found.</p>
+                    )}
+                </div>
+
+                {/* Action Buttons */}
+                <div className="mt-6 flex justify-center space-x-4">
+                    {["accepted", "rejected", "revision"].map((actionType) => (
+                        <button
+                            key={actionType}
+                            onClick={() => handleAction(actionType)}
+                            className={`px-4 py-2 text-white rounded-lg ${action === actionType ? "bg-green-600" : "bg-green-500 hover:bg-green-600"
                                 }`}
                         >
-                            {item.title}
-                        </li>
+                            {actionType === "accepted" && "✅ Accept"}
+                            {actionType === "rejected" && "❌ Reject"}
+                            {actionType === "revision" && "🔄 Revision"}
+                        </button>
                     ))}
-                </ul>
-
-                {/* Submit Button */}
-                <div className="mt-6">
-                    <button
-                        onClick={handleSubmit}
-                        className="w-full py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition-all"
-                    >
-                        Submit Approved Abstracts
-                    </button>
                 </div>
-            </div>
 
-            {/* Right Section */}
-            <div className="w-full lg:w-1/2 bg-white shadow-lg rounded-lg p-6 space-y-6">
-                <h2 className="text-2xl font-bold text-gray-700">Matched Abstracts</h2>
-                {selectedItem && (
-                    <>
-                        {[1, 2, 3].map((index) => {
-                            const matched = items.find((item) => item.stdAbsId === selectedItem)[`matched${ index }`];
-                        return (
-                        <div key={index} className="p-4 bg-gray-200 rounded-lg mb-4">
-                            <p className="text-lg font-semibold">Matched {index} - {matched.percentage}%</p>
-                            <p><strong>Title:</strong> {matched.title}</p>
-                            <p><strong>Domain:</strong> {matched.domain}</p>
-                            <p><strong>Keywords:</strong> {matched.keywords}</p>
-                            <p><strong>Abstract:</strong>
-                             {/* {matched.abstract} */}
-                             </p>
-                            <button
-                                onClick={() => handleViewAbstract(matched.abstract)}
-                                className="mt-4 py-2 px-4 bg-blue-400 text-white rounded-lg hover:bg-blue-600 transition-all"
-                            >
-                                View
-                            </button>
-                        </div>
-                        );
-            })}
-                    </>
+                {/* Comment Box */}
+                {action && (
+                    <div className="mt-6">
+                        <label className="block text-gray-700 font-semibold mb-2">
+                            💬 Add a Comment {action === "revision" && <span className="text-red-500">*</span>}
+                        </label>
+                        <textarea
+                            className="w-full p-3 border rounded-lg focus:ring focus:ring-blue-300"
+                            rows="4"
+                            placeholder={`Enter your comment for ${action}...`}
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                        />
+                        {actionError && <p className="text-red-500 mt-2">{actionError}</p>}
+
+                        <button
+                            onClick={handleSubmit}
+                            className="w-full mt-4 px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+                        >
+                            Submit Decision
+                        </button>
+                    </div>
                 )}
             </div>
         </div>
@@ -163,20 +169,3 @@ const TopicReview = () => {
 };
 
 export default TopicReview;
-
-
-/*
-send (usestate)
-student id
-
-send (submit)
-student id
-approved list
-
-recieve (usestate)
-student submitted abstract
-
-
-
-
-*/

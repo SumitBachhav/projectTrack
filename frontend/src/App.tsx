@@ -28,6 +28,7 @@ import SubmitSkill from './components/student/SubmitSkill';
 import UploadAbstracts from './components/coordinator/UploadAbstracts';
 import StaffDashboard from './components/staff/StaffDashboard';
 import RegisterStaff from './components/RegisterStaff';
+import CoordinatorDashboard from './components/coordinator/CoordinatorDashboard';
 
 
 function App() {
@@ -82,7 +83,7 @@ function App() {
       element: <AbstractComplete />
     },
     {
-      path: '/staff/topicReview/:studentId',
+      path: '/staff/topicReview',
       element: <TopicReview />
     },
     {
@@ -140,6 +141,10 @@ function App() {
     {
       path: '/register-staff',
       element: <RegisterStaff />
+    },
+    {
+      path: '/coordinator/dashboard',
+      element: <CoordinatorDashboard />
     }
   ])
   

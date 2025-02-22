@@ -1,67 +1,101 @@
-import React from 'react'
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 
-function TopicReviewOverview() {
+const TopicReviewOverview = () => {
+  const [abstracts, setAbstracts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate(); // Initialize useNavigate
 
-    const navigate = useNavigate();
-
-    // const studentId = 11122;
-
-    const handleClick = (studentId) => {
-        navigate(`/staff/topicReview/${studentId}`);
+  useEffect(() => {
+    const fetchAbstracts = async () => {
+      try {
+        const response = await fetch("/api/v1/staff/toVerifyAbstractList");
+        if (!response.ok) {
+          throw new Error("Failed to fetch abstracts");
+        }
+        const data = await response.json();
+        setAbstracts(data.data); // Update to match the API response structure
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    const data = [
-        { studentId: 1012401, status: 'Verified' },
-        { studentId: 1012402, status: 'Pending' },
-        { studentId: 1012403, status: 'Pending' },
-        { studentId: 1012404, status: 'Pending' },
-        { studentId: 1012405, status: 'Pending' },
-        { studentId: 1012406, status: 'Pending' },
-        { studentId: 1012407, status: 'Pending' },
-        { studentId: 1012408, status: 'Pending' },
-        { studentId: 1012409, status: 'Pending' },
-        { studentId: 10124010, status: 'Verified' },
+    fetchAbstracts();
+  }, []);
 
-    ];
+  // Function to handle row click
+  const handleRowClick = (abstractId) => {
+    navigate(`/staff/topicReview`, { state: { abstractId } }); // Navigate to the detail page with abstractId
+  };
 
+  if (loading) return <p>Loading abstracts...</p>;
+  if (error) return <p>Error: {error}</p>;
 
-    return (
-        <div className="flex flex-col items-center mt-10 justify-center bg-gray-100 min-h-screen p-8">
-      <div className="bg-white p-6 rounded-lg shadow-lg text-center w-full max-w-3xl">
-        <p className="font-bold text-3xl mb-6 text-gray-700">Submitted Abstracts</p>
-        <div className="space-y-4">
-          {data.map((item) => (
-            <div
-              key={item.studentId}
-              onClick={() => handleClick(item.studentId)}
-              className="flex items-center justify-between cursor-pointer p-4 bg-slate-100 hover:bg-slate-200 rounded-lg shadow transition-all"
-            >
-              <p className="text-lg font-medium text-gray-700">{`Student ID: ${item.studentId}`}</p>
-              <div
-                className={`px-3 py-1 text-sm font-bold rounded-full ${
-                  item.status === "Pending"
-                    ? "bg-yellow-500 text-black"
-                    : "bg-green-800 text-white"
-                }`}
-              >
-                {item.status}
-              </div>
-            </div>
-          ))}
+  // Function to get color for status
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "accepted":
+        return "text-green-600 bg-green-200/50 border-green-400";
+      case "rejected":
+        return "text-red-600 bg-red-200/50 border-red-400";
+      case "submitted":
+        return "text-blue-600 bg-blue-200/50 border-blue-400"
+      case "revision":
+        return "text-blue-600 bg-blue-200/50 border-yellow-400"
+      default:
+        return "text-gray-600 bg-gray-200/50 border-gray-400";
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 p-6">
+      <div className="max-w-4xl w-full p-6 bg-white/80 backdrop-blur-lg shadow-2xl rounded-2xl border border-gray-200">
+        <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">📄 Submitted Abstracts</h2>
+        
+        <div className="overflow-x-auto">
+          <table className="w-full border border-gray-300 rounded-lg shadow-lg bg-white/90">
+            <thead>
+              <tr className="bg-gradient-to-r from-gray-200 to-gray-100 text-gray-800">
+                <th className="py-3 px-4 text-left font-semibold">Title</th>
+                <th className="py-3 px-4 text-left font-semibold">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+            {abstracts.length > 0 ? (
+              abstracts.map((abstract) => (
+                <tr
+                  key={abstract.id}
+                  className="border hover:bg-gray-50 cursor-pointer"
+                  onClick={() => handleRowClick(abstract.id)} // Add click handler
+                >
+                  {/* <td className="border p-2">{abstract.title}</td> */}
+                  {/* <td className="border p-2">{abstract.status}</td> */}
+                  <td className="py-4 px-4 text-gray-800 font-medium">{abstract.title}</td>
+                  <td className="py-4 px-4">
+                    <span
+                      className={`px-3 py-1 rounded-full border ${getStatusColor(abstract.status)} shadow-sm`}
+                    >
+                      {abstract.status == "submitted" ? "pending" : abstract.status}
+                    </span>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="2" className="p-2 text-center">
+                  No abstracts available
+                </td>
+              </tr>
+            )}
+          </tbody>
+          </table>
         </div>
-        <button
-          onClick={() => navigate("/student/dashboard")}
-          className="mt-6 px-6 py-2 bg-blue-500 text-white font-semibold rounded-full hover:bg-blue-600 focus:outline-none"
-        >
-          Dashboard
-        </button>
       </div>
-    </div>)
-}
+    </div>
+  );
+};
 
-export default TopicReviewOverview
-
-
-
- 
+export default TopicReviewOverview;
