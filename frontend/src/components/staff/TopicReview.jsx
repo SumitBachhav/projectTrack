@@ -44,8 +44,8 @@ const TopicReview = () => {
 
     // Handle form submission
     const handleSubmit = async () => {
-        if (action === "revision" && !comment.trim()) {
-            setActionError("Comment is required for revision.");
+        if (!comment.trim()) {
+            setActionError("Comment is required.");
             return;
         }
 

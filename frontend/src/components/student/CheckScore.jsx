@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
     Accordion,
@@ -7,6 +7,7 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useNavigate } from 'react-router-dom';
+import Select from 'react-select'; // Import react-select
 
 function CheckScore() {
     const navigate = useNavigate();
@@ -15,8 +16,39 @@ function CheckScore() {
         abstract: '',
         title: '',
         keyword: '',
-        domain: '',
+        domains: [], // Changed to an array for multiple domains
     });
+
+    const [domains, setDomains] = useState([]); // Store domain options
+    const [submittedDomains, setSubmittedDomains] = useState([]); // Track submitted domains
+
+    useEffect(() => {
+        const fetchDomains = async () => {
+            try {
+                const response = await axios.get('/api/v1/user/getDomains');
+                // let d = data;
+                const domainOptions = response.data.data.domains.map((domain) => ({
+                    value: domain,
+                    label: domain,
+                    isDisabled: submittedDomains.includes(domain), // Disable submitted domains
+                }));
+                setDomains(domainOptions);
+            } catch (error) {
+                console.error("Error fetching domains:", error);
+            }
+        };
+
+        fetchDomains();
+    }, [submittedDomains]); // Re-fetch domains when submittedDomains changes
+
+    // Handle domain selection (multiple domains)
+    const handleDomainChange = (selectedOptions) => {
+        const selectedDomains = selectedOptions.map((option) => option.value);
+        setFormData({
+            ...formData,
+            domains: selectedDomains,
+        });
+    };
 
     const [score1, setScore1] = useState('Please submit abstract to get similarity score and abstracts');
     const [score2, setScore2] = useState('Please submit abstract to get similarity score and abstracts');
@@ -47,7 +79,7 @@ function CheckScore() {
             abstract: '',
             title: '',
             keyword: '',
-            domain: '',
+            domains: [], // Reset domains
         });
         setScore1('Please submit abstract to get similarity score and abstracts');
         setScore2('Please submit abstract to get similarity score and abstracts');
@@ -67,7 +99,7 @@ function CheckScore() {
         const listObject = {
             abstract: formData.abstract,
             title: formData.title,
-            domain: formData.domain,
+            domains: formData.domains, // Use the array of selected domains
             keywords: formData.keyword,
             matched: [{
                 "score": score1,
@@ -83,22 +115,15 @@ function CheckScore() {
             }
             ],
             embedding: embedding
-            // score1: score1,
-            // score2: score2,
-            // score3: score3,
-            // matchedId1: matchedId1,
-            // matchedId2: matchedId2,
-            // matchedId3: matchedId3,
         };
         setAbstractList([...abstractList, listObject]);
         setSendButtonDisabled(false);
+        setSubmittedDomains([...submittedDomains, ...formData.domains]); // Add selected domains to submittedDomains
         clear();
     };
 
-    // sending data to backend ----------------------------------------------------------
     const send = async () => {
         try {
-            // console.log(abstractList)
             await axios.post('/api/v1/student/submitAbstracts', abstractList);
             setAbstractList([]);
             navigate('/student/abstractSubmissionComplete');
@@ -121,7 +146,6 @@ function CheckScore() {
         setError('');
         setEmbedding('');
 
-        // getting data from fastapi----------------------------------------------------------
         try {
             const response = await axios.post(
                 'http://localhost:8000/compareDatabase',
@@ -205,15 +229,20 @@ function CheckScore() {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Domain</label>
-                        <input
-                            type="text"
-                            name="domain"
-                            value={formData.domain}
-                            onChange={handleChange}
-                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"
-                            placeholder="Enter Project Domain"
-                            required
+                        <label
+                            htmlFor="domain"
+                            className="block text-sm font-medium text-gray-700"
+                        >
+                            Domains
+                        </label>
+                        <Select
+                            isMulti
+                            options={domains}
+                            value={domains.filter((option) => formData.domains.includes(option.value))}
+                            onChange={handleDomainChange}
+                            isOptionDisabled={(option) => option.isDisabled}
+                            className="mt-1"
+                            placeholder="Select domains..."
                         />
                     </div>
                     <div>
@@ -318,32 +347,3 @@ function CheckScore() {
 }
 
 export default CheckScore;
-
-
-/*
-
-recieving data from backend -------------------------------------------------------
-
-
-
-
-sending data to backend -----------------------------------------------------------
-
-    [{
-    const listObject = {
-        abstract: formData.abstract,
-        title: formData.title,
-        keyword: formData.keyword,
-        domain: formData.domain,
-        score1: score1,
-        score2: score2,
-        score3: score3,
-        matchedId1: matchedId1,
-        matchedId2: matchedId2,
-        matchedId3: matchedId3,
-    }]
-        
-
-
-
-*/
