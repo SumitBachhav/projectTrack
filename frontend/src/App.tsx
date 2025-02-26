@@ -32,6 +32,7 @@ import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Notifications from './components/Notifications';
 import { useAuth } from './context/AuthContext';
+import FAQ from './components/FAQ'; // Import FAQ component
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
@@ -85,6 +86,7 @@ function App() {
                 </ProtectedRoute>
               } 
             />
+            <Route path="/faq" element={<FAQ />} /> {/* Add FAQ route */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Layout>
