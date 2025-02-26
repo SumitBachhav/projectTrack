@@ -1,8 +1,7 @@
 import './App.css'
 import CheckScore from './components/student/CheckScore.jsx'
 import RegisterStudent from './components/RegisterStudent';
-import { Routes, Route, Navigate, createBrowserRouter, 
-RouterProvider } from 'react-router-dom';
+import { Routes, Route, Navigate, BrowserRouter } from 'react-router-dom';
 import Layout from './components/Layout';
 import Register from './components/Register';
 import StaffForm from './components/staff/StaffForm.jsx';
@@ -29,133 +28,69 @@ import UploadAbstracts from './components/coordinator/UploadAbstracts';
 import StaffDashboard from './components/staff/StaffDashboard';
 import RegisterStaff from './components/RegisterStaff';
 import CoordinatorDashboard from './components/coordinator/CoordinatorDashboard';
+import { AuthProvider } from './context/AuthContext';
+import Navbar from './components/Navbar';
+import Notifications from './components/Notifications';
+import { useAuth } from './context/AuthContext';
 
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+};
 
 function App() {
-
-  const router = createBrowserRouter([
-    {
-      path: '/',
-      element: <Home />
-    },
-    {
-      path: '/register',
-      element: <Register />
-    },
-    {
-      path: '/staff/submitSkills',
-      element: <StaffForm />
-    },
-    {
-      path: '/register/coordinator',
-      element: <CoordinatorForm />
-    },
-    {
-      path: '/register/successful',
-      element: <RegisterComplete />
-    },
-    {
-      path: '/login',
-      element: <Login />
-    },
-    {
-      path: '/student/dashboard',
-      element: <StudentDashboard />
-    },
-    {
-      path: '/student/checkabstract',
-      element: <CheckScore />
-    },
-    {
-      path: '/student/insertdata',
-      element: <InsertData />//check for redundancy with /student/checkabstract
-    },
-    {
-      path: '*',
-      element: <Navigate to="/" replace />
-    },
-    {
-      path: '/test',
-      element: <TestPage />
-    },
-    {
-      path: '/student/abstractSubmissionComplete',
-      element: <AbstractComplete />
-    },
-    {
-      path: '/staff/topicReview',
-      element: <TopicReview />
-    },
-    {
-      path: '/staff/topicReviewOverview',
-      element: <TopicReviewOverview />
-    },
-    {
-      path: '/student/checkIfApproved',
-      element: <CheckIfApproved />
-    },
-    {
-      path: '/student/projectSpecification',
-      element: <ProjectSpecification />
-    },
-    {
-      path: '/student/inviteStudents',
-      element: <InviteStuents />
-    },
-    {
-      path: '/student/availableProjects',
-      element: <AvailableProjects />
-    },
-    {
-      path: '/student/availableGroups',
-      element: <AvailableGroups />
-    },
-    {
-      path: '/student/invitesAndRequests',
-      element: <InvitesAndRequests />
-    },
-    {
-      path: '/student/submittedAbstracts',
-      element: <SubmittedAbstractPage />
-    },
-    {
-      path: 'student/groupMembers',
-      element: <GroupMembers />
-    },
-    {
-      path: '/student/submitSkills',
-      element: <SubmitSkill />
-    },
-    {
-      path: '/register-student',
-      element: <RegisterStudent />
-    },
-    {
-      path: '/coordinator/uploadAbstracts',
-      element: <UploadAbstracts />
-    },
-    {
-      path: '/staff/dashboard',
-      element: <StaffDashboard />
-    },
-    {
-      path: '/register-staff',
-      element: <RegisterStaff />
-    },
-    {
-      path: '/coordinator/dashboard',
-      element: <CoordinatorDashboard />
-    }
-  ])
-  
-
   return (
-    <Layout>
-      <RouterProvider router={router} />
-    </Layout>
-
+    <AuthProvider>
+      <BrowserRouter>
+        <Navbar />
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/staff/submitSkills" element={<StaffForm />} />
+            <Route path="/register/coordinator" element={<CoordinatorForm />} />
+            <Route path="/register/successful" element={<RegisterComplete />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/student/dashboard" element={<StudentDashboard />} />
+            <Route path="/student/checkabstract" element={<CheckScore />} />
+            <Route path="/student/insertdata" element={<InsertData />} />
+            <Route path="/test" element={<TestPage />} />
+            <Route path="/student/abstractSubmissionComplete" element={<AbstractComplete />} />
+            <Route path="/staff/topicReview" element={<TopicReview />} />
+            <Route path="/staff/topicReviewOverview" element={<TopicReviewOverview />} />
+            <Route path="/student/checkIfApproved" element={<CheckIfApproved />} />
+            <Route path="/student/projectSpecification" element={<ProjectSpecification />} />
+            <Route path="/student/inviteStudents" element={<InviteStuents />} />
+            <Route path="/student/availableProjects" element={<AvailableProjects />} />
+            <Route path="/student/availableGroups" element={<AvailableGroups />} />
+            <Route path="/student/invitesAndRequests" element={<InvitesAndRequests />} />
+            <Route path="/student/submittedAbstracts" element={<SubmittedAbstractPage />} />
+            <Route path="/student/groupMembers" element={<GroupMembers />} />
+            <Route path="/student/submitSkills" element={<SubmitSkill />} />
+            <Route path="/register-student" element={<RegisterStudent />} />
+            <Route path="/coordinator/uploadAbstracts" element={<UploadAbstracts />} />
+            <Route path="/staff/dashboard" element={<StaffDashboard />} />
+            <Route path="/register-staff" element={<RegisterStaff />} />
+            <Route path="/coordinator/dashboard" element={<CoordinatorDashboard />} />
+            <Route 
+              path="/notifications" 
+              element={
+                <ProtectedRoute>
+                  <Notifications />
+                </ProtectedRoute>
+              } 
+            />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Layout>
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
 
 export default App
-{/* <CheckScore/> */}
