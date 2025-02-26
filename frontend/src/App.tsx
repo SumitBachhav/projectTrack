@@ -5,7 +5,7 @@ import { Routes, Route, Navigate, createBrowserRouter,
 RouterProvider } from 'react-router-dom';
 import Layout from './components/Layout';
 import Register from './components/Register';
-import StaffForm from './components/StaffForm';
+import StaffForm from './components/staff/StaffForm.jsx';
 import CoordinatorForm from './components/CoordinatorForm';
 import Home from './components/Home';
 import RegisterComplete from './components/RegisterComplete';

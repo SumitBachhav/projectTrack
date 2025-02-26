@@ -174,6 +174,9 @@ const StaffForm = () => {
                     Submit
                 </button>
             )}
+            <a href="https://forms.gle/DaoWzq3cTGdMqX1F9" target="_blank" className="text-blue-500 mt-5 hover:underline hover:font-semibold">Cannot find your domain ? </a>
+            <p className="text-sm text-gray-600">Note: Do not submit any domains if any of the domains are not listed.</p>
+            <p className="text-sm text-gray-600">You can come back to this page to add your skill sets after you get a conformation email.</p>
         </div>
     );
 };

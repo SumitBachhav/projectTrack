@@ -2,9 +2,6 @@ import React from 'react';
 import { BookOpen, Users, ClipboardCheck, Target, MessageSquare, Shield } from 'lucide-react';
 
 const Home = () => {
-  const handleGetStarted = () => {
-    window.location.href = '/register';
-  };
 
   const features = [
     {
@@ -72,12 +69,6 @@ const Home = () => {
             A comprehensive project management platform designed to streamline and enhance the final
             year project process for college students, faculty, and administration.
           </p>
-          <button
-            onClick={handleGetStarted}
-            className="bg-white text-blue-600 px-8 py-3 rounded-full font-semibold hover:bg-blue-50 transition duration-300 shadow-lg"
-          >
-            Get Started
-          </button>
         </div>
       </div>
 
@@ -144,12 +135,6 @@ const Home = () => {
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to streamline your project management?</h2>
           <p className="mb-8 text-lg">Join ProjectTrack today and experience organized, efficient project development.</p>
-          <button
-            onClick={handleGetStarted}
-            className="bg-white text-blue-600 px-8 py-3 rounded-full font-semibold hover:bg-blue-50 transition duration-300 shadow-lg"
-          >
-            Register Now
-          </button>
         </div>
       </div>
     </div>
