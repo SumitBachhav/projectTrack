@@ -13,21 +13,17 @@ import { domainsWithSkills } from "../utils/Constants.js";
 
 const generateAccessAndRefereshTokens = async (userId) => {
     try {
-        const user = await User.findById(userId);
-        if (!user) {
-            throw new Error("User not found");
-        }
+        const user = await User.findById(userId)
+        const accessToken = user.generateAccessToken()
+        const refreshToken = user.generateRefreshToken()
 
-        const accessToken = user.generateAccessToken();
-        const refreshToken = user.generateRefreshToken();
+        user.refreshToken = refreshToken
+        await user.save({ validateBeforeSave: false })
 
-        user.refreshToken = refreshToken;
-        await user.save({ validateBeforeSave: false });
+        return { accessToken, refreshToken }
 
-        return { accessToken, refreshToken };
     } catch (error) {
-        console.error("Token generation error:", error);
-        throw new Error("Something went wrong while generating refresh and access token");
+        throw new ApiError(500, "Something went wrong while generating referesh and access token")
     }
 }
 
@@ -118,9 +114,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const options = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "Lax",
-        path: "/"
+        secure: true
     }
 
     const data = {
@@ -160,9 +154,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 
     const options = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "Lax",
-        path: "/"
+        secure: true
     }
 
     return res
@@ -208,9 +200,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     
         const options = {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "Lax",
-            path: "/"
+            secure: true
         }
     
         const {accessToken, newRefreshToken} = await generateAccessAndRefereshTokens(user._id)
