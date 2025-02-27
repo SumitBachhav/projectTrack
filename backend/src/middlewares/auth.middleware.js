@@ -20,7 +20,6 @@ export const verifyJWT = asyncHandler(async(req, _, next) => {
         const user = await findUser(decodedToken?._id)
     
         if (!user) {
-            
             throw new ApiError(401, "Invalid Access Token")
         }
 

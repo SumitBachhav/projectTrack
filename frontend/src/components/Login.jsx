@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
+  const { login } = useAuth();
   // State to manage form data (email and password)
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -37,6 +39,7 @@ const Login = () => {
       const { success, data, message } = await response.data;
 
       if (success) {
+        login(); // Add this line to update auth state
         // Login successful
         console.log('Login successful');
         // console.log('User:', data.user);
