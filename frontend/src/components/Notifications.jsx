@@ -1,28 +1,25 @@
 import React, { useState } from 'react';
-import { Bell, CheckCircle, AlertCircle } from 'lucide-react';
+import { Bell, AlertCircle, CheckCircle } from 'lucide-react';
 
 const Notifications = () => {
-  const [activeTab, setActiveTab] = useState('unread');
-
-  // Sample notifications data
-  const unreadNotifications = [
+  const [unreadNotifications, setUnreadNotifications] = useState([
     {
       id: 1,
-      title: "New Project Assignment",
-      message: "You have been assigned to review 'AI-based Traffic Management System'",
+      title: "New Message",
+      message: "You have received a new message from John.",
       time: "2 hours ago",
-      type: "urgent"
+      type: "info"
     },
     {
       id: 2,
-      title: "Abstract Submission",
-      message: "Your abstract has been approved by the coordinator",
-      time: "5 hours ago",
-      type: "success"
+      title: "System Update",
+      message: "Your system will be updated tonight.",
+      time: "1 day ago",
+      type: "warning"
     }
-  ];
+  ]);
 
-  const readNotifications = [
+  const [readNotifications, setReadNotifications] = useState([
     {
       id: 3,
       title: "Group Update",
@@ -37,9 +34,17 @@ const Notifications = () => {
       time: "2 days ago",
       type: "warning"
     }
-  ];
+  ]);
 
-  const NotificationCard = ({ notification }) => (
+  const [activeTab, setActiveTab] = useState('unread');
+
+  const markAsRead = (id) => {
+    const notification = unreadNotifications.find(n => n.id === id);
+    setUnreadNotifications(unreadNotifications.filter(n => n.id !== id));
+    setReadNotifications([...readNotifications, notification]);
+  };
+
+  const NotificationCard = ({ notification, onMarkAsRead }) => (
     <div className={`bg-white rounded-lg shadow-sm p-4 mb-3 border-l-4 hover:shadow-md transition-shadow duration-200 ease-in-out
       ${notification.type === 'urgent' ? 'border-red-500' : 
         notification.type === 'success' ? 'border-green-500' : 
@@ -51,6 +56,14 @@ const Notifications = () => {
         </div>
         <span className="text-xs text-gray-500">{notification.time}</span>
       </div>
+      {onMarkAsRead && (
+        <button
+          onClick={() => onMarkAsRead(notification.id)}
+          className="mt-2 text-blue-600 hover:text-blue-800 text-sm"
+        >
+          Mark as Read
+        </button>
+      )}
     </div>
   );
 
@@ -62,7 +75,6 @@ const Notifications = () => {
           <h1 className="text-2xl font-bold text-gray-800">Notification Center</h1>
         </div>
 
-        {/* Tabs */}
         <div className="flex space-x-4 mb-6">
           <button
             onClick={() => setActiveTab('unread')}
@@ -88,13 +100,16 @@ const Notifications = () => {
           </button>
         </div>
 
-        {/* Notifications Content */}
         <div className="mt-6">
           {activeTab === 'unread' ? (
             <div className="space-y-4">
               {unreadNotifications.length > 0 ? (
                 unreadNotifications.map(notification => (
-                  <NotificationCard key={notification.id} notification={notification} />
+                  <NotificationCard
+                    key={notification.id}
+                    notification={notification}
+                    onMarkAsRead={markAsRead}
+                  />
                 ))
               ) : (
                 <p className="text-gray-500 text-center py-8">No new notifications</p>
