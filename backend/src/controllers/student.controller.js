@@ -5,6 +5,7 @@ import { Skill } from "../models/skill.model.js"
 import { Abstract } from "../models/abstract.model.js";
 import { Student } from "../models/student.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { DonatedAbstract } from "../models/donatedAbstract.model.js";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 
@@ -168,7 +169,7 @@ const submitAbstracts = asyncHandler(async (req, res) => {
     }
 });
 
-export const getSubmittedAbstract = asyncHandler(async (req, res) => {
+const getSubmittedAbstract = asyncHandler(async (req, res) => {
     const abstracts = await Abstract.find({ ownerId: req.mainId});
     return res
     .status(200)
@@ -184,19 +185,88 @@ export const getSubmittedAbstract = asyncHandler(async (req, res) => {
 })
 
 export const getApprovedAbstract = asyncHandler(async (req, res) => {
-    const abstracts = await Abstract.find({ ownerId: req.mainId, status: "accepted"});
-    return res
-    .status(200)
-    .json(
-        new ApiResponse(
-            200,
-            {
-                abstracts
-            },
-            "Abstracts loaded Successfully"
+    try {
+        const abstracts = await Abstract.find({ ownerId: req.mainId, status: "accepted"});
+        // const hasFinalized = await Student.findOne({ _id: req.user._id, finalizedAbstract: { $exists: true } });
+        // const finalizedAbstract = await Student.findById(req.user._id).select("finalizedAbstract");
+        const user = req.user;
+
+        let hasFinalized = false
+        if (user.finalizedAbstract) {
+            hasFinalized = true;
+        }
+    
+        return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                {
+                    abstracts, hasFinalized
+                },
+                "Abstracts loaded Successfully"
+            )
         )
-    )
+    } catch (error) {
+        throw new ApiError(500, `cannot find user - ${error.message}`);
+    }
 })
+
+
+const finalizeAbstract = asyncHandler(async (req, res) => {
+    const { requirements, abstractId, donatedIds } = req.body;
+    const user = req.user;
+
+    try {
+        // Input validation
+        if (!abstractId || !Array.isArray(requirements) || requirements.length === 0) {
+            throw new ApiError(400, "Invalid data. Provide abstractId and requirements array.");
+        }
+
+        // console.log("skillsData", requirements);
+        // console.log("abstractId", abstractId);
+        // console.log("donatedIds", donatedIds);
+
+        // Update abstract requirements
+        const updatedAbstract = await Abstract.findByIdAndUpdate(
+            abstractId,
+            { requirements },
+            { new: true }
+        );
+        if (!updatedAbstract) {
+            throw new ApiError(404, "Abstract not found or requirements not updated.");
+        }
+
+        // Handle donated abstracts
+        if (donatedIds && donatedIds.length > 0) {
+            const donatedAbstracts = donatedIds.map(id => ({
+                abstract: id,
+                InUse: false,
+                acceptedBy: null,
+                donatedBy: req.mainId,
+            }));
+
+            const donatedSuccess = await DonatedAbstract.insertMany(donatedAbstracts, { ordered: true });
+            if (!donatedSuccess || donatedSuccess.length === 0) {
+                throw new ApiError(400, "Could not insert into donated abstracts.");
+            }
+
+            user.donatedAbstracts = donatedIds;
+        }
+
+        // Update user with finalized abstract and donated abstracts
+        user.finalizedAbstract = abstractId;
+        const updateUserSuccess = await user.save();
+        if (!updateUserSuccess) {
+            throw new ApiError(400, "Could not finalize abstract or update user.");
+        }
+
+        return res.status(200).json(new ApiResponse(200, {}, "Abstract finalized successfully"));
+    } catch (error) {
+        console.error(error);  // Log the error for debugging
+        throw new ApiError(500, `Error while submitting abstract: ${error.message}`);
+    }
+});
 
 
 const studentDashboard = asyncHandler(async (req, res) => {
@@ -228,5 +298,7 @@ export {
     reset,
     submitSkills,
     submitAbstracts,
-    studentDashboard
+    studentDashboard,
+    getSubmittedAbstract,
+    finalizeAbstract
 }

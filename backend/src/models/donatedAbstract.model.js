@@ -14,6 +14,11 @@ const donatedAbstractSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "Student"
     },
+    donatedBy: {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+        required: true
+    }
 
 
 

@@ -8,7 +8,8 @@ import { check,
     submitAbstracts,
     studentDashboard,
     getSubmittedAbstract,
-    getApprovedAbstract
+    getApprovedAbstract,
+    finalizeAbstract
  } from "../controllers/student.controller.js";
 
 const router = Router()
@@ -21,6 +22,7 @@ router.route("/submitAbstracts").post(verifyJWT, refreshTokenMiddleware, submitA
 router.route("/studentDashboard").get(verifyJWT, refreshTokenMiddleware, studentDashboard)
 router.route("/getSubmittedAbstract").get(verifyJWT, refreshTokenMiddleware, getSubmittedAbstract)
 router.route("/getApprovedAbstract").get(verifyJWT, refreshTokenMiddleware, getApprovedAbstract)
+router.route("/finalizeAbstract").post(verifyJWT, refreshTokenMiddleware, finalizeAbstract)
 
 
 // router.route("/login").post(loginUser)
