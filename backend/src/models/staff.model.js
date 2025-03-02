@@ -13,6 +13,14 @@ const staffSchema = new Schema({
         lowercase: true,
         trim: true,
     },
+    employedInInstitution: {
+      type: Boolean,
+      required: true  
+    },
+    availability: {
+        type: Boolean,
+        required: true
+    },
     department: {
         type: String,
         enum: ['computer', 'civil', 'mechanical', 'electrical', 'it'],
