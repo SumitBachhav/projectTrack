@@ -51,33 +51,11 @@ function App() {
         <Navbar />
         <Layout>
           <Routes>
+
+            {/* common */}
             <Route path="/" element={<Home />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/staff/submitSkills" element={<StaffForm />} />
-            <Route path="/register/coordinator" element={<CoordinatorForm />} />
-            <Route path="/register/successful" element={<RegisterComplete />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/student/dashboard" element={<StudentDashboard />} />
-            <Route path="/student/checkabstract" element={<CheckScore />} />
-            <Route path="/student/insertdata" element={<InsertData />} />
-            <Route path="/test" element={<TestPage />} />
-            <Route path="/student/abstractSubmissionComplete" element={<AbstractComplete />} />
-            <Route path="/staff/topicReview" element={<TopicReview />} />
-            <Route path="/staff/topicReviewOverview" element={<TopicReviewOverview />} />
-            <Route path="/student/checkIfApproved" element={<CheckIfApproved />} />
-            <Route path="/student/projectSpecification" element={<ProjectSpecification />} />
-            <Route path="/student/inviteStudents" element={<InviteStuents />} />
-            <Route path="/student/availableProjects" element={<AvailableProjects />} />
-            <Route path="/student/availableGroups" element={<AvailableGroups />} />
-            <Route path="/student/invitesAndRequests" element={<InvitesAndRequests />} />
-            <Route path="/student/submittedAbstracts" element={<SubmittedAbstractPage />} />
-            <Route path="/student/groupMembers" element={<GroupMembers />} />
-            <Route path="/student/submitSkills" element={<SubmitSkill />} />
-            <Route path="/register-student" element={<RegisterStudent />} />
-            <Route path="/coordinator/uploadAbstracts" element={<UploadAbstracts />} />
-            <Route path="/staff/dashboard" element={<StaffDashboard />} />
-            <Route path="/register-staff" element={<RegisterStaff />} />
-            <Route path="/coordinator/dashboard" element={<CoordinatorDashboard />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
             <Route 
               path="/notifications" 
               element={
@@ -87,7 +65,47 @@ function App() {
               } 
             />
             <Route path="/faq" element={<FAQ />} /> {/* Add FAQ route */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+
+
+            {/* coordinator */}
+            <Route path="/coordinator/dashboard" element={<CoordinatorDashboard />} />
+            <Route path="/coordinator/uploadAbstracts" element={<UploadAbstracts />} />
+
+
+
+            {/* staff */}
+            <Route path="/staff/submitSkills" element={<StaffForm />} />
+            <Route path="/staff/topicReview" element={<TopicReview />} />
+            <Route path="/staff/topicReviewOverview" element={<TopicReviewOverview />} />
+            <Route path="/staff/dashboard" element={<StaffDashboard />} />
+
+
+
+            {/* student */}
+            <Route path="/student/dashboard" element={<StudentDashboard />} />
+            <Route path="/student/checkabstract" element={<CheckScore />} />
+            <Route path="/student/abstractSubmissionComplete" element={<AbstractComplete />} />
+            <Route path="/student/checkIfApproved" element={<CheckIfApproved />} />
+            <Route path="/student/projectSpecification" element={<ProjectSpecification />} />
+            <Route path="/student/inviteStudents" element={<InviteStuents />} />
+            <Route path="/student/availableProjects" element={<AvailableProjects />} />
+            <Route path="/student/availableGroups" element={<AvailableGroups />} />
+            <Route path="/student/invitesAndRequests" element={<InvitesAndRequests />} />
+            <Route path="/student/submittedAbstracts" element={<SubmittedAbstractPage />} />
+            <Route path="/student/groupMembers" element={<GroupMembers />} />
+            <Route path="/student/submitSkills" element={<SubmitSkill />} />
+
+
+            {/* not sure */}
+            <Route path="/register" element={<Register />} />
+            <Route path="/register/coordinator" element={<CoordinatorForm />} />
+            <Route path="/register/successful" element={<RegisterComplete />} />
+            <Route path="/student/insertdata" element={<InsertData />} />
+            <Route path="/test" element={<TestPage />} />
+            <Route path="/register-student" element={<RegisterStudent />} />
+            <Route path="/register-staff" element={<RegisterStaff />} />
+
+            
           </Routes>
         </Layout>
       </BrowserRouter>

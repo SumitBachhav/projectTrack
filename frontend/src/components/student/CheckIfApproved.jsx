@@ -97,6 +97,12 @@ const CheckIfApproved = () => {
             >
                 Check for available projects
             </button>
+            <button
+                onClick={() => navigate('/student/availableGroups')}
+                className="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none"
+            >
+                Check for available Groups
+            </button>
         </div>
     );
 

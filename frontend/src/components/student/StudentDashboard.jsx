@@ -104,6 +104,18 @@ const StudentDashboard = () => {
             </button>
           </div>
 
+          {/* Invite students */}
+          <div className="bg-red-50 p-6 rounded-lg shadow-md">
+            <h3 className="text-xl font-semibold text-gray-700 mb-4">Invite students</h3>
+            <p className="text-lg text-gray-500">Invite students to join your project.</p>
+            <button
+              onClick={() => navigate('/student/inviteStudents')}
+              className="mt-4 w-full py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-200"
+            >
+              Invite
+            </button>
+          </div>
+
           {/* Deadlines */}
           <div className="bg-yellow-50 p-6 rounded-lg shadow-md">
             <h3 className="text-xl font-semibold text-gray-700 mb-4">Upcoming Deadlines</h3>

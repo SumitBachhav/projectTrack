@@ -76,7 +76,7 @@ const ProjectSpecification = () => {
                 abstractId: abstract._id,
                 donatedIds
             });
-            alert('Skills submitted successfully!');
+            alert('Skills submitted successfully! Invite Students from dashboard.');
             // Uncomment the next line if navigating to the dashboard after submission
             navigate('/student/dashboard');
         } catch (error) {
