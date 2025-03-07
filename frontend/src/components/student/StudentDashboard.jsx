@@ -97,7 +97,7 @@ const StudentDashboard = () => {
             <h3 className="text-xl font-semibold text-gray-700 mb-4">Invites and Requests</h3>
             <p className="text-lg text-gray-500">Check your invites and requests.<br/> 1 pending request!</p>
             <button
-              onClick={() => navigate('/student/invitesAndRequests')}
+              onClick={() => navigate('/student/inviteRequests')}
               className="mt-4 w-full py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-200"
             >
               View Invites and Requests
