@@ -23,7 +23,7 @@ import StudentDashboard from './components/student/StudentDashboard.jsx';
 // @ts-ignore
 import InsertData from './components/InsertData';
 // @ts-ignore
-import TestPage from './components/TestPage';
+import TestPage from './components/testPage';
 // @ts-ignore
 import AbstractComplete from './components/student/AbstractComplete.jsx';
 // @ts-ignore
