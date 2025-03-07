@@ -9,7 +9,10 @@ import { check,
     studentDashboard,
     getSubmittedAbstract,
     getApprovedAbstract,
-    finalizeAbstract
+    finalizeAbstract,
+    getProjectAndStudentData,
+    sendInvitations,
+    getInvitesAndRequests
  } from "../controllers/student.controller.js";
 
 const router = Router()
@@ -23,6 +26,9 @@ router.route("/studentDashboard").get(verifyJWT, refreshTokenMiddleware, student
 router.route("/getSubmittedAbstract").get(verifyJWT, refreshTokenMiddleware, getSubmittedAbstract)
 router.route("/getApprovedAbstract").get(verifyJWT, refreshTokenMiddleware, getApprovedAbstract)
 router.route("/finalizeAbstract").post(verifyJWT, refreshTokenMiddleware, finalizeAbstract)
+router.route("/getProjectAndStudentData").get(verifyJWT, refreshTokenMiddleware, getProjectAndStudentData)
+router.route("/sendInvitations").post(verifyJWT, refreshTokenMiddleware, sendInvitations)
+router.route("/getInvitesAndRequests").get(verifyJWT, refreshTokenMiddleware, getInvitesAndRequests)
 
 
 // router.route("/login").post(loginUser)

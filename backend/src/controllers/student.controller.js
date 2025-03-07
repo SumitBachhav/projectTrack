@@ -6,6 +6,7 @@ import { Abstract } from "../models/abstract.model.js";
 import { Student } from "../models/student.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { DonatedAbstract } from "../models/donatedAbstract.model.js";
+import { InviteAndRequest } from "../models/inviteAndRequest.model.js";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 
@@ -94,7 +95,6 @@ const submitSkills = asyncHandler(async (req, res) => {
     }
 });
 
-// TODO : update student with submitted skills
 
 
 const submitAbstracts = asyncHandler(async (req, res) => {
@@ -170,23 +170,23 @@ const submitAbstracts = asyncHandler(async (req, res) => {
 });
 
 const getSubmittedAbstract = asyncHandler(async (req, res) => {
-    const abstracts = await Abstract.find({ ownerId: req.mainId});
+    const abstracts = await Abstract.find({ ownerId: req.mainId });
     return res
-    .status(200)
-    .json(
-        new ApiResponse(
-            200,
-            {
-                abstracts
-            },
-            "Abstracts loaded Successfully"
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                {
+                    abstracts
+                },
+                "Abstracts loaded Successfully"
+            )
         )
-    )
 })
 
 export const getApprovedAbstract = asyncHandler(async (req, res) => {
     try {
-        const abstracts = await Abstract.find({ ownerId: req.mainId, status: "accepted"});
+        const abstracts = await Abstract.find({ ownerId: req.mainId, status: "accepted" });
         // const hasFinalized = await Student.findOne({ _id: req.user._id, finalizedAbstract: { $exists: true } });
         // const finalizedAbstract = await Student.findById(req.user._id).select("finalizedAbstract");
         const user = req.user;
@@ -195,18 +195,18 @@ export const getApprovedAbstract = asyncHandler(async (req, res) => {
         if (user.finalizedAbstract) {
             hasFinalized = true;
         }
-    
+
         return res
-        .status(200)
-        .json(
-            new ApiResponse(
-                200,
-                {
-                    abstracts, hasFinalized
-                },
-                "Abstracts loaded Successfully"
+            .status(200)
+            .json(
+                new ApiResponse(
+                    200,
+                    {
+                        abstracts, hasFinalized
+                    },
+                    "Abstracts loaded Successfully"
+                )
             )
-        )
     } catch (error) {
         throw new ApiError(500, `cannot find user - ${error.message}`);
     }
@@ -268,6 +268,259 @@ const finalizeAbstract = asyncHandler(async (req, res) => {
     }
 });
 
+const getProjectAndStudentData = asyncHandler(async (req, res) => {
+    try {
+        if (!req.user || !req.user.finalizedAbstract) {
+            throw new ApiError(400, "User or finalized abstract ID missing");
+        }
+
+        const project = await Abstract.findById(req.user.finalizedAbstract);
+        if (!project) {
+            throw new ApiError(404, "Project not found");
+        }
+
+        const projectRequirements = project.requirements || [];
+        const requiredDomains = projectRequirements.map(req => req.domain);
+        // console.log(projectRequirements);
+        // const requiredDomains = projectRequirements.map(req => ({
+        //     domain: req.domain,
+        //     skills: req.skills
+        // }));
+
+        const students = await Student.find().populate("skills id").select("id skills");
+        if (!students.length) {
+            throw new ApiError(404, "No students found");
+        }
+
+        const matchingStudents = students.filter(student =>
+            student._id.toString() !== req.user._id.toString() &&
+            student.skills.some(skill => requiredDomains.includes(skill.domain))
+        ).map(student => ({
+            id: student._id,
+            name: student.id?.name || "Unknown",
+            domain: student.skills.map(skill => skill.domain),
+            // .filter(skill => requiredDomains.includes(skill.domain))
+            skills: student.skills.flatMap(skill => skill.skills)
+        }));
+
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(
+                    200,
+                    {
+                        matchingStudents, projectRequirements
+                    },
+                    "Project and student data loaded Successfully"
+                )
+            );
+    } catch (error) {
+        return res.status(error.statusCode || 500).json(new ApiError(error.statusCode || 500, error.message || "Internal Server Error"));
+    }
+});
+
+const sendInvitations = asyncHandler(async (req, res) => {
+    try {
+        if (!req.user || !req.user.finalizedAbstract) {
+            throw new ApiError(400, "User or finalized abstract ID missing");
+        }
+
+        const { studentIds } = req.body;
+        const fromStudent = req.user;
+
+        if (!studentIds || !Array.isArray(studentIds) || studentIds.length === 0) {
+            return res.status(400).json({ message: "Invalid student IDs provided" });
+        }
+
+        // Filter out self-invitations
+        const validStudentIds = studentIds.filter(toStudentId => toStudentId !== fromStudent._id.toString());
+        if (validStudentIds.length === 0) {
+            return res.status(400).json({ message: "Cannot send invitations to yourself" });
+        }
+
+        // Check for existing invitations
+        const existingInvites = await InviteAndRequest.find({
+            from: fromStudent._id,
+            to: { $in: validStudentIds },
+            type: "invite"
+        }).select("to");
+
+        const existingToIds = new Set(existingInvites.map(invite => invite.to.toString()));
+
+        // Create new invite requests excluding existing ones
+        const newInvites = validStudentIds
+            .filter(toStudentId => !existingToIds.has(toStudentId))
+            .map(toStudentId => ({
+                from: fromStudent._id,
+                to: toStudentId,
+                abstractId: fromStudent.finalizedAbstract,
+                type: "invite",
+                status: "pending"
+            }));
+
+        if (newInvites.length > 0) {
+            await InviteAndRequest.insertMany(newInvites);
+        }
+
+        return res
+            .status(201)
+            .json(
+                new ApiResponse(
+                    201,
+                    {},
+                    newInvites.length > 0 ? "Invitations sent successfully" : "No new invitations sent"
+                )
+            );
+    } catch (error) {
+        console.error("Error sending invitations:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+// const getInvitesAndRequests = asyncHandler(async (req, res) => {
+//     const userId = req.user._id;
+
+//     const sent = await InviteAndRequest.find({ from: userId })
+//         .populate({ 
+//             path: "to", 
+//             select: "id", 
+//             populate: { 
+//                 path: "id", 
+//                 select: "name" 
+//             } 
+//         })
+//         .populate({ 
+//             path: "abstractId", 
+//             select: "title abstract domain requirements" 
+//         })
+
+//     const received = await InviteAndRequest.find({ to: userId })
+//         .populate({
+//             path: 'from',
+//             select: 'id skills',
+//             populate: [
+//                 { path: 'id', select: 'name' },
+//                 { path: 'skills' }
+//             ]
+//         })
+//         .populate({
+//             path: 'abstractId',
+//             select: 'title abstract domain requirements'
+//         });
+
+//     const sentInvites = sent.filter((invite) => invite.type === "invite").map((invite) => ({
+//         name: invite.to.id.name,
+//         date: invite.createdAt,
+//         status: invite.status,
+//     }));
+
+//     const sentRequests = sent.filter((invite) => invite.type === "request").map((invite) => ({
+//         name: invite.to.id.name,
+//         date: invite.createdAt,
+//         abstract: {
+//             title: invite.abstractId.title,
+//             abstract: invite.abstractId.abstract,
+//             domain: invite.abstractId.domain,
+//             requirements: invite.abstractId.requirements,
+//         },
+//         status: invite.status,
+//     }));
+
+//     const receivedInvites = received.filter((invite) => invite.type === "invite").map((invite) => ({
+//         name: invite.from.id.name,
+//         date: invite.createdAt,
+//         abstract: {
+//             title: invite.abstractId.title,
+//             abstract: invite.abstractId.abstract,
+//             domain: invite.abstractId.domain,
+//             requirements: invite.abstractId.requirements,
+//         },
+//         status: invite.status,
+//     }));
+
+//     const receivedRequests = received.filter((invite) => invite.type === "request").map((invite) => ({
+//         name: invite.from.id.name,
+//         date: invite.createdAt,
+//         skills: invite.from.skills,
+//         status: invite.status,
+//     }))
+
+
+//     return res.status(200).json(
+//         new ApiResponse(200, {
+//             sentInvites,
+//             sentRequests,
+//             receivedInvites,
+//             receivedRequests
+//         }, "Data fetched successfully")
+//     );
+// });
+
+const getInvitesAndRequests = asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+
+    // Fetch all invites and requests related to the user
+    const invitesAndRequests = await InviteAndRequest.find({
+        $or: [{ from: userId }, { to: userId }]
+    })
+    .populate({
+        path: 'from to',
+        select: 'id skills',
+        populate: { path: 'id', select: 'name' }
+    })
+    .populate({
+        path: 'abstractId',
+        select: 'title abstract domain requirements'
+    });
+
+    // Process fetched data
+    const response = {
+        sentInvites: [],
+        sentRequests: [],
+        receivedInvites: [],
+        receivedRequests: []
+    };
+
+    invitesAndRequests.forEach(invite => {
+        const isSent = invite.from._id.equals(userId);
+        const counterparty = isSent ? invite.to : invite.from;
+
+        const inviteData = {
+            name: counterparty.id.name,
+            date: invite.createdAt.toLocaleDateString('en-GB'), // Format as DD/MM/YYYY
+            status: invite.status
+        };
+
+        if (invite.type === "invite") {
+            isSent ? response.sentInvites.push(inviteData) : response.receivedInvites.push({
+                ...inviteData,
+                abstract: invite.abstractId && {
+                    title: invite.abstractId.title,
+                    abstract: invite.abstractId.abstract,
+                    domain: invite.abstractId.domain,
+                    requirements: invite.abstractId.requirements
+                }
+            });
+        } else {
+            isSent ? response.sentRequests.push({
+                ...inviteData,
+                abstract: invite.abstractId && {
+                    title: invite.abstractId.title,
+                    abstract: invite.abstractId.abstract,
+                    domain: invite.abstractId.domain,
+                    requirements: invite.abstractId.requirements
+                }
+            }) : response.receivedRequests.push({
+                ...inviteData,
+                skills: invite.from.skills
+            });
+        }
+    });
+
+    return res.status(200).json(new ApiResponse(200, response, "Data fetched successfully"));
+});
+
+
 
 const studentDashboard = asyncHandler(async (req, res) => {
 
@@ -300,5 +553,8 @@ export {
     submitAbstracts,
     studentDashboard,
     getSubmittedAbstract,
-    finalizeAbstract
+    finalizeAbstract,
+    getProjectAndStudentData,
+    sendInvitations,
+    getInvitesAndRequests
 }

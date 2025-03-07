@@ -37,13 +37,6 @@ const abstractSchema = new Schema({
             type: String
         }]
     }],
-    //TODO: check if this is correct ref vid - 6 at 25 min
-    // scores: [{
-    //     type: String,
-    // }],
-    // matchedIds: [{
-    //     type: String,
-    // }],
     matched: [{
         score: {
             type: Number,
@@ -58,8 +51,25 @@ const abstractSchema = new Schema({
         enum: ['pending', 'submitted', 'revision', 'accepted', 'rejected', 'completed'],
         default: 'pending'
     },
-    comments: [{
-        type: String
+    assignedTo: [{
+        assignedStaff: {
+            type: Schema.Types.ObjectId,
+            ref: "Staff",
+            required: true
+        },
+        decision: {
+            type: String,
+            enum: ['pending', 'accepted', 'rejected', 'revision'],
+            default: 'pending'
+        },
+        comments: {
+            old: [{
+                type: String
+            }],
+            new: [{
+                type: String
+            }]
+        }
     }]
 },
     {

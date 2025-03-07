@@ -67,26 +67,6 @@ const studentSchema = new Schema({
             ref: "Abstract"
         }
     ],
-    invites: {
-        sent: [{
-            type: Schema.Types.ObjectId,
-            ref: "Student"
-        }],
-        received: [{
-            type: Schema.Types.ObjectId,
-            ref: "Student"
-        }],
-    },
-    requests: {
-        sent: [{
-            type: Schema.Types.ObjectId,
-            ref: "Student"
-        }],
-        received: [{
-            type: Schema.Types.ObjectId,
-            ref: "Student"
-        }],
-    },
 },
     {
         timestamps: true
