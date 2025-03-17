@@ -11,5 +11,5 @@ export default defineConfig({
     },
   },
   // "server": { "proxy": { "/api": "http://localhost:4000" } }
-  "server": { "proxy": { "/": "https://ez4070gwe8.execute-api.ap-south-1.amazonaws.com/prod" } }
+  server: { proxy: { "/api": {target: "https://ez4070gwe8.execute-api.ap-south-1.amazonaws.com/prod" , ChangeOrigin : true, secure : true} } }
 })
