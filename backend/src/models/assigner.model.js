@@ -1,45 +1,50 @@
-import mongoose, {Schema} from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-const assignerSchema = new Schema({
-    id: {
-        type: String,
-        required: true
+const taskSchema = new Schema(
+  {
+    title: {
+      type: String,
+      required: [true, "Title is required"],
+      trim: true
     },
-
-    isAssign: {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-        required: true,
-        default: false
+    description: {
+      type: String,
+      required: [true, "Description is required"],
+      trim: true
     },
-
-    isEditTask: {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-        required: true,
-        default: false
+    assigner: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true
     },
-
-    isReAssign: {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-        required: true,
-        default: false
+    receiver: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true
     },
-
-    isDeleteAssign: {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-        required: true,
-        default: false
+    status: {
+      type: String,
+      enum: ["pending", "inProgress", "completed", "approved"],
+      default: "pending"
     },
-
-    previousUsers: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: "User",
-            required: true
+    remark: {
+      type: String,
+      trim: true
+    },
+    previousAssignments: [
+      {
+        user: {
+          type: Schema.Types.ObjectId,
+          ref: "User"
+        },
+        reassignedAt: {
+          type: Date,
+          default: Date.now
         }
+      }
     ]
-    
-});
+  },
+  { timestamps: true }
+);
+
+export const Task = mongoose.model("Task", taskSchema);

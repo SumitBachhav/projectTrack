@@ -1,41 +1,67 @@
+// middlewares/auth.middleware.js (or whatever you name the file)
+
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import jwt from "jsonwebtoken"
-import { User } from "../models/user.model.js";
-import { Student } from "../models/student.model.js";
+import jwt from "jsonwebtoken";
 import { findUser } from "../utils/FindUser.js";
 
-export const verifyJWT = asyncHandler(async(req, _, next) => {
+export const verifyJWT = asyncHandler(async (req, _, next) => {
     try {
-        const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "")
-        
-        // console.log(token);
-        if (!token) {
-            throw new ApiError(401, "Unauthorized request")
-        }
-    
-        const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
-    
-        // const user = await User.findById(decodedToken?._id).select("-password -refreshToken")
-        const user = await findUser(decodedToken?._id)
-    
-        if (!user) {
-            throw new ApiError(401, "Invalid Access Token")
+        if (!process.env.ACCESS_TOKEN_SECRET) {
+            console.error("ACCESS_TOKEN_SECRET is not defined");
+            throw new ApiError(500, "Internal server error: ACCESS_TOKEN_SECRET not configured");
         }
 
-        // console.log(user)
-    
+        const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
+
+        if (!token) {
+            console.warn("No access token found in request");
+            throw new ApiError(401, "Unauthorized request: Missing access token");
+        }
+
+        let decodedToken;
+        try {
+            decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+        } catch (jwtError) {
+            if (jwtError.name === "TokenExpiredError") {
+                req.isAccessTokenExpired = true;
+                console.log("Access token expired");
+                return next(); // Let next middleware handle refresh
+            } else {
+                console.error("JWT verification failed:", jwtError.message);
+                throw new ApiError(401, "Invalid access token: " + jwtError.message);
+            }
+        }
+
+        const user = await findUser(decodedToken?._id);
+
+        if (!user) {
+            console.warn("User not found for decoded token:", decodedToken?._id);
+            throw new ApiError(401, "Invalid access token: User not found");
+        }
+
         req.user = user;
         req.mainId = decodedToken?._id;
-        next()
+
+        console.log("JWT verification successful for user:", user._id);
+        next();
+
     } catch (error) {
-        if (error.name === "TokenExpiredError") {
-            // Signal that token is expired, but let the next middleware handle refresh logic
-            req.isAccessTokenExpired = true;
-            console.log("access Token is expired");
-            next();
-        } else {
-            throw new ApiError(401, error?.message || "Invalid access token");
-        }
+        console.error("JWT verification middleware error:", error.message);
+        throw new ApiError(error.statusCode || 500, error.message || "Internal server error");
     }
 });
+
+// Example route using the middleware (you can put this in a separate route file)
+// routes/example.route.js
+
+import express from 'express';
+import { verifyJWT } from './auth.middleware.js'; // Adjust the path as needed
+
+const router = express.Router();
+
+router.get('/protected', verifyJWT, (req, res) => {
+    res.send('This route is protected!');
+});
+
+export default router;
