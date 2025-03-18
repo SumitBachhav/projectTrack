@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, X, LogIn, Bell, HelpCircle } from 'lucide-react';
+import { Menu, X, LogIn, Bell, HelpCircle, CheckSquare } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
@@ -43,13 +43,22 @@ const Navbar = () => {
               FAQ
             </Link>
             {isAuthenticated && (
-              <Link 
-                to="/notifications" 
-                className="flex items-center px-3 py-2 text-gray-100 hover:text-white rounded-md hover:bg-blue-700 transition-colors"
-              >
-                <Bell className="w-4 h-4 mr-2" />
-                Notifications
-              </Link>
+              <>
+                <Link 
+                  to="/notifications" 
+                  className="flex items-center px-3 py-2 text-gray-100 hover:text-white rounded-md hover:bg-blue-700 transition-colors"
+                >
+                  <Bell className="w-4 h-4 mr-2" />
+                  Notifications
+                </Link>
+                <Link 
+                  to="/tasks" 
+                  className="flex items-center px-3 py-2 text-gray-100 hover:text-white rounded-md hover:bg-blue-700 transition-colors"
+                >
+                  <CheckSquare className="w-4 h-4 mr-2" />
+                  Tasks
+                </Link>
+              </>
             )}
             {!isAuthenticated ? (
               <Link
@@ -92,13 +101,22 @@ const Navbar = () => {
                 FAQ
               </Link>
               {isAuthenticated && (
-                <Link
-                  to="/notifications"
-                  className="flex items-center px-3 py-2 text-gray-100 hover:text-white rounded-md hover:bg-blue-700 transition-colors"
-                >
-                  <Bell className="w-4 h-4 mr-2" />
-                  Notifications
-                </Link>
+                <>
+                  <Link
+                    to="/notifications"
+                    className="flex items-center px-3 py-2 text-gray-100 hover:text-white rounded-md hover:bg-blue-700 transition-colors"
+                  >
+                    <Bell className="w-4 h-4 mr-2" />
+                    Notifications
+                  </Link>
+                  <Link
+                    to="/tasks"
+                    className="flex items-center px-3 py-2 text-gray-100 hover:text-white rounded-md hover:bg-blue-700 transition-colors"
+                  >
+                    <CheckSquare className="w-4 h-4 mr-2" />
+                    Tasks
+                  </Link>
+                </>
               )}
               {!isAuthenticated ? (
                 <Link
