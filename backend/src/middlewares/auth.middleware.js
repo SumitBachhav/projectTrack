@@ -56,7 +56,6 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
 // routes/example.route.js
 
 import express from 'express';
-import { verifyJWT } from './auth.middleware.js'; // Adjust the path as needed
 
 const router = express.Router();
 
