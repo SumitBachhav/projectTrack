@@ -25,7 +25,7 @@ function CheckScore() {
     useEffect(() => {
         const fetchDomains = async () => {
             try {
-                const response = await axios.get('/api/v1/user/getDomains');
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/user/getDomains`);
                 // let d = data;
                 const domainOptions = response.data.data.domains.map((domain) => ({
                     value: domain,
@@ -124,7 +124,7 @@ function CheckScore() {
 
     const send = async () => {
         try {
-            await axios.post('/api/v1/student/submitAbstracts', abstractList);
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/student/submitAbstracts`, abstractList);
             setAbstractList([]);
             navigate('/student/abstractSubmissionComplete');
         } catch (error) {
@@ -147,17 +147,13 @@ function CheckScore() {
         setEmbedding('');
 
         try {
-            const response = await axios.post(
-                'http://localhost:8000/compareDatabase',
-                {
-                    abstract: formData.abstract,
+            const response = await axios.post(`${import.meta.env.VITE_SIMILARITY_API_URL}/compareDatabase`, {
+                abstract: formData.abstract,
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
                 },
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                }
-            );
+            });
 
             console.log(response);
 

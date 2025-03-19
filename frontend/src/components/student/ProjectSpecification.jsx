@@ -15,7 +15,7 @@ const ProjectSpecification = () => {
 
     const fetchDomainsAndSkills = useCallback(async () => {
         try {
-            const { data } = await axios.get('/api/v1/user/getDomainsAndSkills');
+            const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/user/getDomainsAndSkills`);
             const domainsWithSkills = data.data.domainsWithSkills;
             setSkillOptions(domainsWithSkills);
             setDomains(Object.keys(domainsWithSkills));
@@ -71,7 +71,7 @@ const ProjectSpecification = () => {
     const handleFinalSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('/api/v1/student/finalizeAbstract', {
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/student/finalizeAbstract`, {
                 requirements: allSkills,
                 abstractId: abstract._id,
                 donatedIds

@@ -21,7 +21,7 @@ const TopicReview = () => {
         const fetchAbstractDetails = async () => {
             try {
                 setLoading(true);
-                const response = await axios.post("/api/v1/staff/getAbstractDetail", {
+                const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/staff/getAbstractDetail`, {
                     abstractId: abstractId.trim().toString(),
                 });
                 setAbstractData(response.data.data);
@@ -51,7 +51,7 @@ const TopicReview = () => {
 
         try {
             setLoading(true);
-            const response = await axios.post("/api/v1/staff/updateAbstractReview", {
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/staff/updateAbstractReview`, {
                 reviewedAbstractId: abstractId,
                 status: action,
                 comments: comment

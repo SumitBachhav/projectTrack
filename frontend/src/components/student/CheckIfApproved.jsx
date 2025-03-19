@@ -14,7 +14,7 @@ const CheckIfApproved = () => {
     // Fetch approved abstracts
     const fetchApprovedAbstracts = useCallback(async () => {
         try {
-            const response = await axios.get('/api/v1/student/getApprovedAbstract');
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/student/getApprovedAbstract`);
             const { abstracts, hasFinalized } = response.data.data;
             setData({ approvedList: abstracts });
             console.log(hasFinalized)
@@ -44,7 +44,7 @@ const CheckIfApproved = () => {
                 console.log(donatedIds);
                 // Uncomment for actual donation logic:
                 // try {
-                //     const response = await axios.post('/api/v1/student/donateAbstracts', { donatedIds });
+                //     const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/student/donateAbstracts`, { donatedIds });
                 // } catch (error) {
                 //     console.error('Error donating abstract', error);
                 // }
