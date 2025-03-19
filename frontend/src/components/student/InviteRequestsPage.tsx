@@ -39,7 +39,7 @@ const InviteRequestsPage: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/student/getInvitesAndRequests`);
+        const response = await axios.get<{ data: ApiResponse }>(`${import.meta.env.VITE_API_URL}/api/v1/student/getInvitesAndRequests`);
         setData(response.data.data);
       } catch (err) {
         setError("Failed to fetch data.");
