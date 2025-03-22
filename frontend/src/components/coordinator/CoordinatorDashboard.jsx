@@ -10,7 +10,9 @@ const CoordinatorDashboard = () => {
   // useEffect(() => {
   //   const fetchDashboardData = async () => {
   //     try {
-  //       const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/coordinator/dashboard`);
+  //       const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/coordinator/dashboard`, {
+  //         withCredentials: true
+  // });
   //       const { success, data, message } = response.data;
 
   //       if (!success) {

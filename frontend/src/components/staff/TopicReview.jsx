@@ -23,6 +23,8 @@ const TopicReview = () => {
                 setLoading(true);
                 const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/staff/getAbstractDetail`, {
                     abstractId: abstractId.trim().toString(),
+                }, {
+                    withCredentials: true
                 });
                 setAbstractData(response.data.data);
             } catch (error) {
@@ -55,7 +57,10 @@ const TopicReview = () => {
                 reviewedAbstractId: abstractId,
                 status: action,
                 comments: comment
-            });
+            },
+                {
+                    withCredentials: true
+                });
             navigate('/staff/topicReviewOverview')
         } catch (error) {
             setError(error.message);

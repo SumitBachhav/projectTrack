@@ -27,7 +27,9 @@ const RegisterStudent = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/user/register-student`, formData);
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/user/register-student`, formData, {
+                withCredentials: true
+            });
             alert('Registration successful. Please submit your skill sets.');
             navigate('/student/submitSkills');
         } catch (error) {

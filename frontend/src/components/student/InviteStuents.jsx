@@ -12,7 +12,9 @@ const InviteStudents = () => {
     useEffect(() => {
         const fetchStudents = async () => {
             try {
-                const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/student/getProjectAndStudentData`);
+                const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/student/getProjectAndStudentData`, {
+                    withCredentials: true
+                });
                 setStudentsData(data.data.matchingStudents);
                 setProjectRequirement(data.data.projectRequirements);
             } catch (error) {
@@ -59,7 +61,9 @@ const InviteStudents = () => {
         }
 
         try {
-            const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/student/sendInvitations`, { studentIds: selectedStudentIds });
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/student/sendInvitations`, { studentIds: selectedStudentIds }, {
+                withCredentials: true
+            });
             if (response.status === 201) {
                 alert('Invites sent successfully');
                 navigate('/student/dashboard');

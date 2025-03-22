@@ -46,7 +46,7 @@ const CheckIfApproved = () => {
                 console.log(donatedIds);
                 // Uncomment for actual donation logic:
                 // try {
-                //     const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/student/donateAbstracts`, { donatedIds });
+                //     const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/student/donateAbstracts`, { donatedIds }, { withCredentials: true });
                 // } catch (error) {
                 //     console.error('Error donating abstract', error);
                 // }
