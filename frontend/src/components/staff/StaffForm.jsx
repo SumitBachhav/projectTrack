@@ -16,7 +16,9 @@ const StaffForm = () => {
     useEffect(() => {
         const fetchDomains = async () => {
             try {
-                const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/user/getDomains`);
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/user/getDomains`, {
+                    withCredentials: true
+                });
                 setFetchedDomains(response.data.data.domains);
                 console.log(response.data.data.domains);
             } catch (error) {
@@ -60,7 +62,9 @@ const StaffForm = () => {
         e.preventDefault();
         try {
             console.log(allDomains);
-            await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/staff/setStaffExpertise`, allDomains);
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/staff/setStaffExpertise`, allDomains, {
+                withCredentials: true
+            });
             alert('Domain data submitted successfully!');
             navigate('/staff/dashboard');
         } catch (error) {

@@ -10,7 +10,9 @@ const StaffDashboard = () => {
     const checkSkillSubmission = async () => {
       try {
         // Replace with your actual API endpoint
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/staff/staffDashboard`);
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/staff/staffDashboard`, {
+          withCredentials: true
+        });
         
         const { success, data, message } = await response.data;
 

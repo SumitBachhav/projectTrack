@@ -58,6 +58,7 @@ function UploadAbstracts() {
                     headers: {
                         'Content-Type': 'application/json',
                     },
+                    withCredentials: true
                 }
             );
 

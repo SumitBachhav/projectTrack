@@ -14,7 +14,9 @@ const CheckIfApproved = () => {
     // Fetch approved abstracts
     const fetchApprovedAbstracts = useCallback(async () => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/student/getApprovedAbstract`);
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/student/getApprovedAbstract`, {
+                withCredentials: true
+            });
             const { abstracts, hasFinalized } = response.data.data;
             setData({ approvedList: abstracts });
             console.log(hasFinalized)

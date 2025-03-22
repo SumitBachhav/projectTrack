@@ -25,7 +25,9 @@ const Register = () => {
             userId: formData.userId,
             role: formData.role, 
         };
-        let x = await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/user/register`, obj);
+        let x = await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/user/register`, obj, {
+          withCredentials: true
+        });
         console.log(x);
     };
 
