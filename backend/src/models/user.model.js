@@ -18,14 +18,15 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: [true, 'Password is required']
+        required: [true, 'Password is required'],
+        select: false
     },
     refreshToken: {
         type: String
     },
     role: {
         type: String,
-        enum: ['student', 'staff', 'coordinator'],
+        enum: ['student', 'staff', 'coordinator', 'assigner'],
         required: true,
     },
     childId: {
