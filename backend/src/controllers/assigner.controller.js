@@ -7,13 +7,18 @@ export const assignTask = async (req, res) => {
     const { title, description, receiverId } = req.body;
     const assignerId = req.user.id;
 
-    // Create a new Task document using the Task model
+     //create task document 
     const task = new Task({
       title,
       description,
       assigner: assignerId,
       receiver: receiverId
     });
+    if (!title || !description || !receiverId) {
+      return res.status(400).json({
+        message: "All fields are required: title, description, receiverId"
+      });
+    }``
     await task.save();
 
     res.status(201).json({ message: "Task assigned successfully", task });
@@ -23,7 +28,7 @@ export const assignTask = async (req, res) => {
   }
 };
 
-// Accept Task (Receiver)
+//accept Task (Receiver)
 export const acceptTask = async (req, res) => {
   try {
     const { id } = req.params;
@@ -31,7 +36,7 @@ export const acceptTask = async (req, res) => {
 
     if (!task) return res.status(404).json({ message: "Task not found" });
     
-    // Check if the current user is the assigned receiver
+    //check if the current user is the assigned receiver
     if (task.receiver.toString() !== req.user.id)
       return res.status(403).json({ message: "Unauthorized" });
       
@@ -45,7 +50,7 @@ export const acceptTask = async (req, res) => {
   }
 };
 
-// Edit Task (Only assigner)
+//edit Task (Only assigner)
 export const editTask = async (req, res) => {
   try {
     const { id } = req.params;
@@ -67,7 +72,7 @@ export const editTask = async (req, res) => {
   }
 };
 
-// Delete Task (Only assigner)
+//delete Task (Only assigner)
 export const deleteTask = async (req, res) => {
   try {
     const { id } = req.params;
@@ -85,7 +90,7 @@ export const deleteTask = async (req, res) => {
   }
 };
 
-// Reassign Task (Only assigner)
+//reassign Task (Only assigner)
 export const reassignTask = async (req, res) => {
   try {
     const { id } = req.params;
@@ -107,7 +112,7 @@ export const reassignTask = async (req, res) => {
   }
 };
 
-// Mark as Complete (Receiver)
+//mark as Complete (Receiver)
 export const markComplete = async (req, res) => {
   try {
     const { id } = req.params;
@@ -127,7 +132,7 @@ export const markComplete = async (req, res) => {
   }
 };
 
-// Approve Completion (Only assigner)
+//approve Completion (only assigner)
 export const approveCompletion = async (req, res) => {
   try {
     const { id } = req.params;
@@ -152,49 +157,129 @@ export const approveCompletion = async (req, res) => {
   }
 };
 
-// Get all tasks for the current user (either as assigner or receiver)
+
+
+//Get on all tasks for the current user (
 export const getAllTasks = async (req, res) => {
   try {
     const userId = req.user.id;
-    
-    // Find tasks where the user is either the assigner or receiver
+
+    //validate user id format
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid user ID format"
+      });
+    }
+
+    //find tasks with pagination,filtering
     const tasks = await Task.find({
       $or: [
         { assigner: userId },
         { receiver: userId }
       ]
     })
-    .populate('assigner', 'name email')
-    .populate('receiver', 'name email')
-    .sort({ createdAt: -1 });
-    
-    res.json({ tasks });
+    .populate('assigner', 'name email _id')
+    .populate('receiver', 'name email _id')
+    .select('-__v') //exclude version key
+    .sort({ createdAt: -1 })
+    .lean();
+
+    //transform tasks for better client-side consumption
+    const transformedTasks = tasks.map(task => ({
+      id: task._id,
+      title: task.title,
+      description: task.description,
+      status: task.status,
+      deadline: task.deadline,
+      assigner: {
+        id: task.assigner._id,
+        name: task.assigner.name,
+        email: task.assigner.email
+      },
+      receiver: {
+        id: task.receiver._id,
+        name: task.receiver.name,
+        email: task.receiver.email
+      },
+      createdAt: task.createdAt,
+      updatedAt: task.updatedAt
+    }));
+
+    return res.status(200).json({
+      success: true,
+      count: tasks.length,
+      data: transformedTasks
+    });
+
   } catch (error) {
     console.error("Error fetching tasks:", error);
-    res.status(500).json({ message: "Server error" });
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
 
-// Get a specific task by ID
+//get task by id of user 
 export const getTaskById = async (req, res) => {
   try {
-    const { id } = req.params;
     const userId = req.user.id;
-    
-    const task = await Task.findById(id)
-      .populate('assigner', 'name email')
-      .populate('receiver', 'name email');
-    
-    if (!task) return res.status(404).json({ message: "Task not found" });
-    
-    // Check if the user is either the assigner or receiver
-    if (task.assigner._id.toString() !== userId && task.receiver._id.toString() !== userId) {
-      return res.status(403).json({ message: "Unauthorized" });
+
+    //validating id is in hex or not 
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid user ID format"
+      });
     }
-    
-    res.json({ task });
+
+    //finding the tasks
+    const tasks = await Task.find({
+      $or: [
+        { assigner: userId },
+        { receiver: userId }
+      ]
+    })
+    .populate('assigner', 'name email _id')
+    .populate('receiver', 'name email _id')
+    .select('-__v')
+    .sort({ createdAt: -1 });
+
+    //transform tasks
+    const transformedTasks = tasks.map(task => ({
+      id: task._id,
+      title: task.title,
+      description: task.description,
+      status: task.status,
+      deadline: task.deadline,
+      assigner: {
+        id: task.assigner._id,
+        name: task.assigner.name,
+        email: task.assigner.email
+      },
+      receiver: {
+        id: task.receiver._id,
+        name: task.receiver.name,
+        email: task.receiver.email
+      },
+      createdAt: task.createdAt,
+      updatedAt: task.updatedAt
+    }));
+
+    return res.status(200).json({
+      success: true,
+      count: transformedTasks.length,
+      data: transformedTasks
+    });
+
   } catch (error) {
-    console.error("Error fetching task:", error);
-    res.status(500).json({ message: "Server error" });
+    console.error("Error fetching user tasks:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
