@@ -407,3 +407,33 @@ export const getAllCompletedTasks = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+
+export const getAssignedTasks = async (req, res) => {
+  try {
+    const tasks = await Task.find({
+      assigner: req.user.id,  // tasks assigned by current user
+    })
+    .select('title deadline status _id receiver')
+    .populate('receiver', 'name')  // get receiver's name
+    .sort({ deadline: -1 })
+    .lean();
+
+    const formattedTasks = tasks.map(task => ({
+      Title: task.title,
+      Deadline: task.deadline,
+      Status: task.status,
+      TaskId: task._id.toString(),
+      To: task.receiver?.name || 'Unknown User'
+    }));
+
+    res.json(formattedTasks);
+
+  } catch (error) {
+    console.error(`[${new Date().toISOString()}] Assigned tasks error:`, error);
+    res.status(500).json({
+      message: 'Failed to fetch assigned tasks',
+      error: process.env.NODE_ENV === 'development' ? error.message : null
+    });
+  }
+};

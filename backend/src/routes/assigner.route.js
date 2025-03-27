@@ -13,7 +13,8 @@ import {
   getTaskById,
   getTasksAcceptedByUser,
   getMyCompletedTasks,
-  getAllCompletedTasks
+  getAllCompletedTasks,
+  getAssignedTasks
 } from '../controllers/assigner.controller.js';
 
 const router = express.Router();
@@ -38,9 +39,9 @@ router.route('/:id')
   .patch(editTask)           
   .delete(deleteTask);       
 
-// // assign by user
-// router.route('/assigned')
-//   .get(authenticateUser, getAssignedTasks)
+// assign by user
+router.route('/all/assigned')
+  .get(getAssignedTasks)
 
 
 router.post('/:id/accept', acceptTask);         
