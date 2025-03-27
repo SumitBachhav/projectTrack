@@ -34,6 +34,6 @@ app.use("/api/v1/tasks", taskRouter)
 app.use("/api/v1/assigner/task", assignerRouter)
 
 
-// http://localhost:8000/api/v1/users/register
+// http://localhost:8000/api/v1/user/register
 
 export { app }
