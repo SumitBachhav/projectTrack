@@ -25,10 +25,10 @@ router.route('/:id')
   .patch(editTask)           
   .delete(deleteTask);       
 
-router.post('/:taskId/accept', acceptTask);         
-router.post('/:taskId/reassign', reassignTask);     
-router.post('/:taskId/complete', markComplete);     
-router.post('/:taskId/approve', approveCompletion); 
+router.post('/:id/accept', acceptTask);         
+router.post('/:id/reassign', reassignTask);     
+router.post('/:id/complete', markComplete);     
+router.post('/:id/approve', approveCompletion); 
 
 
 

@@ -31,7 +31,7 @@ app.use("/api/v1/student", studentRouter)
 app.use("/api/v1/staff", staffRouter)
 app.use("/api/v1/coordinator", coordinatorRouter)
 app.use("/api/v1/tasks", taskRouter)
-app.use("/api/v1/assigner", assignerRouter)
+app.use("/api/v1/assigner/task", assignerRouter)
 
 
 // http://localhost:8000/api/v1/users/register
