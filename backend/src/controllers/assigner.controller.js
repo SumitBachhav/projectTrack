@@ -222,7 +222,7 @@ export const getAllTasks = async (req, res) => {
   }
 };
 
-//get task by id of user 
+//get task by id of task
 export const getTaskById = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -281,5 +281,129 @@ export const getTaskById = async (req, res) => {
       message: "Internal server error",
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
+  }
+};
+
+//get task by user 
+export const getTasksAcceptedByUser = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    //validate user ID format
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid user ID format",
+      });
+    }
+
+    //find tasks where the user is the receiver and the task is in progress
+    const tasks = await Task.find({
+      receiver: userId,
+      status: "inProgress", //glter for accepted tasks
+    })
+      .populate("assigner", "name email _id")
+      .populate("receiver", "name email _id")
+      .select("-__v")
+      .sort({ createdAt: -1 });
+
+    //transform tasks for better client-side consumption
+    const transformedTasks = tasks.map((task) => ({
+      id: task._id,
+      title: task.title,
+      description: task.description,
+      status: task.status,
+      deadline: task.deadline,
+      assigner: {
+        id: task.assigner._id,
+        name: task.assigner.name,
+        email: task.assigner.email,
+      },
+      receiver: {
+        id: task.receiver._id,
+        name: task.receiver.name,
+        email: task.receiver.email,
+      },
+      createdAt: task.createdAt,
+      updatedAt: task.updatedAt,
+    }));
+
+    return res.status(200).json({
+      success: true,
+      count: transformedTasks.length,
+      data: transformedTasks,
+    });
+  } catch (error) {
+    console.error("Error fetching accepted tasks:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
+  }
+};
+
+
+export const getMyCompletedTasks = async (req, res) => {
+  try {
+    const tasks = await Task.find({
+      receiver: req.user.id,        //tasks assigned to user
+      status: 'completed',          //only completed 
+      completedAt: { $exists: true }//ensure completion 
+    })
+    
+    .select('title deadline status _id assigner receiver completedAt')
+
+    .populate('assigner', 'name')   //only get assigner name
+    .populate('receiver', 'name')   //only get receiver name
+    
+    .sort({ completedAt: -1 })
+    // to increase performance
+    .lean();                        
+
+    // transform data
+    const formattedTasks = tasks.map(task => ({
+      Title: task.title,
+      Deadline: task.deadline,
+      Status: task.status,
+      TaskId: task._id.toString(),
+      To: task.receiver?.name || 'Unknown', 
+      From: task.assigner?.name || 'Unknown' 
+    }));
+
+    res.json(formattedTasks);
+
+  } catch (error) {
+
+    console.error(`[${new Date().toISOString()}] Error fetching completed tasks:`, error);
+    
+    
+    res.status(500).json({ 
+      message: 'Failed to fetch completed tasks',
+      error: process.env.NODE_ENV === 'development' ? error.message : null
+    });
+  }
+};
+
+export const getAllCompletedTasks = async (req, res) => {
+  try {
+    const tasks = await Task.find({ status: 'completed' })
+      .select('title deadline status _id assigner receiver')
+      .populate('assigner', 'name email')
+      .populate('receiver', 'name email')
+      .sort({ completedAt: -1 });
+
+    res.json(tasks.map(task => ({
+      Title: task.title,
+      Deadline: task.deadline,
+      Status: task.status,
+      TaskId: task._id,
+      To: task.receiver.name,
+      From: task.assigner.name
+    })));
+
+  } catch (error) {
+    console.error('Error fetching all completed tasks:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };

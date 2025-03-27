@@ -11,6 +11,9 @@ import {
   approveCompletion,
   getAllTasks,
   getTaskById,
+  getTasksAcceptedByUser,
+  getMyCompletedTasks,
+  getAllCompletedTasks
 } from '../controllers/assigner.controller.js';
 
 const router = express.Router();
@@ -19,11 +22,26 @@ router.use(verifyJWT);
 router.route('/')
   .get(getAllTasks)         
   .post(assignTask);        
+  
+router.route('/me')
+  .get(getTasksAcceptedByUser) // task accepted by usr
+  
+router.route('/me/completed') 
+  .get(getMyCompletedTasks)
+  
+  
+router.route('/completed/all') 
+  .get(getAllCompletedTasks)
 
 router.route('/:id')
-  .get(getTaskById)          
+  .get(getTaskById)// by task id      
   .patch(editTask)           
   .delete(deleteTask);       
+
+// // assign by user
+// router.route('/assigned')
+//   .get(authenticateUser, getAssignedTasks)
+
 
 router.post('/:id/accept', acceptTask);         
 router.post('/:id/reassign', reassignTask);     

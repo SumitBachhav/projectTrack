@@ -27,6 +27,14 @@ const taskSchema = new Schema(
       enum: ["pending", "inProgress", "completed", "approved"],
       default: "pending"
     },
+    deadline: {
+      type: Date,
+      required: [true, "Deadline is required"]
+    },
+    completedAt: {
+      type: Date
+    },
+
     remark: {
       type: String,
       trim: true
