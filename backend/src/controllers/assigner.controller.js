@@ -1,30 +1,64 @@
 import mongoose from "mongoose";
-import { Task } from "../models/task.model.js";
 import { User } from "../models/user.model.js";
+import { Task } from "../models/assigner.model.js";
+
 
 export const assignTask = async (req, res) => {
   try {
-    const { title, description, receiverId } = req.body;
+    const { title, description, receiverId, deadline, remark } = req.body;
     const assignerId = req.user.id;
 
-     //create task document 
+    // Validate required fields
+    if (!title || !description || !receiverId || !deadline) {
+      return res.status(400).json({
+        message: "Required fields: title, description, receiverId, deadline"
+      });
+    }
+
+    // Check if receiver exists
+    const receiver = await User.findById(receiverId);
+    if (!receiver) {
+      return res.status(404).json({ message: "Receiver not found" });
+    }
+
+    // Validate deadline is a future date
+    if (new Date(deadline) < new Date()) {
+      return res.status(400).json({
+        message: "Deadline must be a future date"
+      });
+    }
+
+    // Create task document
     const task = new Task({
       title,
       description,
       assigner: assignerId,
-      receiver: receiverId
+      receiver: receiverId,
+      deadline,
+      remark: remark || undefined, 
     });
-    if (!title || !description || !receiverId) {
-      return res.status(400).json({
-        message: "All fields are required: title, description, receiverId"
-      });
-    }``
+
     await task.save();
 
-    res.status(201).json({ message: "Task assigned successfully", task });
+    res.status(201).json({
+      message: "Task assigned successfully",
+      task: {
+        _id: task._id,
+        title: task.title,
+        description: task.description,
+        status: task.status,
+        deadline: task.deadline,
+        assigner: assignerId,
+        receiver: receiverId,
+        remark: task.remark
+      }
+    });
   } catch (error) {
     console.error("Error assigning task:", error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ 
+      message: "Server error",
+      error: error.message 
+    });
   }
 };
 
@@ -50,25 +84,115 @@ export const acceptTask = async (req, res) => {
   }
 };
 
-//edit Task (Only assigner)
+// edit task assigner only
 export const editTask = async (req, res) => {
   try {
+    // auth check
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+
     const { id } = req.params;
-    const { title, description } = req.body;
-    const task = await Task.findById(id);
+    const { title, description, remark, deadline } = req.body;
 
-    if (!task) return res.status(404).json({ message: "Task not found" });
-    if (task.assigner.toString() !== req.user.id)
-      return res.status(403).json({ message: "Unauthorized" });
+    // Validate task ID format
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid task ID format" });
+    }
 
-    task.title = title;
-    task.description = description;
-    await task.save();
+    // find task and who is assigner
+    const task = await Task.findOne({
+      _id: id,
+      assigner: req.user.id
+    });
 
-    res.json({ message: "Task updated", task });
+    if (!task) {
+      return res.status(404).json({ 
+        message: "Task not found or you don't have permission to edit it"
+      });
+    }
+
+    //updates
+    const updates = {};
+    const allowedFields = ['title', 'description', 'remark', 'deadline'];
+    
+    // validate and prepare updates
+    for (const field of allowedFields) {
+      if (req.body[field] !== undefined) {
+        if (typeof req.body[field] === 'string') {
+          updates[field] = req.body[field].trim();
+          
+          // Check for empty strings after trim
+          if (!updates[field]) {
+            return res.status(400).json({ 
+              message: `${field} cannot be empty`
+            });
+          }
+        } else {
+          updates[field] = req.body[field];
+        }
+      }
+    }
+
+    // validation for deadline
+    if (updates.deadline) {
+      const newDeadline = new Date(updates.deadline);
+      if (isNaN(newDeadline)) {
+        return res.status(400).json({ message: "Invalid deadline format" });
+      }
+      if (newDeadline < new Date()) {
+        return res.status(400).json({ message: "Deadline must be in the future" });
+      }
+      updates.deadline = newDeadline;
+    }
+
+    // update task with validation
+    const updatedTask = await Task.findByIdAndUpdate(
+      id,
+      { $set: updates },
+      {
+        new: true,
+        runValidators: true,
+        select: '-__v -previousAssignments'
+      }
+    );
+
+    if (!updatedTask) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    res.json({
+      message: "Task updated successfully",
+      task: updatedTask.toObject({ virtuals: true })
+    });
+
   } catch (error) {
-    console.error("Error editing task:", error);
-    res.status(500).json({ message: "Server error" });
+    console.error("Error editing task:", {
+      name: error.name,
+      message: error.message,
+      stack: error.stack
+    });
+
+    // handle specific error types
+    if (error.name === 'ValidationError') {
+      const errors = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({ 
+        message: "Validation failed",
+        errors 
+      });
+    }
+
+    if (error.name === 'CastError') {
+      return res.status(400).json({ 
+        message: "Invalid data format",
+        field: error.path 
+      });
+    }
+
+    res.status(500).json({
+      message: "Server error",
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
 

@@ -39,7 +39,7 @@ router.route('/:id')
   .patch(editTask)           
   .delete(deleteTask);       
 
-// assign by user
+// assinged by user
 router.route('/all/assigned')
   .get(getAssignedTasks)
 
