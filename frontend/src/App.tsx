@@ -71,6 +71,8 @@ import { ToastProvider } from "./components/ui/use-toast";
 import TaskHomePage from "./components/TaskManagement/TaskHomePage";
 import CompletedTasks from "./components/TaskManagement/CompletedTasks";
 import AssignTask from "./components/TaskManagement/AssignTask";
+import TaskComment from "./components/TaskManagement/TaskComment";
+import TaskRequest from "./components/TaskManagement/TaskRequest.js";
 
 // @ts-ignore
 const ProtectedRoute = ({ children }) => {
@@ -112,7 +114,6 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-
               {/* //TaskHomePage */}
               <Route
                 path="/task-home"
@@ -122,13 +123,30 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-
               {/* Completed Tasks  */}
               <Route path="/completed-tasks" element={<CompletedTasks />} />
-
               {/* Completed Tasks  */}
               <Route path="/assign-tasks" element={<AssignTask />} />
+              
+              {/* task comment section */}
+              <Route
+                path="/task-comments"
+                element={
+                  <ProtectedRoute>
+                    <TaskComment />
+                  </ProtectedRoute>
+                }
+              />
 
+              {/* task comment section */}
+              <Route
+                path="/task-request"
+                element={
+                  <ProtectedRoute>
+                    <TaskRequest />
+                  </ProtectedRoute>
+                }
+              />
 
               {/* coordinator */}
               <Route
@@ -198,8 +216,6 @@ function App() {
               <Route path="/test" element={<TestPage />} />
               <Route path="/register-student" element={<RegisterStudent />} />
               <Route path="/register-staff" element={<RegisterStaff />} />
-              
-              
             </Routes>
           </Layout>
         </BrowserRouter>
