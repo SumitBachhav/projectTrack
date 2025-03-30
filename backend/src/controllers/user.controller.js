@@ -413,6 +413,31 @@ const getDomainsAndSkills = asyncHandler(async (req, res) => {
     )
 })
 
+const getAllUsers = asyncHandler(async (req, res) => {
+    try {
+        // fetch names
+        const users = await User.find({})
+            .select('name -_id') // excluding id
+            .lean();
+
+        if (!users?.length) {
+            return res.status(404).json(
+                new ApiResponse(404, [], "No users found")
+            );
+        }
+
+        // extaacting just names
+        const names = users.map(user => user.name);
+
+        return res.status(200).json(
+            new ApiResponse(200, { names }, "User names fetched successfully")
+        );
+
+    } catch (error) {
+        throw new ApiError(500, `Error fetching users: ${error.message}`);
+    }
+});
+
 
 export {
     registerUser,
@@ -425,5 +450,6 @@ export {
     registerStaff,
     getDomains,
     getDomainsAndSkills,
-    assignerLogin
+    assignerLogin,
+    getAllUsers
 }
