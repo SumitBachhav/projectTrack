@@ -79,6 +79,59 @@ const registerUser = asyncHandler(async (req, res) => {
     )
 
 })
+const assignerLogin = asyncHandler(async (req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        throw new ApiError(400, "Email and password are required");
+    }
+
+    const user = await User.findOne({ email }).select("+password");
+    
+
+    if (!user) {
+        throw new ApiError(404, "Assigner not found");
+    }
+
+    // Check for assigner role // [NEW]
+    if (user.role !== "assigner") {
+        throw new ApiError(403, "Access restricted to assigners only");
+    }
+
+    const isPasswordValid = await user.isPasswordCorrect(password);
+    if (!isPasswordValid) {
+        throw new ApiError(401, "Invalid credentials");
+    }
+
+    const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(user._id);
+
+    const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
+
+    const options = {
+        httpOnly: true,
+        secure: true
+    };
+
+    const data = {
+        name: loggedInUser.name,
+        role: loggedInUser.role,
+        childId: loggedInUser.childId
+    };
+
+    return res
+        .status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .json(
+            new ApiResponse(
+                200,
+                {
+                    user: data, accessToken, refreshToken
+                },
+                "Assigner logged in successfully" // [CHANGED MESSAGE]
+            )
+        );
+});
 
 const loginUser = asyncHandler(async (req, res) => {
     // req body -> data
@@ -95,14 +148,13 @@ const loginUser = asyncHandler(async (req, res) => {
         throw new ApiError(400, "email is required")
     }
 
-
-    const user = await User.findOne({ email })
+    const user = await User.findOne({ email }).select("+password");
 
     if (!user) {
         throw new ApiError(404, "User does not exist")
     }
 
-    const isPasswordValid = await user.isPasswordCorrect(password)
+    const isPasswordValid = await user.isPasswordCorrect(password);
 
     if (!isPasswordValid) {
         throw new ApiError(401, "Invalid user credentials")
@@ -373,4 +425,5 @@ export {
     registerStaff,
     getDomains,
     getDomainsAndSkills,
+    assignerLogin
 }

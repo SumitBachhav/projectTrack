@@ -1,28 +1,54 @@
-import express from "express";
-import { verifyJWT } from "../middlewares/auth.middleware.js";
-import { 
-    getAllTasks, 
-    getTaskById, 
-    assignTask, 
-    acceptTask, 
-    editTask, 
-    deleteTask, 
-    reassignTask, 
-    markComplete, 
-    approveCompletion, 
-    getCompletedTasks  
-} from "../controllers/assigner.controller.js";
+import express from 'express';
+import { verifyJWT } from '../middlewares/auth.middleware.js';
+// import { protect } from '../middlewares/auth.middleware.js';
+import {
+  assignTask,
+  acceptTask,
+  editTask,
+  deleteTask,
+  reassignTask,
+  markComplete,
+  approveCompletion,
+  getAllTasks,
+  getTaskById,
+  getTasksAcceptedByUser,
+  getMyCompletedTasks,
+  getAllCompletedTasks,
+  getAssignedTasks
+} from '../controllers/assigner.controller.js';
 
 const router = express.Router();
+router.use(verifyJWT);
 
-router.post("/assign", verifyJWT, assignTask);
-router.put("/accept/:taskId", verifyJWT, acceptTask);
-router.put("/edit/:taskId", verifyJWT, editTask);
-router.delete("/delete/:taskId", verifyJWT, deleteTask);
-router.put("/reassign/:taskId", verifyJWT, reassignTask);
-router.put("/complete/:taskId", verifyJWT, markComplete);
-router.put("/approve/:taskId", verifyJWT, approveCompletion);
-router.get("/tasks", verifyJWT, getAllTasks);
-router.get("/completed-tasks", verifyJWT, getCompletedTasks); // ✅ Fixed Route
+router.route('/')
+  .get(getAllTasks)         
+  .post(assignTask);        
+  
+router.route('/me')
+  .get(getTasksAcceptedByUser) // task accepted by usr
+  
+router.route('/me/completed') 
+  .get(getMyCompletedTasks)
+  
+  
+router.route('/completed/all') 
+  .get(getAllCompletedTasks)
+
+router.route('/:id')
+  .get(getTaskById)// by task id      
+  .patch(editTask)           
+  .delete(deleteTask);       
+
+// assinged by user
+router.route('/all/assigned')
+  .get(getAssignedTasks)
+
+
+router.post('/:id/accept', acceptTask);         
+router.post('/:id/reassign', reassignTask);     
+router.post('/:id/complete', markComplete);     
+router.post('/:id/approve', approveCompletion); 
+
+
 
 export default router;

@@ -1,7 +1,7 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { Button } from '../ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
+import { Form, FormControl, FormItem, FormLabel, FormMessage } from '../ui/form';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
@@ -25,14 +25,20 @@ interface TaskFormProps {
   users: User[];
 }
 
+// Define the validation schema
 const formSchema = z.object({
   title: z.string().min(3, { message: 'Title must be at least 3 characters' }),
   description: z.string().min(10, { message: 'Description must be at least 10 characters' }),
-  receiverId: z.string().min(1, { message: 'Please select a receiver' }),
+  receiverId: z.string().nonempty({ message: 'Please select a receiver' }),
 });
 
 const TaskForm: React.FC<TaskFormProps> = ({ onSubmit, onCancel, initialData, users }) => {
-  const form = useForm<z.infer<typeof formSchema>>({
+  const {
+    control,
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
       title: '',
@@ -41,58 +47,42 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSubmit, onCancel, initialData, us
     },
   });
 
-  const handleSubmit = (values: z.infer<typeof formSchema>) => {
-    onSubmit(values);
-  };
-
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Title</FormLabel>
-              <FormControl>
-                <Input placeholder="Task title" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <Form>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        {/* Title Field */}
+        <FormItem>
+          <FormLabel>Title</FormLabel>
+          <FormControl>
+            <Input placeholder="Task title" {...register('title')} />
+          </FormControl>
+          <FormMessage>{errors.title?.message}</FormMessage>
+        </FormItem>
 
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea 
-                  placeholder="Describe the task in detail" 
-                  className="min-h-[100px]" 
-                  {...field} 
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {/* Description Field */}
+        <FormItem>
+          <FormLabel>Description</FormLabel>
+          <FormControl>
+            <Textarea placeholder="Describe the task in detail" className="min-h-[100px]" {...register('description')} />
+          </FormControl>
+          <FormMessage>{errors.description?.message}</FormMessage>
+        </FormItem>
 
-        <FormField
-          control={form.control}
-          name="receiverId"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Assign To</FormLabel>
-              <Select 
-                onValueChange={field.onChange} 
-                defaultValue={field.value}
-              >
+        {/* Assign To (ReceiverId) Field */}
+        <FormItem>
+          <FormLabel>Assign To</FormLabel>
+          <Controller
+            name="receiverId"
+            control={control}
+            render={({ field }) => (
+              <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a user" />
+                    {field.value ? (
+                      <SelectValue>{users.find(user => user._id === field.value)?.name || 'Unknown User'}</SelectValue>
+                    ) : (
+                      <span className="text-gray-500">Select a user</span>
+                    )}
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -103,22 +93,21 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSubmit, onCancel, initialData, us
                   ))}
                 </SelectContent>
               </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+            )}
+          />
+          <FormMessage>{errors.receiverId?.message}</FormMessage>
+        </FormItem>
 
+        {/* Buttons */}
         <div className="flex justify-end space-x-2 pt-4">
           <Button type="button" variant="outline" onClick={onCancel}>
             Cancel
           </Button>
-          <Button type="submit">
-            Submit
-          </Button>
+          <Button type="submit">Submit</Button>
         </div>
       </form>
     </Form>
   );
 };
 
-export default TaskForm; 
+export default TaskForm;
