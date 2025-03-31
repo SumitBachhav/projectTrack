@@ -10,9 +10,7 @@ const FormItem = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
-  return (
-    <div ref={ref} className={cn("space-y-2", className)} {...props} />
-  );
+  return <div ref={ref} className={cn("space-y-2", className)} {...props} />;
 });
 FormItem.displayName = "FormItem";
 
@@ -62,41 +60,71 @@ const FormMessage = React.forwardRef<
 });
 FormMessage.displayName = "FormMessage";
 
-const FormField = ({ name, control, render }) => {
-  return render({
-    field: {
-      name,
-      value: control?._formValues?.[name] || "",
-      onChange: (e) => {
-        const value = e?.target?.value !== undefined ? e.target.value : e;
-        if (control?._updateFormState) {
-          control._updateFormState({
-            ...control._formState,
-            dirtyFields: {
-              ...control._formState.dirtyFields,
-              [name]: true,
-            },
-          });
-          control._updateFieldArray({
-            ...control._fields,
-            [name]: value,
-          });
-          control._formValues[name] = value;
-        }
-      },
-      onBlur: () => {
-        if (control?._updateFormState) {
-          control._updateFormState({
-            ...control._formState,
-            touchedFields: {
-              ...control._formState.touchedFields,
-              [name]: true,
-            },
-          });
-        }
-      },
+// The problem is here - the FormField implementation is problematic
+// Replacing with a proper implementation
+const FormField = ({ name, control, render }: any) => {
+  if (!control || typeof control.register !== "function") {
+    console.warn("FormField requires a valid control from useForm()");
+    return null;
+  }
+
+  // Get field state from control
+  const fieldState = control._formState?.errors?.[name]
+    ? { error: control._formState.errors[name] }
+    : {};
+
+  // Use the controller's field API
+  const field = {
+    name,
+    value: control._formValues?.[name] ?? "",
+    onChange: (event: any) => {
+      // Handle both direct values and event objects
+      const value = event && event.target ? event.target.value : event;
+
+      // Update field value
+      if (control._fields) {
+        control._fields[name] = value;
+      }
+
+      if (control._formValues) {
+        control._formValues[name] = value;
+      }
+
+      // Trigger re-render
+      if (typeof control._updateFormState === "function") {
+        control._updateFormState({
+          ...control._formState,
+          isDirty: true,
+          dirtyFields: {
+            ...control._formState.dirtyFields,
+            [name]: true,
+          },
+        });
+      }
     },
-  });
+    onBlur: () => {
+      if (typeof control._updateFormState === "function") {
+        control._updateFormState({
+          ...control._formState,
+          touchedFields: {
+            ...control._formState.touchedFields,
+            [name]: true,
+          },
+        });
+      }
+    },
+    ref: (element: any) => {
+      // Register the field if possible
+      if (element && typeof control.register === "function") {
+        const { ref } = control.register(name);
+        if (typeof ref === "function") {
+          ref(element);
+        }
+      }
+    },
+  };
+
+  return render({ field, fieldState });
 };
 
 export {
@@ -107,4 +135,4 @@ export {
   FormDescription,
   FormMessage,
   FormField,
-}; 
+};
