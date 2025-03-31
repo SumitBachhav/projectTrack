@@ -1,5 +1,5 @@
 import './App.css'
-import { Routes, Route, Navigate, BrowserRouter } from 'react-router-dom';
+import { Routes, Route, Navigate, BrowserRouter, Link } from 'react-router-dom';
 // @ts-ignore
 import CheckScore from './components/student/CheckScore.jsx'
 // @ts-ignore
@@ -64,6 +64,8 @@ import Notifications from './components/Notifications';
 import { useAuth } from './context/AuthContext';
 // @ts-ignore
 import FAQ from './components/FAQ'; // Import FAQ component
+
+import TaskDetail from './components/TaskManagement/TaskDetails.js';
 
 import InviteRequestsPage from './components/student/InviteRequestsPage';
 import TaskList from './components/TaskManagement/TaskList';
@@ -149,6 +151,7 @@ function App() {
               <Route path="/test" element={<TestPage />} />
               <Route path="/register-student" element={<RegisterStudent />} />
               <Route path="/register-staff" element={<RegisterStaff />} />
+              <Route path="/tasks/:taskId" element={<TaskDetail />} />
 
               
             </Routes>
