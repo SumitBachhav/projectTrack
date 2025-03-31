@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Menu, X, LogIn, Bell, HelpCircle, CheckSquare } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState } from "react";
+import { Menu, X, LogIn, Bell, HelpCircle, CheckSquare } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { Link } from "react-router-dom";
+import axios from "axios";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,15 +10,19 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await axios.post('/api/v1/user/logout', {}, { withCredentials: true });
+      const response = await axios.post(
+        "/api/v1/user/logout",
+        {},
+        { withCredentials: true }
+      );
       // Call logout regardless of the API response to ensure local state is cleared
       logout();
-      window.location.href = '/login';
+      window.location.href = "/login";
     } catch (err) {
-      console.error('Logout error:', err);
+      console.error("Logout error:", err);
       // Still logout locally even if the API call fails
       logout();
-      window.location.href = '/login';
+      window.location.href = "/login";
     }
   };
 
@@ -35,8 +39,8 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-2">
-            <Link 
-              to="/faq" 
+            <Link
+              to="/faq"
               className="flex items-center px-3 py-2 text-gray-100 hover:text-white rounded-md hover:bg-blue-700 transition-colors"
             >
               <HelpCircle className="w-4 h-4 mr-2" />
@@ -44,15 +48,15 @@ const Navbar = () => {
             </Link>
             {isAuthenticated && (
               <>
-                <Link 
-                  to="/notifications" 
+                <Link
+                  to="/notifications"
                   className="flex items-center px-3 py-2 text-gray-100 hover:text-white rounded-md hover:bg-blue-700 transition-colors"
                 >
                   <Bell className="w-4 h-4 mr-2" />
                   Notifications
                 </Link>
-                <Link 
-                  to="/tasks" 
+                <Link
+                  to="/task"
                   className="flex items-center px-3 py-2 text-gray-100 hover:text-white rounded-md hover:bg-blue-700 transition-colors"
                 >
                   <CheckSquare className="w-4 h-4 mr-2" />
@@ -84,7 +88,11 @@ const Navbar = () => {
               onClick={() => setIsOpen(!isOpen)}
               className="p-2 rounded-md text-gray-100 hover:text-white hover:bg-blue-700"
             >
-              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {isOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
             </button>
           </div>
         </div>

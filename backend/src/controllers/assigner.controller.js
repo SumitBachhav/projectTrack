@@ -561,3 +561,79 @@ export const getAssignedTasks = async (req, res) => {
     });
   }
 };
+
+// comments
+export const addComment = async (req, res) => {
+  try {
+    const { id: taskId } = req.params;
+    const { content } = req.body;
+    const userId = req.user._id;
+
+    // Validate input
+    if (!content) {
+      return res.status(400).json({ success: false, message: 'Comment content is required' });
+    }
+
+    const task = await Task.findById(taskId);
+    if (!task) {
+      return res.status(404).json({ success: false, message: 'Task not found' });
+    }
+
+    // Add new comment
+    const newComment = {
+      content,
+      commentedBy: userId
+    };
+
+    task.comments.push(newComment);
+    const savedTask = await task.save();
+    
+    // Populate user details in the response
+    const populatedTask = await Task.populate(savedTask, {
+      path: 'comments.commentedBy',
+      select: 'name email'
+    });
+
+    const addedComment = populatedTask.comments[savedTask.comments.length - 1];
+
+    res.status(201).json({
+      success: true,
+      message: 'Comment added successfully',
+      comment: addedComment
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error adding comment',
+      error: error.message
+    });
+  }
+};
+
+
+export const getComments = async (req, res) => {
+  try {
+    const { taskId } = req.params;
+
+    const task = await Task.findById(taskId)
+      .populate('comments.commentedBy', 'name email')
+      .select('comments');
+
+    if (!task) {
+      return res.status(404).json({ success: false, message: 'Task not found' });
+    }
+
+    res.status(200).json({
+      success: true,
+      comments: task.comments
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching comments',
+      error: error.message
+    });
+  }
+};
