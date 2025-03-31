@@ -1,26 +1,89 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { FaBars } from "react-icons/fa";
 import { AnimatePresence, motion } from "framer-motion";
 
-const TaskHomePage: React.FC = () => {
-  const [showMenu, setShowMenu] = useState(false);
-  const [activeSection, setActiveSection] = useState<string | null>(null);
+interface User {
+  id: string;
+  name: string;
+}
 
-  // Dummy Data
-  const tasks = [
+interface Task {
+  id: number;
+  title: string;
+  deadline: string;
+}
+
+interface ApiResponse {
+  statusCode: number;
+  data: User[] | null;
+  message?: string;
+}
+
+const TaskHomePage: React.FC = () => {
+  const [showMenu, setShowMenu] = useState<boolean>(false);
+  const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const tasks: Task[] = [
     { id: 1, title: "Design Landing Page", deadline: "March 31, 2025" },
     { id: 2, title: "API Integration", deadline: "April 2, 2025" },
     { id: 3, title: "Fix UI Bugs", deadline: "April 5, 2025" },
   ];
 
-  const users = [
-    { id: 1, name: "John Doe" },
-    { id: 2, name: "Alice Johnson" },
-    { id: 3, name: "Michael Smith" },
-  ];
+  useEffect(() => {
+    if (activeSection === "users") {
+      fetchUsers();
+    }
+  }, [activeSection]);
+
+  const fetchUsers = async (): Promise<void> => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const response = await axios.get<ApiResponse>(
+        "http://localhost:4000/api/v1/assigner/task/me",
+        { withCredentials: true }
+      );
+
+      console.log("API Response:", response.data);
+      
+      if (!response.data) {
+        throw new Error("Empty response from server");
+      }
+
+      if (response.data.statusCode === 200 && Array.isArray(response.data.data)) {
+        setUsers(response.data.data);
+      } else if (response.data.statusCode === 404) {
+        setUsers([]);
+      } else {
+        throw new Error(
+          response.data.message || 
+          `Unexpected response format: ${JSON.stringify(response.data)}`
+        );
+      }
+    } catch (err) {
+      console.error('Error details:', err);
+      let errorMessage = 'Failed to load users';
+      
+      if (axios.isAxiosError(err)) {
+        errorMessage = err.response?.data?.message || err.message;
+        console.error("HTTP Status:", err.response?.status);
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center p-20">
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4 md:p-20">
       {/* Header */}
       <div className="w-full max-w-6xl bg-gray-800 text-white text-center py-4 rounded-lg text-2xl font-bold shadow-lg">
         Task Home Page
@@ -37,13 +100,13 @@ const TaskHomePage: React.FC = () => {
           This Milestone ◀
         </button>
         <button
-          className="bg-gray-600 text-white px-5 py-2 rounded-lg shadow-lg hover:bg-gray-700 transition"
+          className={`${activeSection === "users" ? "bg-blue-600" : "bg-gray-600"} text-white px-5 py-2 rounded-lg shadow-lg hover:bg-blue-700 transition`}
           onClick={() => setActiveSection("users")}
         >
           Users Task
         </button>
         <button
-          className="bg-gray-600 text-white px-5 py-2 rounded-lg shadow-lg hover:bg-gray-700 transition"
+          className={`${activeSection === "tasks" ? "bg-blue-600" : "bg-gray-600"} text-white px-5 py-2 rounded-lg shadow-lg hover:bg-blue-700 transition`}
           onClick={() => setActiveSection("tasks")}
         >
           All Tasks
@@ -64,7 +127,7 @@ const TaskHomePage: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
-                className="absolute right-0 mt-2 w-48 bg-gray-200 rounded-lg shadow-lg p-3"
+                className="absolute right-0 mt-2 w-48 bg-gray-200 rounded-lg shadow-lg p-3 z-10"
               >
                 <ul className="space-y-2 text-gray-700">
                   <li className="hover:bg-gray-300 p-2 rounded-md cursor-pointer transition">Task Home Page</li>
@@ -124,16 +187,43 @@ const TaskHomePage: React.FC = () => {
               transition={{ duration: 0.5 }}
             >
               <h2 className="text-lg font-bold text-gray-800">Users List</h2>
-              <ul className="mt-4 space-y-3">
-                {users.map((user) => (
-                  <li
-                    key={user.id}
-                    className="p-3 bg-yellow-200 rounded-lg shadow-md hover:bg-yellow-300 transition cursor-pointer"
+              
+              {loading && (
+                <div className="text-center my-8">
+                  <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
+                  <p className="mt-2 text-gray-600">Loading users...</p>
+                </div>
+              )}
+              
+              {error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded my-4">
+                  <p>Error: {error}</p>
+                  <button 
+                    onClick={fetchUsers}
+                    className="mt-2 bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded"
                   >
-                    {user.name}
-                  </li>
-                ))}
-              </ul>
+                    Retry
+                  </button>
+                </div>
+              )}
+              
+              {!loading && !error && (
+                <ul className="mt-4 space-y-3">
+                  {users.length > 0 ? (
+                    users.map((user) => (
+                      <li
+                        key={user.id}
+                        className="p-3 bg-yellow-200 rounded-lg shadow-md hover:bg-yellow-300 transition cursor-pointer flex justify-between items-center"
+                      >
+                        <span>{user.name}</span>
+                        <span className="text-xs text-gray-500">ID: {user.id.substring(0, 8)}...</span>
+                      </li>
+                    ))
+                  ) : (
+                    <p className="text-gray-500">No users found.</p>
+                  )}
+                </ul>
+              )}
             </motion.div>
           )}
 

@@ -5,67 +5,76 @@ const taskSchema = new Schema(
     title: {
       type: String,
       required: [true, "Title is required"],
-      trim: true
+      trim: true,
     },
     description: {
       type: String,
       required: [true, "Description is required"],
-      trim: true
+      trim: true,
     },
     assigner: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true
+      required: true,
     },
     receiver: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true
+      required: true,
     },
     status: {
       type: String,
-      enum: ["pending", "inProgress", "completed", "approved", "rejected"],
-      default: "pending"
+      enum: ["pending", "inProgress", "completed", "approved"],
+      default: "pending",
     },
-    remarks: {
+    deadline: {
+      type: Date,
+      required: [true, "Deadline is required"],
+    },
+    completedAt: {
+      type: Date,
+    },
+    
+    remark: {
       type: String,
-      trim: true
+      trim: true,
     },
     previousAssignments: [
       {
         user: {
           type: Schema.Types.ObjectId,
-          ref: "User"
+          ref: "User",
         },
         reassignedAt: {
           type: Date,
-          default: Date.now
-        }
-      }
+          default: Date.now,
+        },
+      },
     ],
-    dueDate: {
-      type: Date,
-      required: [true, "Due date is required"]
-    },
     comments: [
       {
-        user: {
+        content: {
+          type: String,
+          required: [true, "Comment  required"],
+          trim: true,
+        },
+        commentedBy: {
           type: Schema.Types.ObjectId,
           ref: "User",
-          required: true
-        },
-        message: {
-          type: String,
-          required: true
+          required: true,
         },
         createdAt: {
           type: Date,
-          default: Date.now
-        }
-      }
-    ]
+          default: Date.now,
+        },
+        updatedAt: {
+          type: Date,
+        },
+      },
+    ],
   },
-  { timestamps: true }
+
+  { timestamps: true }  
 );
 
 export const Task = mongoose.model("Task", taskSchema);

@@ -14,7 +14,9 @@ import {
   getTasksAcceptedByUser,
   getMyCompletedTasks,
   getAllCompletedTasks,
-  getAssignedTasks
+  getAssignedTasks,
+  getComments,
+  addComment
 } from '../controllers/assigner.controller.js';
 
 const router = express.Router();
@@ -26,7 +28,7 @@ router.route('/')
   
 router.route('/me')
   .get(getTasksAcceptedByUser) // task accepted by usr
-  
+
 router.route('/me/completed') 
   .get(getMyCompletedTasks)
   
@@ -34,6 +36,10 @@ router.route('/me/completed')
 router.route('/completed/all') 
   .get(getAllCompletedTasks)
 
+router.route('/:id/comments')  
+  .get(getComments)
+  .post(addComment)
+ 
 router.route('/:id')
   .get(getTaskById)// by task id      
   .patch(editTask)           

@@ -1,5 +1,12 @@
+import React from "react";
 import "./App.css";
-import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  Navigate,
+  BrowserRouter,
+  useNavigate,
+} from "react-router-dom";
 // @ts-ignore
 import CheckScore from "./components/student/CheckScore.jsx";
 // @ts-ignore
@@ -64,18 +71,16 @@ import Notifications from "./components/Notifications";
 import { useAuth } from "./context/AuthContext";
 // @ts-ignore
 import FAQ from "./components/FAQ"; // Import FAQ component
-
 import InviteRequestsPage from "./components/student/InviteRequestsPage";
 import TaskList from "./components/TaskManagement/TaskList";
 import { ToastProvider } from "./components/ui/use-toast";
-import TaskHomePage from "./components/TaskManagement/TaskHomePage";
-import CompletedTasks from "./components/TaskManagement/CompletedTasks";
-import AssignTask from "./components/TaskManagement/AssignTask";
-import TaskComment from "./components/TaskManagement/TaskComment";
-import TaskRequest from "./components/TaskManagement/TaskRequest.js";
-
 // @ts-ignore
-const ProtectedRoute = ({ children }) => {
+import FormTask from "./components/TaskManagement/FormTask.jsx";
+import TaskHomePage from "./components/TaskManagement/TaskHomePage.js";
+
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const { isAuthenticated } = useAuth();
 
   if (!isAuthenticated) {
@@ -87,140 +92,132 @@ const ProtectedRoute = ({ children }) => {
 
 function App() {
   return (
-    <AuthProvider>
-      <ToastProvider>
-        <BrowserRouter>
-          <Navbar />
-          <Layout>
-            <Routes>
-              {/* common */}
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-              <Route
-                path="/notifications"
-                element={
-                  <ProtectedRoute>
-                    <Notifications />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/faq" element={<FAQ />} /> {/* Add FAQ route */}
-              <Route
-                path="/tasks"
-                element={
-                  <ProtectedRoute>
-                    <TaskList />
-                  </ProtectedRoute>
-                }
-              />
-              {/* //TaskHomePage */}
-              <Route
-                path="/task-home"
-                element={
-                  <ProtectedRoute>
-                    <TaskHomePage />
-                  </ProtectedRoute>
-                }
-              />
-              {/* Completed Tasks  */}
-              <Route path="/completed-tasks" element={<CompletedTasks />} />
-              {/* Completed Tasks  */}
-              <Route path="/assign-tasks" element={<AssignTask />} />
-              
-              {/* task comment section */}
-              <Route
-                path="/task-comments"
-                element={
-                  <ProtectedRoute>
-                    <TaskComment />
-                  </ProtectedRoute>
-                }
-              />
+    <>
+      <AuthProvider>
+        <ToastProvider>
+          <BrowserRouter>
+            <Navbar />
+            <Layout>
+              <Routes>
+                {/* common */}
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+                <Route
+                  path="/notifications"
+                  element={
+                    <ProtectedRoute>
+                      <Notifications />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="/faq" element={<FAQ />} /> {/* Add FAQ route */}
+                <Route
+                  path="/tasks"
+                  element={
+                    <ProtectedRoute>
+                      <TaskList />
+                    </ProtectedRoute>
+                  }
+                />
 
-              {/* task comment section */}
-              <Route
-                path="/task-request"
-                element={
-                  <ProtectedRoute>
-                    <TaskRequest />
-                  </ProtectedRoute>
-                }
-              />
+                <Route
+                  path="/task-home"
+                  element={
+                    <ProtectedRoute>
+                      <TaskHomePage />
+                    </ProtectedRoute>
+                  }
+                />
 
-              {/* coordinator */}
-              <Route
-                path="/coordinator/dashboard"
-                element={<CoordinatorDashboard />}
-              />
-              <Route
-                path="/coordinator/uploadAbstracts"
-                element={<UploadAbstracts />}
-              />
-              {/* staff */}
-              <Route path="/staff/submitSkills" element={<StaffForm />} />
-              <Route path="/staff/topicReview" element={<TopicReview />} />
-              <Route
-                path="/staff/topicReviewOverview"
-                element={<TopicReviewOverview />}
-              />
-              <Route path="/staff/dashboard" element={<StaffDashboard />} />
-              {/* student */}
-              <Route path="/student/dashboard" element={<StudentDashboard />} />
-              <Route path="/student/checkabstract" element={<CheckScore />} />
-              <Route
-                path="/student/abstractSubmissionComplete"
-                element={<AbstractComplete />}
-              />
-              <Route
-                path="/student/checkIfApproved"
-                element={<CheckIfApproved />}
-              />
-              <Route
-                path="/student/projectSpecification"
-                element={<ProjectSpecification />}
-              />
-              <Route
-                path="/student/inviteStudents"
-                element={<InviteStuents />}
-              />
-              <Route
-                path="/student/availableProjects"
-                element={<AvailableProjects />}
-              />
-              <Route
-                path="/student/availableGroups"
-                element={<AvailableGroups />}
-              />
-              <Route
-                path="/student/submittedAbstracts"
-                element={<SubmittedAbstractPage />}
-              />
-              <Route path="/student/groupMembers" element={<GroupMembers />} />
-              <Route path="/student/submitSkills" element={<SubmitSkill />} />
-              <Route
-                path="/student/inviteRequests"
-                element={<InviteRequestsPage />}
-              />
-              {/* not sure */}
-              <Route path="/register" element={<Register />} />
-              <Route
-                path="/register/coordinator"
-                element={<CoordinatorForm />}
-              />
-              <Route
-                path="/register/successful"
-                element={<RegisterComplete />}
-              />
-              <Route path="/student/insertdata" element={<InsertData />} />
-              <Route path="/test" element={<TestPage />} />
-              <Route path="/register-student" element={<RegisterStudent />} />
-              <Route path="/register-staff" element={<RegisterStaff />} />
-            </Routes>
-          </Layout>
-        </BrowserRouter>
-      </ToastProvider>
-    </AuthProvider>
+                {/* coordinator */}
+                <Route
+                  path="/coordinator/dashboard"
+                  element={<CoordinatorDashboard />}
+                />
+                <Route
+                  path="/coordinator/uploadAbstracts"
+                  element={<UploadAbstracts />}
+                />
+                {/* staff */}
+                <Route path="/staff/submitSkills" element={<StaffForm />} />
+                <Route path="/staff/topicReview" element={<TopicReview />} />
+                <Route
+                  path="/staff/topicReviewOverview"
+                  element={<TopicReviewOverview />}
+                />
+                <Route path="/staff/dashboard" element={<StaffDashboard />} />
+                {/* student */}
+                <Route
+                  path="/student/dashboard"
+                  element={<StudentDashboard />}
+                />
+                <Route path="/student/checkabstract" element={<CheckScore />} />
+                <Route
+                  path="/student/abstractSubmissionComplete"
+                  element={<AbstractComplete />}
+                />
+                <Route
+                  path="/student/checkIfApproved"
+                  element={<CheckIfApproved />}
+                />
+                <Route
+                  path="/student/projectSpecification"
+                  element={<ProjectSpecification />}
+                />
+                <Route
+                  path="/student/inviteStudents"
+                  element={<InviteStuents />}
+                />
+                <Route
+                  path="/student/availableProjects"
+                  element={<AvailableProjects />}
+                />
+                <Route
+                  path="/student/availableGroups"
+                  element={<AvailableGroups />}
+                />
+                <Route
+                  path="/student/submittedAbstracts"
+                  element={<SubmittedAbstractPage />}
+                />
+                <Route
+                  path="/student/groupMembers"
+                  element={<GroupMembers />}
+                />
+                <Route path="/student/submitSkills" element={<SubmitSkill />} />
+                <Route
+                  path="/student/inviteRequests"
+                  element={<InviteRequestsPage />}
+                />
+                {/* not sure */}
+                <Route path="/register" element={<Register />} />
+                <Route
+                  path="/register/coordinator"
+                  element={<CoordinatorForm />}
+                />
+                <Route
+                  path="/register/successful"
+                  element={<RegisterComplete />}
+                />
+                <Route path="/student/insertdata" element={<InsertData />} />
+                <Route path="/test" element={<TestPage />} />
+                <Route path="/register-student" element={<RegisterStudent />} />
+                <Route path="/register-staff" element={<RegisterStaff />} />
+                <Route
+                  path="/task"
+                  element={
+                    <ProtectedRoute>
+                      <FormTask />
+                    </ProtectedRoute>
+                  }
+                />
+              </Routes>
+            </Layout>
+          </BrowserRouter>
+        </ToastProvider>
+      </AuthProvider>
+    </>
   );
 }
 
