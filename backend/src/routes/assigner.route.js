@@ -11,12 +11,49 @@ import {
   approveCompletion,
   getAllTasks,
   getTaskById,
+  getTasksAcceptedByUser,
+  getMyCompletedTasks,
+  getAllCompletedTasks,
+  getAssignedTasks,
+  getComments,
+  addComment
 } from '../controllers/assigner.controller.js';
 
 const router = express.Router();
+router.use(verifyJWT);
+
+router.route('/')
+  .get(getAllTasks)         
+  .post(assignTask);        
+  
+router.route('/me')
+  .get(getTasksAcceptedByUser) // task accepted by usr
+
+router.route('/me/completed') 
+  .get(getMyCompletedTasks)
+  
+  
+router.route('/completed/all') 
+  .get(getAllCompletedTasks)
+
+router.route('/:id/comments')  
+  .get(getComments)
+  .post(addComment)
+ 
+router.route('/:id')
+  .get(getTaskById)// by task id      
+  .patch(editTask)           
+  .delete(deleteTask);       
+
+// assinged by user
+router.route('/all/assigned')
+  .get(getAssignedTasks)
 
 
-
+router.post('/:id/accept', acceptTask);         
+router.post('/:id/reassign', reassignTask);     
+router.post('/:id/complete', markComplete);     
+router.post('/:id/approve', approveCompletion); 
 
 
 
