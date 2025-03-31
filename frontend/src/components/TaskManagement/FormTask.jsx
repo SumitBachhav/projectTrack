@@ -17,12 +17,24 @@ const TaskCreateForm = () => {
   const [users, setUsers] = useState([]);
   const [selectedReceiver, setSelectedReceiver] = useState("");
 
-  // Fetch users on component mount
+  // Fetch users on component mount with credentials
   useEffect(() => {
     axios
-      .get("http://localhost:4000/api/v1/users") // Adjust endpoint
-      .then((response) => setUsers(response.data))
-      .catch((error) => console.error("Error fetching users:", error));
+      .get("http://localhost:4000/api/v1/user", { withCredentials: true })
+      .then((response) => {
+        if (response.data?.data?.names) {
+          setUsers(response.data.data.names);
+        } else {
+          console.error("Invalid response format:", response.data);
+        }
+      })
+      .catch((error) => {
+        console.error(
+          "Error fetching users:",
+          error.response?.status,
+          error.response?.data
+        );
+      });
   }, []);
 
   const onSubmit = async (data) => {
@@ -33,7 +45,7 @@ const TaskCreateForm = () => {
 
     const formattedData = {
       ...data,
-      receiverId: selectedReceiver, // Send selected user's _id
+      receiverId: selectedReceiver, // Send selected user's id
       deadline: selectedDate?.toISOString(),
     };
 
@@ -43,7 +55,7 @@ const TaskCreateForm = () => {
         formattedData,
         {
           headers: { "Content-Type": "application/json" },
-          withCredentials: true,
+          withCredentials: true, // Ensure credentials are included
         }
       );
 
@@ -105,9 +117,9 @@ const TaskCreateForm = () => {
             onChange={(e) => setSelectedReceiver(e.target.value)}
             className="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           >
-            <option value="">Select a student</option>
+            <option value="">Select a user</option>
             {users.map((user) => (
-              <option key={user._id} value={user._id}>
+              <option key={user.id} value={user.id}>
                 {user.name}
               </option>
             ))}

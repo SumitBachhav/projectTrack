@@ -1,47 +1,48 @@
 import { Router } from "express";
-import { 
-    loginUser, 
-    logoutUser, 
-    registerUser, 
-    registerStudent,
-    // refreshAccessToken, 
-    changeCurrentPassword, 
-    check,
-    registerStaff,
-    getDomains,
-    getDomainsAndSkills
-
+import {
+  loginUser,
+  logoutUser,
+  registerUser,
+  registerStudent,
+  // refreshAccessToken,
+  changeCurrentPassword,
+  check,
+  registerStaff,
+  getDomains,
+  getDomainsAndSkills,
+  getAllUsers,
 } from "../controllers/user.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { refreshTokenMiddleware } from "../middlewares/refreshToken.middleware.js";
 
-const router = Router()
+const router = Router();
+router.route("/").get(getAllUsers);
 
-router.route("/register").post(
-    registerUser)
+router.route("/register").post(registerUser);
 
-router.route("/login").post(loginUser)
+router.route("/login").post(loginUser);
 
-router.route("/check").get(verifyJWT, refreshTokenMiddleware, check)
+router.route("/check").get(verifyJWT, refreshTokenMiddleware, check);
 
-router.route("/logout").get(verifyJWT, refreshTokenMiddleware, 
-    logoutUser)
+router.route("/logout").get(verifyJWT, refreshTokenMiddleware, logoutUser);
 
 // router.route("/refresh-token").post(refreshAccessToken)
-router.route("/change-password").post(verifyJWT, refreshTokenMiddleware, 
-    changeCurrentPassword)
+router
+  .route("/change-password")
+  .post(verifyJWT, refreshTokenMiddleware, changeCurrentPassword);
 
-router.route("/register-student").post(verifyJWT, refreshTokenMiddleware, 
-    registerStudent)
+router
+  .route("/register-student")
+  .post(verifyJWT, refreshTokenMiddleware, registerStudent);
 
-router.route("/register-staff").post(verifyJWT, refreshTokenMiddleware, 
-    registerStaff)
-    
-router.route("/getDomains").get(verifyJWT, refreshTokenMiddleware, 
-    getDomains)
+router
+  .route("/register-staff")
+  .post(verifyJWT, refreshTokenMiddleware, registerStaff);
 
-router.route("/getDomainsAndSkills").get(verifyJWT, refreshTokenMiddleware, 
-    getDomainsAndSkills)
+router.route("/getDomains").get(verifyJWT, refreshTokenMiddleware, getDomains);
 
+router
+  .route("/getDomainsAndSkills")
+  .get(verifyJWT, refreshTokenMiddleware, getDomainsAndSkills);
 
-export default router
+export default router;
