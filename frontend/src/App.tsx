@@ -77,6 +77,9 @@ import { ToastProvider } from "./components/ui/use-toast";
 // @ts-ignore
 import FormTask from "./components/TaskManagement/FormTask.jsx";
 import TaskHomePage from "./components/TaskManagement/TaskHomePage.js";
+import AssignTask from "./components/TaskManagement/AssignTask.js";
+import CompletedTasks from "./components/TaskManagement/CompletedTasks.js";
+import TaskDetails from "./components/TaskManagement/TaskDetails.js";
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -126,6 +129,26 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <TaskHomePage />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/assign-task"
+                  element={
+                    <ProtectedRoute>
+                      <AssignTask />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route path="/task-details/:taskId" element={<TaskDetails />} />
+
+               <Route
+                  path="/completed-tasks"
+                  element={
+                    <ProtectedRoute>
+                      <CompletedTasks />
                     </ProtectedRoute>
                   }
                 />

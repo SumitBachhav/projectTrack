@@ -48,7 +48,7 @@ export const assignTask = async (req, res) => {
         title: task.title,
         description: task.description,
         status: task.status,
-        deadline: task.deadline,
+        deadline: task.deadline ? new Date(task.deadline).toISOString().slice(0, 10) : null,
         assigner: assignerId,
         receiver: receiverId,
         remark: task.remark
@@ -316,7 +316,7 @@ export const getAllTasks = async (req, res) => {
       title: task.title,
       description: task.description,
       status: task.status,
-      deadline: task.deadline,
+      deadline: task.deadline ? new Date(task.deadline).toISOString().slice(0, 10) : null,
       assigner: {
         id: task.assigner._id,
         name: task.assigner.name,
