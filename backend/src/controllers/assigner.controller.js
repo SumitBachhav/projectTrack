@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import { User } from "../models/user.model.js";
 import { Task } from "../models/assigner.model.js";
+import { ApiError } from '../utils/ApiError.js';
+import { ApiResponse } from "../utils/ApiResponse.js";
 
 
 export const assignTask = async (req, res) => {
@@ -315,7 +317,7 @@ export const getAllTasks = async (req, res) => {
       title: task.title,
       description: task.description,
       status: task.status,
-      deadline: task.deadline,
+      deadline: task.deadline ? new Date(task.deadline).toISOString().slice(0, 10) : null,
       assigner: {
         id: task.assigner._id,
         name: task.assigner.name,
@@ -437,7 +439,7 @@ export const getTasksAcceptedByUser = async (req, res) => {
       title: task.title,
       description: task.description,
       status: task.status,
-      deadline: task.deadline,
+      deadline: task.deadline ? new Date(task.deadline).toISOString().slice(0, 10) : null, // Format deadline
       assigner: {
         id: task.assigner._id,
         name: task.assigner.name,
@@ -614,26 +616,21 @@ export const addComment = async (req, res) => {
 
 export const getComments = async (req, res) => {
   try {
-    const { taskId } = req.params;
-
-    const task = await Task.findById(taskId)
-      .populate('comments.commentedBy', 'name email')
-      .select('comments');
+    const task = await Task.findById(req.params.id)
+      .select('comments')
+      .populate('comments.commentedBy', 'name email');
 
     if (!task) {
-      return res.status(404).json({ success: false, message: 'Task not found' });
+      return res.status(404).json(
+        new ApiError(404, null, "Task not found")
+      );
     }
 
-    res.status(200).json({
-      success: true,
-      comments: task.comments
-    });
-
+    res.status(200).json(
+      new ApiResponse(200, { comments: task.comments }, "Comments retrieved")
+    );
+    
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Error fetching comments',
-      error: error.message
-    });
+    throw new ApiError(500, `Error fetching comments: ${error.message}`);
   }
 };

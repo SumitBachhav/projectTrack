@@ -1,3 +1,4 @@
+
 import React from "react";
 import "./App.css";
 import {
@@ -69,11 +70,6 @@ import Navbar from "./components/Navbar";
 import Notifications from "./components/Notifications";
 // @ts-ignore
 import { useAuth } from "./context/AuthContext";
-// @ts-ignore
-import FAQ from "./components/FAQ"; // Import FAQ component
-import InviteRequestsPage from "./components/student/InviteRequestsPage";
-import TaskList from "./components/TaskManagement/TaskList";
-import { ToastProvider } from "./components/ui/use-toast";
 // @ts-ignore
 import FormTask from "./components/TaskManagement/FormTask.jsx";
 
