@@ -1,4 +1,5 @@
 import { Router } from "express";
+
 import { 
     loginUser, 
     logoutUser, 
@@ -16,7 +17,9 @@ import {
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { refreshTokenMiddleware } from "../middlewares/refreshToken.middleware.js";
 
-const router = Router()
+const router = Router();
+router.route("/").get(getAllUsers);
+
 
 router.route('/').get(
     getAllUsers)
@@ -24,28 +27,30 @@ router.route('/').get(
 router.route("/register").post(
     registerUser)
 
-router.route("/login").post(loginUser)
 
-router.route("/check").get(verifyJWT, refreshTokenMiddleware, check)
+router.route("/login").post(loginUser);
 
-router.route("/logout").get(verifyJWT, refreshTokenMiddleware, 
-    logoutUser)
+router.route("/check").get(verifyJWT, refreshTokenMiddleware, check);
+
+router.route("/logout").get(verifyJWT, refreshTokenMiddleware, logoutUser);
 
 // router.route("/refresh-token").post(refreshAccessToken)
-router.route("/change-password").post(verifyJWT, refreshTokenMiddleware, 
-    changeCurrentPassword)
+router
+  .route("/change-password")
+  .post(verifyJWT, refreshTokenMiddleware, changeCurrentPassword);
 
-router.route("/register-student").post(verifyJWT, refreshTokenMiddleware, 
-    registerStudent)
+router
+  .route("/register-student")
+  .post(verifyJWT, refreshTokenMiddleware, registerStudent);
 
-router.route("/register-staff").post(verifyJWT, refreshTokenMiddleware, 
-    registerStaff)
-    
-router.route("/getDomains").get(verifyJWT, refreshTokenMiddleware, 
-    getDomains)
+router
+  .route("/register-staff")
+  .post(verifyJWT, refreshTokenMiddleware, registerStaff);
 
-router.route("/getDomainsAndSkills").get(verifyJWT, refreshTokenMiddleware, 
-    getDomainsAndSkills)
+router.route("/getDomains").get(verifyJWT, refreshTokenMiddleware, getDomains);
 
+router
+  .route("/getDomainsAndSkills")
+  .get(verifyJWT, refreshTokenMiddleware, getDomainsAndSkills);
 
-export default router
+export default router;
