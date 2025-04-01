@@ -429,7 +429,6 @@ const getDomainsAndSkills = asyncHandler(async (req, res) => {
     )
   );
 });
-
 const getAllUsers = asyncHandler(async (req, res) => {
   try {
     // Fetch names and IDs

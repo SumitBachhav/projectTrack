@@ -1,47 +1,59 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+
+const taskId = "67eba9823da4ef291c30b82a"; // Example task ID (Make it dynamic as needed)
 
 function Comments() {
-  // Initial state with sample comments
+  const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState("");
-  const [comments, setComments] = useState([
-    {
-      id: 1,
-      author: "Martha",
-      text: "This this is a test comment to check the the length and the max length of that comment section ",
-      time: "10:15 AM",
-    },
-    {
-      id: 2,
-      author: "Johny",
-      text: "Johny's insightful comment here.",
-      time: "10:20 AM",
-    },
-    {
-      id: 3,
-      author: "Mary Kate",
-      text: "Mary Kate’s note is here.",
-      time: "10:25 AM",
-    },
-  ]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  // Add a new comment with current time
-  const handleAddComment = (e) => {
+  const API_URL = `http://localhost:4000/api/v1/assigner/task/${taskId}/comments`;
+
+  // Fetch comments from API
+  useEffect(() => {
+    const fetchComments = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(API_URL);
+        if (response.data.success) {
+          setComments(response.data.data.comments);
+        } else {
+          setError("Failed to load comments");
+        }
+      } catch (err) {
+        setError("Error fetching comments");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchComments();
+  }, []);
+
+  // Add a new comment
+  const handleAddComment = async (e) => {
     e.preventDefault();
     if (!commentText.trim()) return;
 
-    const currentTime = new Date().toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-    const newComment = {
-      id: Date.now(),
-      author: "New User", // you can modify this as needed
-      text: commentText,
-      time: currentTime,
-    };
+    try {
+      const response = await axios.post(API_URL, { content: commentText });
 
-    setComments([...comments, newComment]);
-    setCommentText("");
+      if (response.data.success) {
+        const newComment = {
+          _id: Date.now(), // Temporary ID
+          content: commentText,
+          commentedBy: { name: "You" }, // Assuming current user
+          createdAt: new Date().toISOString(),
+        };
+
+        setComments([...comments, newComment]);
+        setCommentText("");
+      }
+    } catch (err) {
+      setError("Error adding comment");
+    }
   };
 
   return (
@@ -71,18 +83,29 @@ function Comments() {
         </div>
       </form>
 
+      {/* Loading and error states */}
+      {loading && <p className="text-gray-500">Loading comments...</p>}
+      {error && <p className="text-red-500">{error}</p>}
+
       {/* Comments list */}
       <div className="space-y-4">
-        {comments.map(({ id, author, text, time }) => (
+        {comments.map(({ _id, content, commentedBy, createdAt }) => (
           <div
-            key={id}
+            key={_id}
             className="bg-white p-4 rounded shadow-sm border border-gray-200"
           >
             <div className="flex justify-between items-center mb-2">
-              <span className="font-semibold text-gray-800">{author}</span>
-              <span className="text-sm text-gray-500">{time}</span>
+              <span className="font-semibold text-gray-800">
+                {commentedBy?.name || "Unknown"}
+              </span>
+              <span className="text-sm text-gray-500">
+                {new Date(createdAt).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </span>
             </div>
-            <p className="text-gray-700">{text}</p>
+            <p className="text-gray-700">{content}</p>
           </div>
         ))}
       </div>
