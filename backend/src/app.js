@@ -1,11 +1,12 @@
-import express from "express"
-import cors from "cors"
-import cookieParser from "cookie-parser"
+import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
 
-const app = express()
+const app = express();
 
+// Middleware
 app.use(cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: process.env.CORS_ORIGIN || "http://localhost:3000", // Default to localhost if env variable is missing
     credentials: true
 }));
 
@@ -18,7 +19,7 @@ app.use(express.static("public"))
 
 //routes import
 import userRouter from './routes/user.route.js'
-import studentRouter from './routes/student.ruote.js'
+import studentRouter from './routes/student.route.js'
 import staffRouter from './routes/staff.route.js'
 import coordinatorRouter from './routes/coordinator.route.js'
 import assignerRouter from './routes/assigner.route.js';

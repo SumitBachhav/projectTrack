@@ -78,6 +78,10 @@ import { ToastProvider } from "./components/ui/use-toast";
 import FormTask from "./components/TaskManagement/FormTask.jsx";
 // @ts-ignore
 import Comments from "./components/TaskManagement/Comments.jsx";
+import TaskHomePage from "./components/TaskManagement/TaskHomePage.js";
+import AssignTask from "./components/TaskManagement/AssignTask.js";
+import TaskDetails from "./components/TaskManagement/TaskDetails.js";
+import CompletedTasks from "./components/TaskManagement/CompletedTasks.js";
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -118,6 +122,31 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <TaskList />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/task-home"
+                  element={
+                    <ProtectedRoute>
+                      <TaskHomePage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/assign-task"
+                  element={
+                    <ProtectedRoute>
+                      <AssignTask />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="/task-details/:taskId" element={<TaskDetails />} />
+                <Route
+                  path="/completed-tasks"
+                  element={
+                    <ProtectedRoute>
+                      <CompletedTasks />
                     </ProtectedRoute>
                   }
                 />
@@ -204,6 +233,7 @@ function App() {
                   }
                 />
                 <Route path="/comments" element={<Comments />} />
+                <Route path="/task/:taskId" element={<TaskDetails />} />
               </Routes>
             </Layout>
           </BrowserRouter>
