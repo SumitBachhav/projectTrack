@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { FaBars } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-
 interface Task {
   id: string;
   title: string;
@@ -23,7 +22,7 @@ const AssignTask: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await axios.get(
         "http://localhost:4000/api/v1/assigner/task/all/assigned",
         {
@@ -44,22 +43,21 @@ const AssignTask: React.FC = () => {
       // Transform API response to match our Task interface
       const validatedTasks = response.data.map((apiTask: any) => {
         // Convert status from "inProgress" to "in-progress"
-        const status = apiTask.Status 
-          ? apiTask.Status.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()
-          : 'pending';
+        const status = apiTask.Status
+          ? apiTask.Status.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase()
+          : "pending";
 
         return {
-          id: apiTask.TaskId || 'unknown-id',
-          title: apiTask.Title || 'Untitled Task',
-          assignedTo: apiTask.To || 'Unassigned',
+          id: apiTask.TaskId || "unknown-id",
+          title: apiTask.Title || "Untitled Task",
+          assignedTo: apiTask.To || "Unassigned",
           deadline: apiTask.Deadline || new Date().toISOString(),
-          status: status as Task['status']
+          status: status as Task["status"],
         };
       });
 
       setTasks(validatedTasks);
       setError(null);
-
     } catch (err) {
       let errorMessage = "Failed to load tasks";
       if (axios.isAxiosError(err)) {
@@ -67,7 +65,7 @@ const AssignTask: React.FC = () => {
         console.error("Axios error details:", {
           status: err.response?.status,
           data: err.response?.data,
-          url: err.config.url
+          url: err.config.url,
         });
       } else if (err instanceof Error) {
         errorMessage = err.message;
@@ -82,6 +80,7 @@ const AssignTask: React.FC = () => {
   useEffect(() => {
     fetchAssignedTasks();
   }, []);
+  const navigate = useNavigate();
 
   // The rest of the component remains the same as in previous version
   // Only the fetchAssignedTasks function has been modified
@@ -107,7 +106,7 @@ const AssignTask: React.FC = () => {
           >
             <FaBars size={20} />
           </button>
-          
+
           <AnimatePresence>
             {showMenu && (
               <motion.div
@@ -119,8 +118,8 @@ const AssignTask: React.FC = () => {
               >
                 <ul className="space-y-2 text-gray-700">
                   <li className="hover:bg-gray-300 rounded-md transition">
-                    <Link 
-                      to="/task-home" 
+                    <Link
+                      to="/task-home"
                       className="block p-2"
                       onClick={() => setShowMenu(false)}
                     >
@@ -128,8 +127,8 @@ const AssignTask: React.FC = () => {
                     </Link>
                   </li>
                   <li className="hover:bg-gray-300 rounded-md transition">
-                    <Link 
-                      to="/assign-task" 
+                    <Link
+                      to="/assign-task"
                       className="block p-2"
                       onClick={() => setShowMenu(false)}
                     >
@@ -137,8 +136,8 @@ const AssignTask: React.FC = () => {
                     </Link>
                   </li>
                   <li className="hover:bg-gray-300 rounded-md transition">
-                    <Link 
-                      to="/task" 
+                    <Link
+                      to="/task"
                       className="block p-2"
                       onClick={() => setShowMenu(false)}
                     >
@@ -146,8 +145,8 @@ const AssignTask: React.FC = () => {
                     </Link>
                   </li>
                   <li className="hover:bg-gray-300 rounded-md transition">
-                    <Link 
-                      to="/completed-tasks" 
+                    <Link
+                      to="/completed-tasks"
                       className="block p-2"
                       onClick={() => setShowMenu(false)}
                     >
@@ -171,9 +170,9 @@ const AssignTask: React.FC = () => {
         ) : error ? (
           <div className="bg-red-50 border-l-4 border-red-400 p-4 rounded-lg">
             <div className="flex items-center">
-              <svg 
-                className="h-5 w-5 text-red-400 mr-3" 
-                fill="currentColor" 
+              <svg
+                className="h-5 w-5 text-red-400 mr-3"
+                fill="currentColor"
                 viewBox="0 0 20 20"
               >
                 <path
@@ -208,6 +207,7 @@ const AssignTask: React.FC = () => {
                 key={task.id}
                 whileHover={{ scale: 1.02 }}
                 className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6"
+                onClick={() => navigate(`/task/${task.id}`)}
               >
                 <h3 className="text-lg font-semibold text-gray-800 mb-2">
                   {task.title}

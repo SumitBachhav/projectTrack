@@ -247,7 +247,7 @@
 //             <h3 className="text-sm font-medium">Description</h3>
 //             <p className="mt-1">{task.description}</p>
 //           </div>
-          
+
 //           <div className="grid grid-cols-2 gap-4">
 //             <div>
 //               <h3 className="text-sm font-medium">Assigned To</h3>
@@ -258,14 +258,14 @@
 //               <p className="mt-1">{task.status}</p>
 //             </div>
 //           </div>
-          
+
 //           {task.remark && (
 //             <div>
 //               <h3 className="text-sm font-medium">Remarks</h3>
 //               <p className="mt-1">{task.remark}</p>
 //             </div>
 //           )}
-          
+
 //           <div className="grid grid-cols-2 gap-4">
 //             <div>
 //               <h3 className="text-sm font-medium">Created At</h3>
@@ -281,7 +281,7 @@
 //           <Button variant="outline" onClick={onClose}>
 //             Close
 //           </Button>
-          
+
 //           <div className="flex flex-wrap gap-2">
 //             {/* Receiver actions */}
 //             {isReceiver && task.status === 'pending' && (
@@ -289,30 +289,30 @@
 //                 Accept Task
 //               </Button>
 //             )}
-            
+
 //             {isReceiver && task.status === 'inProgress' && (
 //               <Button onClick={handleMarkComplete}>
 //                 Mark as Complete
 //               </Button>
 //             )}
-            
+
 //             {/* Assigner actions */}
 //             {isAssigner && (
 //               <>
 //                 <Button variant="outline" onClick={() => setShowEditDialog(true)}>
 //                   Edit
 //                 </Button>
-                
+
 //                 <Button variant="outline" onClick={() => setShowReassignDialog(true)}>
 //                   Reassign
 //                 </Button>
-                
+
 //                 {task.status === 'completed' && (
 //                   <Button onClick={() => setShowApproveDialog(true)}>
 //                     Review
 //                   </Button>
 //                 )}
-                
+
 //                 <Button variant="destructive" onClick={() => setShowDeleteDialog(true)}>
 //                   Delete
 //                 </Button>
@@ -331,7 +331,7 @@
 //               Approve or reject the completed task. Add remarks for feedback.
 //             </DialogDescription>
 //           </DialogHeader>
-          
+
 //           <div className="space-y-4 py-4">
 //             <div className="space-y-2">
 //               <Label htmlFor="remark">Remarks</Label>
@@ -343,7 +343,7 @@
 //               />
 //             </div>
 //           </div>
-          
+
 //           <DialogFooter className="flex justify-between">
 //             <Button variant="outline" onClick={() => handleApproveTask(false)}>
 //               Reject
@@ -364,12 +364,12 @@
 //               Select a new user to assign this task to.
 //             </DialogDescription>
 //           </DialogHeader>
-          
+
 //           <div className="space-y-4 py-4">
 //             <div className="space-y-2">
 //               <Label htmlFor="newReceiver">New Assignee</Label>
-//               <Select 
-//                 onValueChange={setNewReceiverId} 
+//               <Select
+//                 onValueChange={setNewReceiverId}
 //                 defaultValue={task.receiver._id}
 //               >
 //                 <SelectTrigger>
@@ -385,7 +385,7 @@
 //               </Select>
 //             </div>
 //           </div>
-          
+
 //           <DialogFooter>
 //             <Button onClick={handleReassignTask}>
 //               Reassign
@@ -403,7 +403,7 @@
 //               Update the task details.
 //             </DialogDescription>
 //           </DialogHeader>
-          
+
 //           <div className="space-y-4 py-4">
 //             <div className="space-y-2">
 //               <Label htmlFor="title">Title</Label>
@@ -414,7 +414,7 @@
 //                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setEditTitle(e.target.value)}
 //               />
 //             </div>
-            
+
 //             <div className="space-y-2">
 //               <Label htmlFor="description">Description</Label>
 //               <Textarea
@@ -426,7 +426,7 @@
 //               />
 //             </div>
 //           </div>
-          
+
 //           <DialogFooter>
 //             <Button onClick={handleEditTask}>
 //               Save Changes
@@ -444,7 +444,7 @@
 //               Are you sure you want to delete this task? This action cannot be undone.
 //             </DialogDescription>
 //           </DialogHeader>
-          
+
 //           <DialogFooter className="flex justify-between">
 //             <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
 //               Cancel
@@ -459,23 +459,34 @@
 //   );
 // };
 
-// export default TaskDetails; 
-
-
+// export default TaskDetails;
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useLocation } from "react-router-dom";
 import axios from "axios";
 import { format, parseISO, isValid } from "date-fns";
+
+interface Assigner {
+  id: string;
+  name: string;
+  email: string;
+}
+
+interface Receiver {
+  id: string;
+  name: string;
+  email: string;
+}
 
 interface TaskDetails {
   id: string;
   title: string;
   description: string;
   status: string;
-  deadline: string;
-  assignedDate: string;
-  assigner?: string;
-  groupId?: string;
+  deadline?: string;
+  createdAt: string;
+  updatedAt: string;
+  assigner?: Assigner;
+  receiver?: Receiver;
 }
 
 const TaskDetails: React.FC = () => {
@@ -485,8 +496,9 @@ const TaskDetails: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Robust date formatting with error handling
-  const formatDate = (dateString: string) => {
+  // ✅ Improved date formatting function
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return "N/A";
     try {
       const date = parseISO(dateString);
       if (!isValid(date)) throw new Error("Invalid date");
@@ -498,14 +510,12 @@ const TaskDetails: React.FC = () => {
   };
 
   useEffect(() => {
-    // First check for state data
     if (location.state?.task) {
       setTask(location.state.task);
       setLoading(false);
       return;
     }
 
-    // Fetch from API if no state data
     const fetchTaskDetails = async () => {
       try {
         const response = await axios.get(
@@ -520,9 +530,9 @@ const TaskDetails: React.FC = () => {
         );
 
         console.log("API Response:", response.data);
-        
-        if (response.data) {
-          setTask(response.data);
+
+        if (response.data?.data) {
+          setTask(response.data.data);
         } else {
           throw new Error("No task data received");
         }
@@ -547,7 +557,7 @@ const TaskDetails: React.FC = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="bg-red-100 p-4 rounded-lg">
+        <div className="bg-red-100 p-4 rounded-lg border border-red-500">
           <p className="text-red-700">{error}</p>
           <Link
             to="/task-home"
@@ -561,31 +571,55 @@ const TaskDetails: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-8">
-      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
-        <Link to="/task-home" className="mb-6 inline-block text-blue-600 hover:text-blue-800">
+    <div className="min-h-screen bg-gray-100 p-4 md:p-8 mt-20">
+      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6 border border-gray-300">
+        <Link
+          to="/task-home"
+          className="mb-6 inline-block text-blue-600 hover:text-blue-800"
+        >
           ← Back to Tasks
         </Link>
 
         {task ? (
           <>
-            <h1 className="text-3xl font-bold mb-6">{task.title}</h1>
+            <h1 className="text-3xl font-bold mb-6 text-center">
+              {task.title}
+            </h1>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
+              {/* Left Side */}
+              <div className="space-y-4 border-r pr-4">
                 <DetailItem label="Status" value={task.status} />
-                <DetailItem 
-                  label="Assigned Date" 
-                  value={formatDate(task.assignedDate)}
-                />
                 <DetailItem
                   label="Deadline"
                   value={formatDate(task.deadline)}
                 />
-                {task.groupId && <DetailItem label="Group ID" value={task.groupId} />}
+                <DetailItem
+                  label="Created At"
+                  value={formatDate(task.createdAt)}
+                />
+                <DetailItem
+                  label="Updated At"
+                  value={formatDate(task.updatedAt)}
+                />
               </div>
-              <div className="space-y-4">
+
+              {/* Right Side */}
+              <div className="space-y-4 pl-4">
                 <DetailItem label="Description" value={task.description} />
-                {task.assigner && <DetailItem label="Assigner" value={task.assigner} />}
+                {task.assigner && (
+                  <div className="border p-4 rounded-lg bg-gray-50">
+                    <h2 className="text-lg font-semibold">Assigner</h2>
+                    <p className="text-gray-700">{task.assigner.name}</p>
+                    <p className="text-gray-500">{task.assigner.email}</p>
+                  </div>
+                )}
+                {task.receiver && (
+                  <div className="border p-4 rounded-lg bg-gray-50">
+                    <h2 className="text-lg font-semibold">Receiver</h2>
+                    <p className="text-gray-700">{task.receiver.name}</p>
+                    <p className="text-gray-500">{task.receiver.email}</p>
+                  </div>
+                )}
               </div>
             </div>
           </>
@@ -599,12 +633,13 @@ const TaskDetails: React.FC = () => {
   );
 };
 
-const DetailItem: React.FC<{ label: string; value?: React.ReactNode }> = ({ label, value }) => (
+const DetailItem: React.FC<{ label: string; value?: React.ReactNode }> = ({
+  label,
+  value,
+}) => (
   <div className="border-b pb-2">
     <dt className="font-medium text-gray-600">{label}</dt>
-    <dd className="mt-1 text-gray-900">
-      {value || "N/A"}
-    </dd>
+    <dd className="mt-1 text-gray-900">{value || "N/A"}</dd>
   </div>
 );
 

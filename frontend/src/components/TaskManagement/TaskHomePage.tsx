@@ -139,8 +139,6 @@ const TaskHomePage: React.FC = () => {
       userArr = response.data.data as User[];
       console.log("User Array:", userArr);
 
-      debugger;
-
       if (response.data) {
         // Handle both response formats
         const responseData = response.data.data;
@@ -307,92 +305,103 @@ const TaskHomePage: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-                <h2 className="text-lg font-bold text-gray-800">All Tasks</h2>
+              <h2 className="text-lg font-bold text-gray-800">All Tasks</h2>
 
-{tasksLoading && (
-  <div className="text-center my-8">
-    <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
-    <p className="mt-2 text-gray-600">Loading tasks...</p>
-  </div>
-)}
-
-{tasksError && (
-  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded my-4">
-    <p>Error: {tasksError}</p>
-    <button
-      onClick={fetchTasks}
-      className="mt-2 bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded"
-    >
-      Retry
-    </button>
-  </div>
-)}
-
-{!tasksLoading && !tasksError && (
-  <ul className="mt-4 space-y-3">
-    {tasks.length > 0 ? (
-      tasks.map((task) => {
-        // Safe date formatting with fallback
-        const formatDate = (dateString: string) => {
-          try {
-            return new Date(dateString).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            });
-          } catch (e) {
-            console.error("Invalid date format:", dateString);
-            return "Invalid Date";
-          }
-        };
-
-        // Status formatting with fallback
-        const formattedStatus = task.status 
-          ? task.status.charAt(0).toUpperCase() + task.status.slice(1)
-          : "Unknown Status";
-
-        return (
-          <li
-            key={task.id}
-            className="p-4 bg-green-200 rounded-lg shadow-md hover:bg-green-300 transition cursor-pointer"
-          >
-            <Link to={`/task-details/${task.id}`} className="block">
-              <div className="flex flex-col md:flex-row md:justify-between md:items-start">
-                <div className="flex-1">
-                  <h3 className="font-medium text-gray-800">
-                    {task.title || "Untitled Task"}
-                  </h3>
-                  {task.description && (
-                    <p className="text-sm text-gray-600 mt-1">
-                      {task.description}
-                    </p>
-                  )}
+              {tasksLoading && (
+                <div className="text-center my-8">
+                  <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
+                  <p className="mt-2 text-gray-600">Loading tasks...</p>
                 </div>
-                <div className="mt-2 md:mt-0 md:ml-4">
-                  <p className="text-sm text-gray-600">
-                    Deadline: {formatDate(task.deadline)}
-                  </p>
-                  {task.status && (
-                    <p className="text-sm mt-1">
-                      Status:{" "}
-                      <span className={`font-medium ${getStatusColor(task.status)}`}>
-                        {formattedStatus}
-                      </span>
-                    </p>
-                  )}
+              )}
+
+              {tasksError && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded my-4">
+                  <p>Error: {tasksError}</p>
+                  <button
+                    onClick={fetchTasks}
+                    className="mt-2 bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded"
+                  >
+                    Retry
+                  </button>
                 </div>
-              </div>
-            </Link>
-          </li>
-        );
-      })
-    ) : (
-      <p className="text-gray-500 p-4">No tasks found.</p>
-    )}
-  </ul>
-)}
-</motion.div>
-)}
+              )}
+
+              {!tasksLoading && !tasksError && (
+                <ul className="mt-4 space-y-3">
+                  {tasks.length > 0 ? (
+                    tasks.map((task) => {
+                      // Safe date formatting with fallback
+                      const formatDate = (dateString: string) => {
+                        try {
+                          return new Date(dateString).toLocaleDateString(
+                            "en-US",
+                            {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            }
+                          );
+                        } catch (e) {
+                          console.error("Invalid date format:", dateString);
+                          return "Invalid Date";
+                        }
+                      };
+
+                      // Status formatting with fallback
+                      const formattedStatus = task.status
+                        ? task.status.charAt(0).toUpperCase() +
+                          task.status.slice(1)
+                        : "Unknown Status";
+
+                      return (
+                        <li
+                          key={task.id}
+                          className="p-4 bg-green-200 rounded-lg shadow-md hover:bg-green-300 transition cursor-pointer"
+                        >
+                          <Link
+                            to={`/task-details/${task.id}`}
+                            className="block"
+                          >
+                            <div className="flex flex-col md:flex-row md:justify-between md:items-start">
+                              <div className="flex-1">
+                                <h3 className="font-medium text-gray-800">
+                                  {task.title || "Untitled Task"}
+                                </h3>
+                                {task.description && (
+                                  <p className="text-sm text-gray-600 mt-1">
+                                    {task.description}
+                                  </p>
+                                )}
+                              </div>
+                              <div className="mt-2 md:mt-0 md:ml-4">
+                                <p className="text-sm text-gray-600">
+                                  Deadline: {formatDate(task.deadline)}
+                                </p>
+                                {task.status && (
+                                  <p className="text-sm mt-1">
+                                    Status:{" "}
+                                    <span
+                                      className={`font-medium ${getStatusColor(
+                                        task.status
+                                      )}`}
+                                    >
+                                      {formattedStatus}
+                                    </span>
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          </Link>
+                        </li>
+                      );
+                    })
+                  ) : (
+                    <p className="text-gray-500 p-4">No tasks found.</p>
+                  )}
+                </ul>
+              )}
+            </motion.div>
+          )}
           {activeSection === "users" && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}

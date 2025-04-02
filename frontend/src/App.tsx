@@ -123,7 +123,6 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
-
                 <Route
                   path="/task-home"
                   element={
@@ -132,7 +131,6 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
-
                 <Route
                   path="/assign-task"
                   element={
@@ -141,10 +139,8 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
-
                 <Route path="/task-details/:taskId" element={<TaskDetails />} />
-
-               <Route
+                <Route
                   path="/completed-tasks"
                   element={
                     <ProtectedRoute>
@@ -152,7 +148,6 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
-
                 {/* coordinator */}
                 <Route
                   path="/coordinator/dashboard"
@@ -235,6 +230,7 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
+                <Route path="/task/:taskId" element={<TaskDetails />} />
               </Routes>
             </Layout>
           </BrowserRouter>
