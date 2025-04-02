@@ -1,4 +1,3 @@
-
 import React from "react";
 import "./App.css";
 import {
@@ -69,9 +68,18 @@ import Navbar from "./components/Navbar";
 // @ts-ignore
 import Notifications from "./components/Notifications";
 // @ts-ignore
+import FAQ from "./components/FAQ";
+// @ts-ignore
 import { useAuth } from "./context/AuthContext";
 // @ts-ignore
 import FormTask from "./components/TaskManagement/FormTask.jsx";
+import TaskHomePage from "./components/TaskManagement/TaskHomePage.js";
+import AssignTask from "./components/TaskManagement/AssignTask.js";
+import CompletedTasks from "./components/TaskManagement/CompletedTasks.js";
+import TaskDetails from "./components/TaskManagement/TaskDetails.js";
+import { ToastProvider } from "./components/ui/use-toast.js";
+import TaskList from "./components/TaskManagement/TaskList.js";
+import InviteRequestsPage from "./components/student/InviteRequestsPage.js";
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -112,6 +120,31 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <TaskList />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/task-home"
+                  element={
+                    <ProtectedRoute>
+                      <TaskHomePage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/assign-task"
+                  element={
+                    <ProtectedRoute>
+                      <AssignTask />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="/task-details/:taskId" element={<TaskDetails />} />
+                <Route
+                  path="/completed-tasks"
+                  element={
+                    <ProtectedRoute>
+                      <CompletedTasks />
                     </ProtectedRoute>
                   }
                 />
@@ -197,6 +230,7 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
+                <Route path="/task/:taskId" element={<TaskDetails />} />
               </Routes>
             </Layout>
           </BrowserRouter>

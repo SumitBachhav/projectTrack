@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
 import { User } from "../models/user.model.js";
 import { Task } from "../models/assigner.model.js";
-import { ApiError } from '../utils/ApiError.js';
+import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
-
+// Assign a Task
 export const assignTask = async (req, res) => {
   try {
     const { title, description, receiverId, deadline, remark } = req.body;
@@ -13,7 +13,7 @@ export const assignTask = async (req, res) => {
     // Validate required fields
     if (!title || !description || !receiverId || !deadline) {
       return res.status(400).json({
-        message: "Required fields: title, description, receiverId, deadline"
+        message: "Required fields: title, description, receiverId, deadline",
       });
     }
 
@@ -26,7 +26,7 @@ export const assignTask = async (req, res) => {
     // Validate deadline is a future date
     if (new Date(deadline) < new Date()) {
       return res.status(400).json({
-        message: "Deadline must be a future date"
+        message: "Deadline must be a future date",
       });
     }
 
@@ -37,7 +37,7 @@ export const assignTask = async (req, res) => {
       assigner: assignerId,
       receiver: receiverId,
       deadline,
-      remark: remark || undefined, 
+      remark: remark || undefined,
     });
 
     await task.save();
@@ -49,17 +49,19 @@ export const assignTask = async (req, res) => {
         title: task.title,
         description: task.description,
         status: task.status,
-        deadline: task.deadline,
+        deadline: task.deadline
+          ? new Date(task.deadline).toISOString().slice(0, 10)
+          : null,
         assigner: assignerId,
         receiver: receiverId,
-        remark: task.remark
-      }
+        remark: task.remark,
+      },
     });
   } catch (error) {
     console.error("Error assigning task:", error);
-    res.status(500).json({ 
+    res.status(500).json({
       message: "Server error",
-      error: error.message 
+      error: error.message,
     });
   }
 };
@@ -71,11 +73,11 @@ export const acceptTask = async (req, res) => {
     const task = await Task.findById(id);
 
     if (!task) return res.status(404).json({ message: "Task not found" });
-    
+
     //check if the current user is the assigned receiver
     if (task.receiver.toString() !== req.user.id)
       return res.status(403).json({ message: "Unauthorized" });
-      
+
     task.status = "inProgress";
     await task.save();
 
@@ -105,29 +107,29 @@ export const editTask = async (req, res) => {
     // find task and who is assigner
     const task = await Task.findOne({
       _id: id,
-      assigner: req.user.id
+      assigner: req.user.id,
     });
 
     if (!task) {
-      return res.status(404).json({ 
-        message: "Task not found or you don't have permission to edit it"
+      return res.status(404).json({
+        message: "Task not found or you don't have permission to edit it",
       });
     }
 
     //updates
     const updates = {};
-    const allowedFields = ['title', 'description', 'remark', 'deadline'];
-    
+    const allowedFields = ["title", "description", "remark", "deadline"];
+
     // validate and prepare updates
     for (const field of allowedFields) {
       if (req.body[field] !== undefined) {
-        if (typeof req.body[field] === 'string') {
+        if (typeof req.body[field] === "string") {
           updates[field] = req.body[field].trim();
-          
+
           // Check for empty strings after trim
           if (!updates[field]) {
-            return res.status(400).json({ 
-              message: `${field} cannot be empty`
+            return res.status(400).json({
+              message: `${field} cannot be empty`,
             });
           }
         } else {
@@ -143,7 +145,9 @@ export const editTask = async (req, res) => {
         return res.status(400).json({ message: "Invalid deadline format" });
       }
       if (newDeadline < new Date()) {
-        return res.status(400).json({ message: "Deadline must be in the future" });
+        return res
+          .status(400)
+          .json({ message: "Deadline must be in the future" });
       }
       updates.deadline = newDeadline;
     }
@@ -155,7 +159,7 @@ export const editTask = async (req, res) => {
       {
         new: true,
         runValidators: true,
-        select: '-__v -previousAssignments'
+        select: "-__v -previousAssignments",
       }
     );
 
@@ -165,35 +169,34 @@ export const editTask = async (req, res) => {
 
     res.json({
       message: "Task updated successfully",
-      task: updatedTask.toObject({ virtuals: true })
+      task: updatedTask.toObject({ virtuals: true }),
     });
-
   } catch (error) {
     console.error("Error editing task:", {
       name: error.name,
       message: error.message,
-      stack: error.stack
+      stack: error.stack,
     });
 
     // handle specific error types
-    if (error.name === 'ValidationError') {
-      const errors = Object.values(error.errors).map(err => err.message);
-      return res.status(400).json({ 
+    if (error.name === "ValidationError") {
+      const errors = Object.values(error.errors).map((err) => err.message);
+      return res.status(400).json({
         message: "Validation failed",
-        errors 
+        errors,
       });
     }
 
-    if (error.name === 'CastError') {
-      return res.status(400).json({ 
+    if (error.name === "CastError") {
+      return res.status(400).json({
         message: "Invalid data format",
-        field: error.path 
+        field: error.path,
       });
     }
 
     res.status(500).json({
       message: "Server error",
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
@@ -275,15 +278,13 @@ export const approveCompletion = async (req, res) => {
 
     res.json({
       message: isApproved ? "Task approved" : "Task marked as incomplete",
-      task
+      task,
     });
   } catch (error) {
     console.error("Error approving task completion:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
-
-
 
 //Get on all tasks for the current user (
 export const getAllTasks = async (req, res) => {
@@ -294,87 +295,22 @@ export const getAllTasks = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({
         success: false,
-        message: "Invalid user ID format"
+        message: "Invalid user ID format",
       });
     }
 
     //find tasks with pagination,filtering
     const tasks = await Task.find({
-      $or: [
-        { assigner: userId },
-        { receiver: userId }
-      ]
+      $or: [{ assigner: userId }, { receiver: userId }],
     })
-    .populate('assigner', 'name email _id')
-    .populate('receiver', 'name email _id')
-    .select('-__v') //exclude version key
-    .sort({ createdAt: -1 })
-    .lean();
+      .populate("assigner", "name email _id")
+      .populate("receiver", "name email _id")
+      .select("-__v") //exclude version key
+      .sort({ createdAt: -1 })
+      .lean();
 
     //transform tasks for better client-side consumption
-    const transformedTasks = tasks.map(task => ({
-      id: task._id,
-      title: task.title,
-      description: task.description,
-      status: task.status,
-      deadline: task.deadline ? new Date(task.deadline).toISOString().slice(0, 10) : null,
-      assigner: {
-        id: task.assigner._id,
-        name: task.assigner.name,
-        email: task.assigner.email
-      },
-      receiver: {
-        id: task.receiver._id,
-        name: task.receiver.name,
-        email: task.receiver.email
-      },
-      createdAt: task.createdAt,
-      updatedAt: task.updatedAt
-    }));
-
-    return res.status(200).json({
-      success: true,
-      count: tasks.length,
-      data: transformedTasks
-    });
-
-  } catch (error) {
-    console.error("Error fetching tasks:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
-  }
-};
-
-//get task by id of task
-export const getTaskById = async (req, res) => {
-  try {
-    const userId = req.user.id;
-
-    //validating id is in hex or not 
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid user ID format"
-      });
-    }
-
-    //finding the tasks
-    const tasks = await Task.find({
-      $or: [
-        { assigner: userId },
-        { receiver: userId }
-      ]
-    })
-    .populate('assigner', 'name email _id')
-    .populate('receiver', 'name email _id')
-    .select('-__v')
-    .sort({ createdAt: -1 });
-
-    //transform tasks
-    const transformedTasks = tasks.map(task => ({
+    const transformedTasks = tasks.map((task) => ({
       id: task._id,
       title: task.title,
       description: task.description,
@@ -383,34 +319,106 @@ export const getTaskById = async (req, res) => {
       assigner: {
         id: task.assigner._id,
         name: task.assigner.name,
-        email: task.assigner.email
+        email: task.assigner.email,
       },
       receiver: {
         id: task.receiver._id,
         name: task.receiver.name,
-        email: task.receiver.email
+        email: task.receiver.email,
       },
       createdAt: task.createdAt,
-      updatedAt: task.updatedAt
+      updatedAt: task.updatedAt,
     }));
 
     return res.status(200).json({
       success: true,
-      count: transformedTasks.length,
-      data: transformedTasks
+      count: tasks.length,
+      data: transformedTasks,
     });
-
   } catch (error) {
-    console.error("Error fetching user tasks:", error);
+    console.error("Error fetching tasks:", error);
     return res.status(500).json({
       success: false,
       message: "Internal server error",
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
 
-//get task by user 
+//get task by id of task
+export const getTaskById = async (req, res) => {
+  try {
+    const taskId = req.params.id;
+    const userId = req.user.id;
+
+    //validate IDs format
+    if (!mongoose.Types.ObjectId.isValid(taskId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid task ID format",
+      });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid user ID format",
+      });
+    }
+
+    //Find the task
+    const task = await Task.findById(taskId)
+      .populate("assigner", "name email _id")
+      .populate("receiver", "name email _id")
+      .select("-__v");
+
+    if (!task) {
+      return res.status(404).json({
+        success: false,
+        message: "Task not found",
+      });
+    }
+
+    // Check authorization
+    const isAuthorized = [task.assigner._id, task.receiver._id].some((id) =>
+      id.equals(userId)
+    );
+
+    const transformedTask = {
+      id: task._id,
+      title: task.title,
+      description: task.description,
+      status: task.status,
+      deadline: task.deadline,
+      assigner: {
+        id: task.assigner._id,
+        name: task.assigner.name,
+        email: task.assigner.email,
+      },
+      receiver: {
+        id: task.receiver._id,
+        name: task.receiver.name,
+        email: task.receiver.email,
+      },
+      createdAt: task.createdAt,
+      updatedAt: task.updatedAt,
+    };
+
+    return res.status(200).json({
+      success: true,
+      data: transformedTask,
+    });
+  } catch (error) {
+    console.error("Error fetching task:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
+  }
+};
+
+//get task by user
 export const getTasksAcceptedByUser = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -439,7 +447,9 @@ export const getTasksAcceptedByUser = async (req, res) => {
       title: task.title,
       description: task.description,
       status: task.status,
-      deadline: task.deadline ? new Date(task.deadline).toISOString().slice(0, 10) : null, // Format deadline
+      deadline: task.deadline
+        ? new Date(task.deadline).toISOString().slice(0, 10)
+        : null, // Format deadline
       assigner: {
         id: task.assigner._id,
         name: task.assigner.name,
@@ -469,97 +479,95 @@ export const getTasksAcceptedByUser = async (req, res) => {
   }
 };
 
-
 export const getMyCompletedTasks = async (req, res) => {
   try {
     const tasks = await Task.find({
-      receiver: req.user.id,        //tasks assigned to user
-      status: 'completed',          //only completed 
-      completedAt: { $exists: true }//ensure completion 
+      receiver: req.user.id, //tasks assigned to user
+      status: "completed", //only completed
+      completedAt: { $exists: true }, //ensure completion
     })
-    
-    .select('title deadline status _id assigner receiver completedAt')
 
-    .populate('assigner', 'name')   //only get assigner name
-    .populate('receiver', 'name')   //only get receiver name
-    
-    .sort({ completedAt: -1 })
-    // to increase performance
-    .lean();                        
+      .select("title deadline status _id assigner receiver completedAt")
+
+      .populate("assigner", "name") //only get assigner name
+      .populate("receiver", "name") //only get receiver name
+
+      .sort({ completedAt: -1 })
+      // to increase performance
+      .lean();
 
     // transform data
-    const formattedTasks = tasks.map(task => ({
+    const formattedTasks = tasks.map((task) => ({
       Title: task.title,
       Deadline: task.deadline,
       Status: task.status,
       TaskId: task._id.toString(),
-      To: task.receiver?.name || 'Unknown', 
-      From: task.assigner?.name || 'Unknown' 
+      To: task.receiver?.name || "Unknown",
+      From: task.assigner?.name || "Unknown",
     }));
 
     res.json(formattedTasks);
-
   } catch (error) {
+    console.error(
+      `[${new Date().toISOString()}] Error fetching completed tasks:`,
+      error
+    );
 
-    console.error(`[${new Date().toISOString()}] Error fetching completed tasks:`, error);
-    
-    
-    res.status(500).json({ 
-      message: 'Failed to fetch completed tasks',
-      error: process.env.NODE_ENV === 'development' ? error.message : null
+    res.status(500).json({
+      message: "Failed to fetch completed tasks",
+      error: process.env.NODE_ENV === "development" ? error.message : null,
     });
   }
 };
 
 export const getAllCompletedTasks = async (req, res) => {
   try {
-    const tasks = await Task.find({ status: 'completed' })
-      .select('title deadline status _id assigner receiver')
-      .populate('assigner', 'name email')
-      .populate('receiver', 'name email')
+    const tasks = await Task.find({ status: "completed" })
+      .select("title deadline status _id assigner receiver")
+      .populate("assigner", "name email")
+      .populate("receiver", "name email")
       .sort({ completedAt: -1 });
 
-    res.json(tasks.map(task => ({
-      Title: task.title,
-      Deadline: task.deadline,
-      Status: task.status,
-      TaskId: task._id,
-      To: task.receiver.name,
-      From: task.assigner.name
-    })));
-
+    res.json(
+      tasks.map((task) => ({
+        Title: task.title,
+        Deadline: task.deadline,
+        Status: task.status,
+        TaskId: task._id,
+        To: task.receiver.name,
+        From: task.assigner.name,
+      }))
+    );
   } catch (error) {
-    console.error('Error fetching all completed tasks:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Error fetching all completed tasks:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
-
 
 export const getAssignedTasks = async (req, res) => {
   try {
     const tasks = await Task.find({
-      assigner: req.user.id,  // tasks assigned by current user
+      assigner: req.user.id, // tasks assigned by current user
     })
-    .select('title deadline status _id receiver')
-    .populate('receiver', 'name')  // get receiver's name
-    .sort({ deadline: -1 })
-    .lean();
+      .select("title deadline status _id receiver")
+      .populate("receiver", "name") // get receiver's name
+      .sort({ deadline: -1 })
+      .lean();
 
-    const formattedTasks = tasks.map(task => ({
+    const formattedTasks = tasks.map((task) => ({
       Title: task.title,
       Deadline: task.deadline,
       Status: task.status,
       TaskId: task._id.toString(),
-      To: task.receiver?.name || 'Unknown User'
+      To: task.receiver?.name || "Unknown User",
     }));
 
     res.json(formattedTasks);
-
   } catch (error) {
     console.error(`[${new Date().toISOString()}] Assigned tasks error:`, error);
     res.status(500).json({
-      message: 'Failed to fetch assigned tasks',
-      error: process.env.NODE_ENV === 'development' ? error.message : null
+      message: "Failed to fetch assigned tasks",
+      error: process.env.NODE_ENV === "development" ? error.message : null,
     });
   }
 };
@@ -573,64 +581,72 @@ export const addComment = async (req, res) => {
 
     // Validate input
     if (!content) {
-      return res.status(400).json({ success: false, message: 'Comment content is required' });
+      return res
+        .status(400)
+        .json({ success: false, message: "Comment content is required" });
     }
 
     const task = await Task.findById(taskId);
     if (!task) {
-      return res.status(404).json({ success: false, message: 'Task not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Task not found" });
     }
 
     // Add new comment
     const newComment = {
       content,
-      commentedBy: userId
+      commentedBy: userId,
     };
 
     task.comments.push(newComment);
     const savedTask = await task.save();
-    
+
     // Populate user details in the response
     const populatedTask = await Task.populate(savedTask, {
-      path: 'comments.commentedBy',
-      select: 'name email'
+      path: "comments.commentedBy",
+      select: "name email",
     });
 
     const addedComment = populatedTask.comments[savedTask.comments.length - 1];
 
     res.status(201).json({
       success: true,
-      message: 'Comment added successfully',
-      comment: addedComment
+      message: "Comment added successfully",
+      comment: addedComment,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error adding comment',
-      error: error.message
+      message: "Error adding comment",
+      error: error.message,
     });
   }
 };
 
-
 export const getComments = async (req, res) => {
   try {
-    const task = await Task.findById(req.params.id)
-      .select('comments')
-      .populate('comments.commentedBy', 'name email');
+    const { taskId } = req.params;
+
+    const task = await Task.findById(taskId)
+      .populate("comments.commentedBy", "name email")
+      .select("comments");
 
     if (!task) {
-      return res.status(404).json(
-        new ApiError(404, null, "Task not found")
-      );
+      return res
+        .status(404)
+        .json({ success: false, message: "Task not found" });
     }
 
-    res.status(200).json(
-      new ApiResponse(200, { comments: task.comments }, "Comments retrieved")
-    );
-    
+    res.status(200).json({
+      success: true,
+      comments: task.comments,
+    });
   } catch (error) {
-    throw new ApiError(500, `Error fetching comments: ${error.message}`);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching comments",
+      error: error.message,
+    });
   }
 };

@@ -430,6 +430,33 @@ const getDomainsAndSkills = asyncHandler(async (req, res) => {
   );
 });
 
+// const getAllUsers = asyncHandler(async (req, res) => {
+//   try {
+//     // Fetch names and IDs
+//     const users = await User.find({})
+//       .select("name _id") // Include _id
+//       .lean();
+
+//     if (!users?.length) {
+//       return res.status(404).json(new ApiResponse(404, [], "No users found"));
+//     }
+
+//     // Create the desired response format
+//     const names = users.map((user) => ({
+//       name: user.name,
+//       id: user._id.toString(), // Convert ObjectId to string
+//     }));
+
+//     return res
+//       .status(200)
+//       .json(
+//         new ApiResponse(
+//           200,
+//           { names },
+//           "User names and IDs fetched successfully"
+//         )
+//     )
+// })
 const getAllUsers = asyncHandler(async (req, res) => {
   try {
     // Fetch names and IDs
@@ -455,48 +482,23 @@ const getAllUsers = asyncHandler(async (req, res) => {
           { names },
           "User names and IDs fetched successfully"
         )
-    )
-})
-const getAllUsers = asyncHandler(async (req, res) => {
-    try {
-        // Fetch names and IDs
-        const users = await User.find({})
-            .select('name _id') // Include _id
-            .lean();
-
-        if (!users?.length) {
-            return res.status(404).json(
-                new ApiResponse(404, [], "No users found")
-            );
-        }
-
-        // Create the desired response format
-        const names = users.map(user => ({
-            name: user.name,
-            id: user._id.toString() // Convert ObjectId to string
-        }));
-
-        return res.status(200).json(
-            new ApiResponse(200, { names }, "User names and IDs fetched successfully")
-        );
-
-    } catch (error) {
-        throw new ApiError(500, `Error fetching users: ${error.message}`);
-    }
+      );
+  } catch (error) {
+    throw new ApiError(500, `Error fetching users: ${error.message}`);
+  }
 });
 
 export {
-    registerUser,
-    registerStudent,
-    loginUser,
-    logoutUser,
-    refreshAccessToken,
-    changeCurrentPassword,
-    check,
-    registerStaff,
-    getDomains,
-    getDomainsAndSkills,
-    assignerLogin,
-    getAllUsers
-}
-
+  registerUser,
+  registerStudent,
+  loginUser,
+  logoutUser,
+  refreshAccessToken,
+  changeCurrentPassword,
+  check,
+  registerStaff,
+  getDomains,
+  getDomainsAndSkills,
+  assignerLogin,
+  getAllUsers,
+};
