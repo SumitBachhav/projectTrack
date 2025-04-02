@@ -68,18 +68,18 @@ import Navbar from "./components/Navbar";
 // @ts-ignore
 import Notifications from "./components/Notifications";
 // @ts-ignore
-import { useAuth } from "./context/AuthContext";
+import FAQ from "./components/FAQ";
 // @ts-ignore
-import FAQ from "./components/FAQ"; // Import FAQ component
-import InviteRequestsPage from "./components/student/InviteRequestsPage";
-import TaskList from "./components/TaskManagement/TaskList";
-import { ToastProvider } from "./components/ui/use-toast";
+import { useAuth } from "./context/AuthContext";
 // @ts-ignore
 import FormTask from "./components/TaskManagement/FormTask.jsx";
 import TaskHomePage from "./components/TaskManagement/TaskHomePage.js";
 import AssignTask from "./components/TaskManagement/AssignTask.js";
 import CompletedTasks from "./components/TaskManagement/CompletedTasks.js";
 import TaskDetails from "./components/TaskManagement/TaskDetails.js";
+import { ToastProvider } from "./components/ui/use-toast.js";
+import TaskList from "./components/TaskManagement/TaskList.js";
+import InviteRequestsPage from "./components/student/InviteRequestsPage.js";
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
   children,

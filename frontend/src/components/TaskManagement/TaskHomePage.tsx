@@ -2,12 +2,14 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { FaBars } from "react-icons/fa";
 import { AnimatePresence, motion } from "framer-motion";
-import { any } from "zod";
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom"; // Added missing import
 
 interface User {
   id: string;
   name: string;
+  title: string;
+  status: string;
+  deadline: string;
 }
 
 interface Task {
@@ -21,10 +23,16 @@ interface Task {
 }
 
 interface ApiResponse<T = any> {
+  message: string;
   statusCode: number;
   data: T;
-  message?: string;
 }
+
+// interface ApiResponse {
+//   statusCode: number;
+//   data: User[] | null;
+//   message?: string;
+// }
 
 const TaskHomePage: React.FC = () => {
   var userArr: any = [];
@@ -106,6 +114,15 @@ const TaskHomePage: React.FC = () => {
     }
   };
 
+  // Example tasks can be added to the initial state if needed
+  useEffect(() => {
+    setTasks([
+      { id: 1, title: "Design Landing Page", deadline: "March 31, 2025" },
+      { id: 2, title: "API Integration", deadline: "April 2, 2025" },
+      { id: 3, title: "Fix UI Bugs", deadline: "April 5, 2025" },
+    ]);
+  }, []);
+
   useEffect(() => {
     if (activeSection === "users") {
       fetchUsers();
@@ -172,6 +189,31 @@ const TaskHomePage: React.FC = () => {
       setError(errorMessage);
     } finally {
       setLoading(false);
+    }
+
+    // Move these additional API calls outside the finally block
+    try {
+      const response = await axios.get(
+        "http://localhost:4000/api/v1/assigner/task/me",
+        { withCredentials: true }
+      );
+
+      if (
+        response.data &&
+        response.data.success &&
+        Array.isArray(response.data.data)
+      ) {
+        const tasks = response.data.data;
+        console.log("Fetched tasks:", tasks);
+        // Process tasks as needed
+      } else {
+        throw new Error(
+          "Unexpected response format: " + JSON.stringify(response.data)
+        );
+      }
+    } catch (err) {
+      console.error("Error fetching tasks:", err);
+      // Additional error handling as needed
     }
   };
 
@@ -402,6 +444,7 @@ const TaskHomePage: React.FC = () => {
               )}
             </motion.div>
           )}
+
           {activeSection === "users" && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -409,25 +452,6 @@ const TaskHomePage: React.FC = () => {
               transition={{ duration: 0.5 }}
             >
               <h2 className="text-lg font-bold text-gray-800">Users List</h2>
-
-              {!loading && !error && (
-                <ul className="mt-4 space-y-3">
-                  {users.length > 0 ? (
-                    users.map((user) => (
-                      <li
-                        key={user.id}
-                        className="p-3 bg-yellow-200 rounded-lg shadow-md hover:bg-yellow-300 transition cursor-pointer flex justify-between items-center"
-                      >
-                        <span>Title {user.title}</span>
-                        <span>Deadline :{user.deadline}</span>
-                        <span>Status :{user.status}</span>
-                      </li>
-                    ))
-                  ) : (
-                    <p className="text-gray-500">No users found.</p>
-                  )}
-                </ul>
-              )}
 
               {loading && (
                 <div className="text-center my-8">
@@ -456,10 +480,9 @@ const TaskHomePage: React.FC = () => {
                         key={user.id}
                         className="p-3 bg-yellow-200 rounded-lg shadow-md hover:bg-yellow-300 transition cursor-pointer flex justify-between items-center"
                       >
-                        <span>{user.name}</span>
-                        <span className="text-xs text-gray-500">
-                          ID: {user.id.substring(0, 8)}...
-                        </span>
+                        <span> {user.title}</span>
+                        <span>{user.deadline}</span>
+                        <span>{user.status}</span>
                       </li>
                     ))
                   ) : (

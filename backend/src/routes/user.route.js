@@ -1,16 +1,18 @@
 import { Router } from "express";
-import {
-  loginUser,
-  logoutUser,
-  registerUser,
-  registerStudent,
-  // refreshAccessToken,
-  changeCurrentPassword,
-  check,
-  registerStaff,
-  getDomains,
-  getDomainsAndSkills,
-  getAllUsers,
+
+import { 
+    loginUser, 
+    logoutUser, 
+    registerUser, 
+    registerStudent,
+    // refreshAccessToken, 
+    changeCurrentPassword, 
+    check,
+    registerStaff,
+    getDomains,
+    getDomainsAndSkills,
+    getAllUsers
+
 } from "../controllers/user.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { refreshTokenMiddleware } from "../middlewares/refreshToken.middleware.js";
@@ -18,7 +20,13 @@ import { refreshTokenMiddleware } from "../middlewares/refreshToken.middleware.j
 const router = Router();
 router.route("/").get(getAllUsers);
 
-router.route("/register").post(registerUser);
+
+router.route('/').get(
+    getAllUsers)
+
+router.route("/register").post(
+    registerUser)
+
 
 router.route("/login").post(loginUser);
 

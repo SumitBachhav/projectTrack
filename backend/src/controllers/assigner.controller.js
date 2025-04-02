@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import { User } from "../models/user.model.js";
 import { Task } from "../models/assigner.model.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 
 // Assign a Task
 export const assignTask = async (req, res) => {
@@ -313,9 +315,7 @@ export const getAllTasks = async (req, res) => {
       title: task.title,
       description: task.description,
       status: task.status,
-      deadline: task.deadline
-        ? new Date(task.deadline).toISOString().slice(0, 10)
-        : null,
+      deadline: task.deadline,
       assigner: {
         id: task.assigner._id,
         name: task.assigner.name,
@@ -447,7 +447,9 @@ export const getTasksAcceptedByUser = async (req, res) => {
       title: task.title,
       description: task.description,
       status: task.status,
-      deadline: task.deadline,
+      deadline: task.deadline
+        ? new Date(task.deadline).toISOString().slice(0, 10)
+        : null, // Format deadline
       assigner: {
         id: task.assigner._id,
         name: task.assigner.name,
