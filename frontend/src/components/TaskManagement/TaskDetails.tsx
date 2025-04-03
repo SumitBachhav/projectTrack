@@ -572,7 +572,8 @@ const TaskDetails: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-8 mt-20">
-      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6 border border-gray-300">
+      {/* Container with relative positioning for absolute positioned link */}
+      <div className="relative max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6 border border-gray-300">
         <Link
           to="/task-home"
           className="mb-6 inline-block text-blue-600 hover:text-blue-800"
@@ -628,6 +629,14 @@ const TaskDetails: React.FC = () => {
             No task details found
           </div>
         )}
+
+        {/* "Add Comment" Link placed at bottom right */}
+        <Link
+          to={`/task/${taskId}/comments`}
+          className=" bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+        >
+          Add Comment
+        </Link>
       </div>
     </div>
   );

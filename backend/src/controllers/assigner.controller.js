@@ -626,27 +626,20 @@ export const addComment = async (req, res) => {
 
 export const getComments = async (req, res) => {
   try {
-    const { taskId } = req.params;
-
-    const task = await Task.findById(taskId)
-      .populate("comments.commentedBy", "name email")
-      .select("comments");
+    const task = await Task.findById(req.params.id)
+      .select("comments")
+      .populate("comments.commentedBy", "name email");
 
     if (!task) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Task not found" });
+      return res.status(404).json(new ApiError(404, null, "Task not found"));
     }
 
-    res.status(200).json({
-      success: true,
-      comments: task.comments,
-    });
+    res
+      .status(200)
+      .json(
+        new ApiResponse(200, { comments: task.comments }, "Comments retrieved")
+      );
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error fetching comments",
-      error: error.message,
-    });
+    throw new ApiError(500, `Error fetching comments: ${error.message}`);
   }
 };

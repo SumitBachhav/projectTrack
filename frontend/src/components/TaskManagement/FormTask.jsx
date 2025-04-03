@@ -74,7 +74,7 @@ const TaskCreateForm = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto my-10 p-6 bg-blue-50 border border-blue-300 rounded-lg shadow-md">
+    <div className="max-w-md mx-auto mt-28 my-10 p-6 bg-blue-50 border border-blue-300 rounded-lg shadow-md">
       <h1 className="text-2xl font-bold text-blue-800 mb-6 text-center">
         Create Task
       </h1>

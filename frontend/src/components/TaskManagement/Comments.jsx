@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 
-const taskId = "67eba9823da4ef291c30b82a"; // Example task ID (Make it dynamic as needed)
-
 function Comments() {
+  const { taskId } = useParams(); // Dynamic taskId from URL
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState("");
   const [loading, setLoading] = useState(false);
@@ -11,12 +11,14 @@ function Comments() {
 
   const API_URL = `http://localhost:4000/api/v1/assigner/task/${taskId}/comments`;
 
-  // Fetch comments from API
+  // Fetch comments from API when taskId changes
   useEffect(() => {
     const fetchComments = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(API_URL);
+        const response = await axios.get(API_URL, {
+          withCredentials: true,
+        });
         if (response.data.success) {
           setComments(response.data.data.comments);
         } else {
@@ -29,8 +31,10 @@ function Comments() {
       }
     };
 
-    fetchComments();
-  }, []);
+    if (taskId) {
+      fetchComments();
+    }
+  }, [taskId, API_URL]);
 
   // Add a new comment
   const handleAddComment = async (e) => {
@@ -38,13 +42,16 @@ function Comments() {
     if (!commentText.trim()) return;
 
     try {
-      const response = await axios.post(API_URL, { content: commentText });
-
+      const response = await axios.post(
+        API_URL,
+        { content: commentText },
+        { withCredentials: true }
+      );
       if (response.data.success) {
         const newComment = {
           _id: Date.now(), // Temporary ID
           content: commentText,
-          commentedBy: { name: "You" }, // Assuming current user
+          commentedBy: { name: "You" }, // Replace with current user info if available
           createdAt: new Date().toISOString(),
         };
 

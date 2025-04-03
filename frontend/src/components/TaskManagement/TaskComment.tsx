@@ -20,11 +20,41 @@ const TaskDetail: React.FC = () => {
 
   useEffect(() => {
     setComments([
-      { id: 1, userId: "user123", user: "John Doe", message: "Hey, did you check the latest update?", timestamp: "10:15 AM" },
-      { id: 2, userId: "user456", user: "Alice", message: "Yes, I reviewed it. Looks good!", timestamp: "10:18 AM" },
-      { id: 3, userId: "user123", user: "John Doe", message: "Great! I'll finalize it then.", timestamp: "10:20 AM" },
-      { id: 4, userId: "user456", user: "Alice", message: "Let me know if you need any help.", timestamp: "10:22 AM" },
-      { id: 5, userId: "user123", user: "John Doe", message: "Will do, thanks!", timestamp: "10:25 AM" },
+      {
+        id: 1,
+        userId: "user123",
+        user: "John Doe",
+        message: "Hey, did you check the latest update?",
+        timestamp: "10:15 AM",
+      },
+      {
+        id: 2,
+        userId: "user456",
+        user: "Alice",
+        message: "Yes, I reviewed it. Looks good!",
+        timestamp: "10:18 AM",
+      },
+      {
+        id: 3,
+        userId: "user123",
+        user: "John Doe",
+        message: "Great! I'll finalize it then.",
+        timestamp: "10:20 AM",
+      },
+      {
+        id: 4,
+        userId: "user456",
+        user: "Alice",
+        message: "Let me know if you need any help.",
+        timestamp: "10:22 AM",
+      },
+      {
+        id: 5,
+        userId: "user123",
+        user: "John Doe",
+        message: "Will do, thanks!",
+        timestamp: "10:25 AM",
+      },
     ]);
   }, []);
 
@@ -34,7 +64,7 @@ const TaskDetail: React.FC = () => {
 
   const handleAddComment = () => {
     if (newComment.trim() === "") return;
-    
+
     const newCommentObj: Comment = {
       id: comments.length + 1,
       userId: user.id,
@@ -55,35 +85,54 @@ const TaskDetail: React.FC = () => {
         <CardContent>
           <h3 className="text-lg font-semibold mb-3">Comments</h3>
           <div className="space-y-4">
-            {[...new Set(comments.map((comment) => comment.userId))].map((userId) => (
-              <div key={userId} className="border rounded-lg p-3 bg-gray-50 shadow-sm transition duration-300 hover:shadow-lg">
+            {[...new Set(comments.map((comment) => comment.userId))].map(
+              (userId) => (
                 <div
-                  className="flex justify-between items-center cursor-pointer p-3 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300"
-                  onClick={() => toggleUserComments(userId)}
+                  key={userId}
+                  className="border rounded-lg p-3 bg-gray-50 shadow-sm transition duration-300 hover:shadow-lg"
                 >
-                  <p className="font-semibold text-lg text-gray-600">
-                    {comments.find((comment) => comment.userId === userId)?.user}
-                  </p>
-                  {openUser[userId] ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                </div>
-                {openUser[userId] && (
-                  <div className="mt-2 space-y-3 p-3">
-                    {comments
-                      .filter((comment) => comment.userId === userId)
-                      .map((comment) => (
-                        <div key={comment.id} className="p-3 bg-white border rounded-lg shadow-md transition duration-300 hover:shadow-xl">
-                          <p className="text-md font-medium text-gray-900">{comment.message}</p>
-                          <span className="text-xs text-gray-500 block mt-1">{comment.timestamp}</span>
-                        </div>
-                      ))}
+                  <div
+                    className="flex justify-between items-center cursor-pointer p-3 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300"
+                    onClick={() => toggleUserComments(userId)}
+                  >
+                    <p className="font-semibold text-lg text-gray-600">
+                      {
+                        comments.find((comment) => comment.userId === userId)
+                          ?.user
+                      }
+                    </p>
+                    {openUser[userId] ? (
+                      <ChevronUp size={20} />
+                    ) : (
+                      <ChevronDown size={20} />
+                    )}
                   </div>
-                )}
-              </div>
-            ))}
+                  {openUser[userId] && (
+                    <div className="mt-2 space-y-3 p-3">
+                      {comments
+                        .filter((comment) => comment.userId === userId)
+                        .map((comment) => (
+                          <div
+                            key={comment.id}
+                            className="p-3 bg-white border rounded-lg shadow-md transition duration-300 hover:shadow-xl"
+                          >
+                            <p className="text-md font-medium text-gray-900">
+                              {comment.message}
+                            </p>
+                            <span className="text-xs text-gray-500 block mt-1">
+                              {comment.timestamp}
+                            </span>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+                </div>
+              )
+            )}
           </div>
         </CardContent>
       </Card>
-      
+
       {/* Comment Input Box */}
       {/* <div className="mt-4 bg-gray-100 p-4 rounded-lg shadow-md flex items-center gap-2 transition duration-300 hover:shadow-lg">
         <Input

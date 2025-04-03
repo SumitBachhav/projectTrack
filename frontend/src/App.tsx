@@ -1,12 +1,8 @@
 import React from "react";
 import "./App.css";
-import {
-  Routes,
-  Route,
-  Navigate,
-  BrowserRouter,
-  useNavigate,
-} from "react-router-dom";
+import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
+// @ts-ignore
+import Calendar from "./components/TaskManagement/Calendar.jsx";
 // @ts-ignore
 import CheckScore from "./components/student/CheckScore.jsx";
 // @ts-ignore
@@ -82,7 +78,6 @@ import TaskHomePage from "./components/TaskManagement/TaskHomePage.js";
 import AssignTask from "./components/TaskManagement/AssignTask.js";
 import TaskDetails from "./components/TaskManagement/TaskDetails.js";
 import CompletedTasks from "./components/TaskManagement/CompletedTasks.js";
-
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -232,8 +227,9 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
-                <Route path="/comments" element={<Comments />} />
+                <Route path="/task/:taskId/comments" element={<Comments />} />
                 <Route path="/task/:taskId" element={<TaskDetails />} />
+                <Route path="/calendar" element={<Calendar />} />
               </Routes>
             </Layout>
           </BrowserRouter>
