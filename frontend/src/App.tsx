@@ -108,6 +108,7 @@ function App() {
 
 
             {/* staff */}
+            <Route path="/register-staff" element={<RegisterStaff />} />
             <Route path="/staff/submitSkills" element={<StaffForm />} />
             <Route path="/staff/topicReview" element={<TopicReview />} />
             <Route path="/staff/topicReviewOverview" element={<TopicReviewOverview />} />
@@ -116,6 +117,7 @@ function App() {
 
 
             {/* student */}
+            <Route path="/register-student" element={<RegisterStudent />} />
             <Route path="/student/dashboard" element={<StudentDashboard />} />
             <Route path="/student/checkabstract" element={<CheckScore />} />
             <Route path="/student/abstractSubmissionComplete" element={<AbstractComplete />} />
@@ -136,8 +138,6 @@ function App() {
             <Route path="/register/successful" element={<RegisterComplete />} />
             <Route path="/student/insertdata" element={<InsertData />} />
             <Route path="/test" element={<TestPage />} />
-            <Route path="/register-student" element={<RegisterStudent />} />
-            <Route path="/register-staff" element={<RegisterStaff />} />
 
             
           </Routes>

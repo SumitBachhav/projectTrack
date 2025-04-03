@@ -32,7 +32,7 @@ function CheckScore() {
                 const domainOptions = response.data.data.domains.map((domain) => ({
                     value: domain,
                     label: domain,
-                    isDisabled: submittedDomains.includes(domain), // Disable submitted domains
+                    // isDisabled: submittedDomains.includes(domain), // Disable submitted domains
                 }));
                 setDomains(domainOptions);
             } catch (error) {
