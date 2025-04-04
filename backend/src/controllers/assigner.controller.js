@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
 import { User } from "../models/user.model.js";
 import { Task } from "../models/assigner.model.js";
+import { Milestone } from "../models/assigner.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 // Assign a Task
-export const assignTask = async (req, res) => {
+const assignTask = async (req, res) => {
   try {
     const { title, description, receiverId, deadline, remark } = req.body;
     const assignerId = req.user.id;
@@ -67,7 +68,7 @@ export const assignTask = async (req, res) => {
 };
 
 //accept Task (Receiver)
-export const acceptTask = async (req, res) => {
+const acceptTask = async (req, res) => {
   try {
     const { id } = req.params;
     const task = await Task.findById(id);
@@ -89,7 +90,7 @@ export const acceptTask = async (req, res) => {
 };
 
 // edit task assigner only
-export const editTask = async (req, res) => {
+const editTask = async (req, res) => {
   try {
     // auth check
     if (!req.user?.id) {
@@ -202,7 +203,7 @@ export const editTask = async (req, res) => {
 };
 
 //delete Task (Only assigner)
-export const deleteTask = async (req, res) => {
+const deleteTask = async (req, res) => {
   try {
     const { id } = req.params;
     const task = await Task.findById(id);
@@ -220,7 +221,7 @@ export const deleteTask = async (req, res) => {
 };
 
 //reassign Task (Only assigner)
-export const reassignTask = async (req, res) => {
+const reassignTask = async (req, res) => {
   try {
     const { id } = req.params;
     const { newReceiverId } = req.body;
@@ -242,7 +243,7 @@ export const reassignTask = async (req, res) => {
 };
 
 //mark as Complete (Receiver)
-export const markComplete = async (req, res) => {
+const markComplete = async (req, res) => {
   try {
     const { id } = req.params;
     const task = await Task.findById(id);
@@ -262,7 +263,7 @@ export const markComplete = async (req, res) => {
 };
 
 //approve Completion (only assigner)
-export const approveCompletion = async (req, res) => {
+const approveCompletion = async (req, res) => {
   try {
     const { id } = req.params;
     const { remark, isApproved } = req.body;
@@ -287,7 +288,7 @@ export const approveCompletion = async (req, res) => {
 };
 
 //Get on all tasks for the current user (
-export const getAllTasks = async (req, res) => {
+const getAllTasks = async (req, res) => {
   try {
     const userId = req.user.id;
 
@@ -346,7 +347,7 @@ export const getAllTasks = async (req, res) => {
 };
 
 //get task by id of task
-export const getTaskById = async (req, res) => {
+const getTaskById = async (req, res) => {
   try {
     const taskId = req.params.id;
     const userId = req.user.id;
@@ -419,7 +420,7 @@ export const getTaskById = async (req, res) => {
 };
 
 //get task by user
-export const getTasksAcceptedByUser = async (req, res) => {
+const getTasksAcceptedByUser = async (req, res) => {
   try {
     const userId = req.user.id;
 
@@ -479,7 +480,7 @@ export const getTasksAcceptedByUser = async (req, res) => {
   }
 };
 
-export const getMyCompletedTasks = async (req, res) => {
+const getMyCompletedTasks = async (req, res) => {
   try {
     const tasks = await Task.find({
       receiver: req.user.id, //tasks assigned to user
@@ -520,7 +521,7 @@ export const getMyCompletedTasks = async (req, res) => {
   }
 };
 
-export const getAllCompletedTasks = async (req, res) => {
+const getAllCompletedTasks = async (req, res) => {
   try {
     const tasks = await Task.find({ status: "completed" })
       .select("title deadline status _id assigner receiver")
@@ -544,7 +545,7 @@ export const getAllCompletedTasks = async (req, res) => {
   }
 };
 
-export const getAssignedTasks = async (req, res) => {
+const getAssignedTasks = async (req, res) => {
   try {
     const tasks = await Task.find({
       assigner: req.user.id, // tasks assigned by current user
@@ -573,7 +574,7 @@ export const getAssignedTasks = async (req, res) => {
 };
 
 // comments
-export const addComment = async (req, res) => {
+const addComment = async (req, res) => {
   try {
     const { id: taskId } = req.params;
     const { content } = req.body;
@@ -624,7 +625,7 @@ export const addComment = async (req, res) => {
   }
 };
 
-export const getComments = async (req, res) => {
+const getComments = async (req, res) => {
   try {
     const task = await Task.findById(req.params.id)
       .select("comments")
@@ -643,3 +644,95 @@ export const getComments = async (req, res) => {
     throw new ApiError(500, `Error fetching comments: ${error.message}`);
   }
 };
+
+const createMilestone = async (req, res) => {
+  try {
+    // 1. Role Check (Staff-Only)
+    if (req.user.role !== 'staff') {
+      return res.status(403).json({ error: 'Only staff can create milestones' });
+    }
+
+    // 2. Input Validation
+    const { milestone } = req.body;
+    if (!milestone?.trim() || typeof milestone !== 'string') { // Check for empty strings
+      return res.status(400).json({ error: 'Milestone text is required and cannot be empty' });
+    }
+
+    // 3. Create Milestone
+    const newMilestone = new Milestone({
+      milestone: milestone.trim(), // Trim whitespace
+      createdBy: req.user.id, // Ensure this is a valid ObjectId
+    });
+
+    const savedMilestone = await newMilestone.save();
+
+    // 4. Format Response
+    res.status(201).json({
+      id: savedMilestone._id,
+      milestone: savedMilestone.milestone,
+      createdBy: savedMilestone.createdBy.toString(), // Convert to string
+      createdAt: savedMilestone.createdAt.toISOString(),
+    });
+
+  } catch (error) {
+    // 5. Error Handling
+    console.error('Error creating milestone:', error);
+
+    // Handle duplicate key errors (if applicable)
+    if (error.code === 11000) {
+      return res.status(409).json({ error: 'Milestone already exists' });
+    }
+
+    // Handle validation errors (e.g., invalid createdBy ObjectId)
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ error: error.message });
+    }
+
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+const getAllMilestones = async (req, res) => {
+  try {
+ 
+    const milestones = await Milestone.find()
+      .sort({ createdAt: -1 }) // new first
+      .populate('createdBy', 'username email'); // Include staff user details
+
+    // format res to match post api endpoint
+    const formattedMilestones = milestones.map((milestone) => ({
+      id: milestone._id,
+      milestone: milestone.milestone,
+      createdBy: milestone.createdBy?._id.toString(), // User ID
+      createdAt: milestone.createdAt.toISOString(),
+      // Optional: Include populated user fields
+      staffName: milestone.createdBy?.username 
+    }));
+
+    res.status(200).json(formattedMilestones);
+
+  } catch (error) {
+    console.error('Error fetching milestones:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+export {
+  assignTask,
+  acceptTask,
+  editTask,
+  deleteTask,
+  reassignTask,
+  markComplete,
+  approveCompletion,
+  getAllTasks,
+  getTaskById,
+  getTasksAcceptedByUser,
+  getMyCompletedTasks,
+  getAllCompletedTasks,
+  getAssignedTasks,
+  getComments,
+  addComment,
+  createMilestone,
+  getAllMilestones
+}
