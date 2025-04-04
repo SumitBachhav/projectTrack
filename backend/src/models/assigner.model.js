@@ -77,4 +77,25 @@ const taskSchema = new Schema(
   { timestamps: true }  
 );
 
+const milestoneSchema = new Schema(
+  {
+    milestone: {
+      type: String,
+      required: [true, "Milestone text is required"],
+      trim: true,
+    },
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  { _id: true }  
+);
+
 export const Task = mongoose.model("Task", taskSchema);
+export const Milestone = mongoose.model("Milestone", milestoneSchema);

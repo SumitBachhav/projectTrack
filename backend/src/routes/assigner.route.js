@@ -15,7 +15,9 @@ import {
   getAllCompletedTasks,
   getAssignedTasks,
   getComments,
-  addComment
+  addComment,
+  createMilestone,
+  getAllMilestones
 } from '../controllers/assigner.controller.js';
 
 const router = express.Router();
@@ -27,6 +29,10 @@ router.route('/')
   
 router.route('/me')
   .get(getTasksAcceptedByUser) // task accepted by usr
+
+router.route('/milestone')
+  .post(createMilestone)  
+  .get(getAllMilestones)
 
 router.route('/me/completed') 
   .get(getMyCompletedTasks)
