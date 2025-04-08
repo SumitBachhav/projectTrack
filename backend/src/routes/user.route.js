@@ -9,13 +9,16 @@ import {
     check,
     registerStaff,
     getDomains,
-    getDomainsAndSkills
+    getDomainsAndSkills,
+    getAllUsers
 
 } from "../controllers/user.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { refreshTokenMiddleware } from "../middlewares/refreshToken.middleware.js";
 
 const router = Router()
+router.route('/').get(
+    getAllUsers)
 
 router.route("/register").post(
     registerUser)
