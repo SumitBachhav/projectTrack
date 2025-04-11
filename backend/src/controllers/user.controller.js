@@ -269,7 +269,7 @@ const registerStudent = asyncHandler(async (req, res) => {
         userID: userID.toLowerCase(),
         year,
         division: division.toLowerCase(),
-        department : department.toLowerCase(),
+        department : department,
         certificates,
         github,
     })
@@ -364,6 +364,37 @@ const getDomainsAndSkills = asyncHandler(async (req, res) => {
     )
 })
 
+const getAllUsers = asyncHandler(async (req, res) => {
+    try {
+      // Fetch names and IDs
+      const users = await User.find({})
+        .select("name _id") // Include _id
+        .lean();
+  
+      if (!users?.length) {
+        return res.status(404).json(new ApiResponse(404, [], "No users found"));
+      }
+  
+      // Create the desired response format
+      const names = users.map((user) => ({
+        name: user.name,
+        id: user._id.toString(), // Convert ObjectId to string
+      }));
+  
+      return res
+        .status(200)
+        .json(
+          new ApiResponse(
+            200,
+            { names },
+            "User names and IDs fetched successfully"
+          )
+        );
+    } catch (error) {
+      throw new ApiError(500, `Error fetching users: ${error.message}`);
+    }
+  });
+
 
 export {
     registerUser,
@@ -376,4 +407,5 @@ export {
     registerStaff,
     getDomains,
     getDomainsAndSkills,
+    getAllUsers
 }
