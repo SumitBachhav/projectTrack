@@ -80,6 +80,79 @@ const registerUser = asyncHandler(async (req, res) => {
 
 })
 
+const bulkRegisterUsers = asyncHandler(async (req, res) => {
+    const users = req.body; // Expecting an array of user objects
+
+    if (!Array.isArray(users) || users.length === 0) {
+        throw new ApiError(400, "Request body must be a non-empty array of user objects");
+    }
+
+    const results = {
+        success: [], // will hold registered user info
+        failed: []   // will hold failure details
+    };
+
+    for (const user of users) {
+        const { name, email, password, role } = user;
+
+        // Validate all required fields
+        if ([name, email, password, role].some(field => !field || field.trim() === "")) {
+            results.failed.push({
+                user,
+                reason: "Missing required fields"
+            });
+            continue;
+        }
+
+        // Check for existing user
+        const existedUser = await User.findOne({ email });
+
+        if (existedUser) {
+            results.failed.push({
+                user,
+                reason: "User with this email already exists"
+            });
+            continue;
+        }
+
+        try {
+            // Create user
+            const newUser = await User.create({
+                name,
+                email,
+                password,
+                role,
+                childId: "none"
+            });
+
+            const cleanUser = await User.findById(newUser._id).select("-password -refreshToken");
+
+            results.success.push(cleanUser);
+        } catch (err) {
+            results.failed.push({
+                user,
+                reason: "Error during user creation"
+            });
+        }
+    }
+
+    return res.status(207).json(
+        new ApiResponse(
+            207,
+            {
+                message: "Bulk registration completed",
+                successCount: results.success.length,
+                failureCount: results.failed.length,
+                successfulUsers: results.success,
+                failedUsers: results.failed
+            },
+            "Processed all users"
+        )
+    );
+});
+
+
+
 const loginUser = asyncHandler(async (req, res) => {
     // req body -> data
     // username or email
@@ -399,6 +472,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
 export {
     registerUser,
     registerStudent,
+    bulkRegisterUsers,
     loginUser,
     logoutUser,
     refreshAccessToken,
@@ -407,5 +481,5 @@ export {
     registerStaff,
     getDomains,
     getDomainsAndSkills,
-    getAllUsers
+    getAllUsers,
 }

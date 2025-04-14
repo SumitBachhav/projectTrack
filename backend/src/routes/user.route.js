@@ -4,6 +4,7 @@ import {
     logoutUser, 
     registerUser, 
     registerStudent,
+    bulkRegisterUsers,
     // refreshAccessToken, 
     changeCurrentPassword, 
     check,
@@ -22,6 +23,9 @@ router.route('/').get(
 
 router.route("/register").post(
     registerUser)
+
+router.route("/bulkRegister").post(
+    bulkRegisterUsers)
 
 router.route("/login").post(loginUser)
 
