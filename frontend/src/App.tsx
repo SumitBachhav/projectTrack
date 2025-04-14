@@ -66,6 +66,7 @@ import { useAuth } from './context/AuthContext';
 import FAQ from './components/FAQ'; // Import FAQ component
 
 import InviteRequestsPage from './components/student/InviteRequestsPage';
+import BulkStudentRegister from './components/BulkStudentRegister.js';
 
 // @ts-ignore
 const ProtectedRoute = ({ children }) => {
@@ -104,6 +105,7 @@ function App() {
             {/* coordinator */}
             <Route path="/coordinator/dashboard" element={<CoordinatorDashboard />} />
             <Route path="/coordinator/uploadAbstracts" element={<UploadAbstracts />} />
+            <Route path="/coordinator/bulkRegister" element={<BulkStudentRegister />} />
 
 
 
