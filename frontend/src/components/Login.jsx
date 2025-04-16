@@ -50,7 +50,7 @@ const Login = () => {
         // Redirect to another page after successful login
         if (user.childId == 'none') {
           if (user.role == 'coordinator') {
-            navigate('/coordinator/uploadAbstracts');
+            navigate('/coordinator/dashboard');
           }
           else if (user.role == 'student') {
             console.log("navigating to student registration page");
