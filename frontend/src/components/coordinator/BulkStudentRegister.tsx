@@ -8,9 +8,17 @@ type User = {
   role: string;
 };
 
+type SafeUser = Omit<User, "password">;
+
 type RegistrationResult = {
-  successfulUsers: User[];
-  failedUsers: { user: User; reason: string }[];
+  successfulUsers: SafeUser[];
+  failedUsers: { user: SafeUser; reason: string }[];
+};
+
+type ApiResponse<T> = {
+  statusCode: number;
+  data: T;
+  message: string;
 };
 
 const BulkStudentRegister: React.FC = () => {
@@ -23,6 +31,11 @@ const BulkStudentRegister: React.FC = () => {
     setError(null);
     setResult(null);
 
+    if (!jsonInput.trim()) {
+      setError("Input cannot be empty.");
+      return;
+    }
+
     try {
       const parsedData: User[] = JSON.parse(jsonInput);
 
@@ -33,15 +46,34 @@ const BulkStudentRegister: React.FC = () => {
 
       setLoading(true);
 
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/user/bulkRegister`, parsedData, { withCredentials: true }); // Change this to your actual route
+      const response = await axios.post<ApiResponse<RegistrationResult>>(
+        `${import.meta.env.VITE_API_URL}/api/v1/user/bulkRegister`,
+        parsedData,
+        { withCredentials: true }
+      );
+
       const { successfulUsers, failedUsers } = response.data.data;
 
       setResult({ successfulUsers, failedUsers });
     } catch (err: any) {
       console.error(err);
-      setError("Invalid JSON input or server error.");
+
+      if (axios.isAxiosError(err) && err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else {
+        setError("Invalid JSON input. Make sure it is a properly formatted array of objects.");
+      }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const formatJson = () => {
+    try {
+      const formatted = JSON.stringify(JSON.parse(jsonInput), null, 2);
+      setJsonInput(formatted);
+    } catch {
+      setError("Cannot format invalid JSON");
     }
   };
 
@@ -56,13 +88,22 @@ const BulkStudentRegister: React.FC = () => {
         onChange={(e) => setJsonInput(e.target.value)}
       />
 
-      <button
-        onClick={handleSubmit}
-        disabled={loading}
-        className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all"
-      >
-        {loading ? "Registering..." : "Submit"}
-      </button>
+      <div className="flex gap-4 mt-4">
+        <button
+          onClick={handleSubmit}
+          disabled={loading}
+          className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all"
+        >
+          {loading ? "Registering..." : "Submit"}
+        </button>
+
+        <button
+          onClick={formatJson}
+          className="px-6 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-all"
+        >
+          Format JSON
+        </button>
+      </div>
 
       {error && (
         <div className="mt-4 text-red-600 font-semibold">{error}</div>

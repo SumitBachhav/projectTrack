@@ -68,7 +68,7 @@ import FAQ from './components/FAQ'; // Import FAQ component
 import SendEmailForm from './components/coordinator/SendEmailForm'
 
 import InviteRequestsPage from './components/student/InviteRequestsPage';
-import BulkStudentRegister from './components/BulkStudentRegister.js';
+import BulkStudentRegister from './components/coordinator/BulkStudentRegister.js';
 
 // @ts-ignore
 const ProtectedRoute = ({ children }) => {

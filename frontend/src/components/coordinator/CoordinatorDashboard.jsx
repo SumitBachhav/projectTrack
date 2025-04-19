@@ -59,13 +59,13 @@ const CoordinatorDashboard = () => {
         {/* Manage Groups */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <div className="bg-gray-50 p-6 rounded-lg shadow-md">
-            <h3 className="text-xl font-semibold text-gray-700 mb-4">Manage Student Groups</h3>
-            <p className="text-lg text-gray-500">View and manage project groups.</p>
+            <h3 className="text-xl font-semibold text-gray-700 mb-4">Register Students</h3>
+            <p className="text-lg text-gray-500">Register students .</p>
             <button
-              onClick={() => navigate('/coordinator/manageGroups')}
+              onClick={() => navigate('/coordinator/bulkRegister')}
               className="mt-4 w-full py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200"
             >
-              Manage Groups
+              Register
             </button>
           </div>
 
