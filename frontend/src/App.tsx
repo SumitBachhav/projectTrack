@@ -64,6 +64,8 @@ import Notifications from './components/Notifications';
 import { useAuth } from './context/AuthContext';
 // @ts-ignore
 import FAQ from './components/FAQ'; // Import FAQ component
+// @ts-ignore
+import SendEmailForm from './components/coordinator/SendEmailForm'
 
 import InviteRequestsPage from './components/student/InviteRequestsPage';
 import BulkStudentRegister from './components/BulkStudentRegister.js';
@@ -106,6 +108,7 @@ function App() {
             <Route path="/coordinator/dashboard" element={<CoordinatorDashboard />} />
             <Route path="/coordinator/uploadAbstracts" element={<UploadAbstracts />} />
             <Route path="/coordinator/bulkRegister" element={<BulkStudentRegister />} />
+            <Route path='/coordinator/sendEmailForm' element={<SendEmailForm />} />
 
 
 
