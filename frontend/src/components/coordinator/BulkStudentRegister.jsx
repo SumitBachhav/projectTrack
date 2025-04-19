@@ -1,30 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-type User = {
-  name: string;
-  email: string;
-  password: string;
-  role: string;
-};
-
-type SafeUser = Omit<User, "password">;
-
-type RegistrationResult = {
-  successfulUsers: SafeUser[];
-  failedUsers: { user: SafeUser; reason: string }[];
-};
-
-type ApiResponse<T> = {
-  statusCode: number;
-  data: T;
-  message: string;
-};
-
-const BulkStudentRegister: React.FC = () => {
-  const [jsonInput, setJsonInput] = useState<string>("");
-  const [result, setResult] = useState<RegistrationResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
+const BulkStudentRegister = () => {
+  const [jsonInput, setJsonInput] = useState("");
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
@@ -37,7 +17,7 @@ const BulkStudentRegister: React.FC = () => {
     }
 
     try {
-      const parsedData: User[] = JSON.parse(jsonInput);
+      const parsedData = JSON.parse(jsonInput);
 
       if (!Array.isArray(parsedData)) {
         setError("Input must be a JSON array.");
@@ -46,7 +26,7 @@ const BulkStudentRegister: React.FC = () => {
 
       setLoading(true);
 
-      const response = await axios.post<ApiResponse<RegistrationResult>>(
+      const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/v1/user/bulkRegister`,
         parsedData,
         { withCredentials: true }
@@ -55,7 +35,7 @@ const BulkStudentRegister: React.FC = () => {
       const { successfulUsers, failedUsers } = response.data.data;
 
       setResult({ successfulUsers, failedUsers });
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
 
       if (axios.isAxiosError(err) && err.response?.data?.message) {

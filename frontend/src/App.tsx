@@ -66,9 +66,11 @@ import { useAuth } from './context/AuthContext';
 import FAQ from './components/FAQ'; // Import FAQ component
 // @ts-ignore
 import SendEmailForm from './components/coordinator/SendEmailForm'
+// @ts-ignore
+import BulkStudentRegister from './components/coordinator/BulkStudentRegister';
+
 
 import InviteRequestsPage from './components/student/InviteRequestsPage';
-import BulkStudentRegister from './components/coordinator/BulkStudentRegister.js';
 
 // @ts-ignore
 const ProtectedRoute = ({ children }) => {
