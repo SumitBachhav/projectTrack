@@ -624,7 +624,6 @@ const studentDashboard = asyncHandler(async (req, res) => {
         )
 });
 
-
 const studentProfile = asyncHandler(async (req, res) => {
     const student = await Student.findById(req.user._id).populate("skills");
     const user = await User.findById(req.mainId);
@@ -662,10 +661,6 @@ export {
     getProjectAndStudentData,
     sendInvitations,
     getInvitesAndRequests,
-<<<<<<< HEAD
-    inviteResponse
-=======
     inviteResponse,
     studentProfile
->>>>>>> ae556d35c1fec0cb434647189ce229e6c6a6240a
 }

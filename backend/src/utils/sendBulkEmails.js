@@ -12,18 +12,34 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendBulkEmails = async (recipients, subject, getHtmlContent) => {
-  const results = await Promise.allSettled(recipients.map(user => {
-    const html = getHtmlContent(user); // user = { name, email, password }
-    return transporter.sendMail({
-      // from: `"Probit Team" <${process.env.EMAIL_USER}>`,
-      to: user.email,
-      subject,
-      html
-    });
-  }));
+  const results = await Promise.allSettled(
+    recipients.map(user => {
+      const html = getHtmlContent(user); // user = { name, email, password }
+      return transporter.sendMail({
+        to: user.email,
+        subject,
+        html
+      });
+    })
+  );
 
-  console.log('results - ',results);
-  return results;
+  const successList = [];
+  const failureList = [];
+
+  results.forEach((result, index) => {
+    const user = recipients[index];
+    if (result.status === 'fulfilled') {
+      successList.push({ email: user.email, name: user.name });
+    } else {
+      failureList.push({
+        email: user.email,
+        name: user.name,
+        error: result.reason?.message || "Unknown error"
+      });
+    }
+  });
+
+  return { successList, failureList };
 };
 
 export default sendBulkEmails;
