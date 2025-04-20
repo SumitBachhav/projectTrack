@@ -662,6 +662,10 @@ export {
     getProjectAndStudentData,
     sendInvitations,
     getInvitesAndRequests,
+<<<<<<< HEAD
+    inviteResponse
+=======
     inviteResponse,
     studentProfile
+>>>>>>> ae556d35c1fec0cb434647189ce229e6c6a6240a
 }
