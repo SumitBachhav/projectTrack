@@ -56,7 +56,7 @@ const CoordinatorDashboard = () => {
           </button>
         </div>
 
-        {/* Manage Groups */}
+        {/* Register students */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <div className="bg-gray-50 p-6 rounded-lg shadow-md">
             <h3 className="text-xl font-semibold text-gray-700 mb-4">Register Students</h3>
@@ -69,15 +69,15 @@ const CoordinatorDashboard = () => {
             </button>
           </div>
 
-          {/* Project Progress Tracking */}
+          {/* Send Invitations */}
           <div className="bg-green-50 p-6 rounded-lg shadow-md">
-            <h3 className="text-xl font-semibold text-gray-700 mb-4">Track Project Progress</h3>
-            <p className="text-lg text-gray-500">Monitor project milestones and deadlines.</p>
+            <h3 className="text-xl font-semibold text-gray-700 mb-4">Send Invitations</h3>
+            <p className="text-lg text-gray-500">Send project invitations.</p>
             <button
-              onClick={() => navigate('/coordinator/projectProgress')}
+              onClick={() => navigate('/coordinator/sendEmailForm')}
               className="mt-4 w-full py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition duration-200"
             >
-              View Progress
+              Send Invitations
             </button>
           </div>
 

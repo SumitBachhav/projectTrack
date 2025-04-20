@@ -1,25 +1,28 @@
 import React, { useState } from 'react';
-import { Menu, X, LogIn, Bell, HelpCircle } from 'lucide-react';
+import { Menu, X, LogIn, Bell, HelpCircle, UserCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/user/logout`, {}, { withCredentials: true });
-      // Call logout regardless of the API response to ensure local state is cleared
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/user/logout`, {}, { withCredentials: true });
       logout();
       window.location.href = '/login';
     } catch (err) {
       console.error('Logout error:', err);
-      // Still logout locally even if the API call fails
       logout();
       window.location.href = '/login';
     }
+  };
+
+  const goToProfile = () => {
+    navigate('/profile');
   };
 
   return (
@@ -28,37 +31,46 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
-            <Link to="/" className="flex items-center">
+            <button onClick={() => navigate('/')} className="flex items-center">
               <span className="text-white text-xl font-bold">ProjectTrack</span>
-            </Link>
+            </button>
           </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-2">
-            <Link 
-              to="/faq" 
+            <button
+              onClick={() => navigate('/faq')}
               className="flex items-center px-3 py-2 text-gray-100 hover:text-white rounded-md hover:bg-blue-700 transition-colors"
             >
               <HelpCircle className="w-4 h-4 mr-2" />
               FAQ
-            </Link>
+            </button>
             {isAuthenticated && (
-              <Link 
-                to="/notifications" 
-                className="flex items-center px-3 py-2 text-gray-100 hover:text-white rounded-md hover:bg-blue-700 transition-colors"
-              >
-                <Bell className="w-4 h-4 mr-2" />
-                Notifications
-              </Link>
+              <>
+                <button
+                  onClick={() => navigate('/notifications')}
+                  className="flex items-center px-3 py-2 text-gray-100 hover:text-white rounded-md hover:bg-blue-700 transition-colors"
+                >
+                  <Bell className="w-4 h-4 mr-2" />
+                  Notifications
+                </button>
+                <button
+                  onClick={() => navigate('/student/studentProfile')}
+                  className="flex items-center px-3 py-2 text-gray-100 hover:text-white rounded-md hover:bg-blue-700 transition-colors"
+                >
+                  <UserCircle className="w-4 h-4 mr-2" />
+                  Profile
+                </button>
+              </>
             )}
             {!isAuthenticated ? (
-              <Link
-                to="/login"
+              <button
+                onClick={() => navigate('/login')}
                 className="ml-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full text-blue-600 bg-white hover:bg-blue-50 transition duration-300 shadow-lg"
               >
                 <LogIn className="w-4 h-4 mr-2" />
                 Login
-              </Link>
+              </button>
             ) : (
               <button
                 onClick={handleLogout}
@@ -84,30 +96,39 @@ const Navbar = () => {
         {isOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1">
-              <Link
-                to="/faq"
+              <button
+                onClick={() => navigate('/faq')}
                 className="flex items-center px-3 py-2 text-gray-100 hover:text-white rounded-md hover:bg-blue-700 transition-colors"
               >
                 <HelpCircle className="w-4 h-4 mr-2" />
                 FAQ
-              </Link>
+              </button>
               {isAuthenticated && (
-                <Link
-                  to="/notifications"
-                  className="flex items-center px-3 py-2 text-gray-100 hover:text-white rounded-md hover:bg-blue-700 transition-colors"
-                >
-                  <Bell className="w-4 h-4 mr-2" />
-                  Notifications
-                </Link>
+                <>
+                  <button
+                    onClick={() => navigate('/notifications')}
+                    className="flex items-center px-3 py-2 text-gray-100 hover:text-white rounded-md hover:bg-blue-700 transition-colors"
+                  >
+                    <Bell className="w-4 h-4 mr-2" />
+                    Notifications
+                  </button>
+                  <button
+                    onClick={goToProfile}
+                    className="flex items-center px-3 py-2 text-gray-100 hover:text-white rounded-md hover:bg-blue-700 transition-colors"
+                  >
+                    <UserCircle className="w-4 h-4 mr-2" />
+                    Profile
+                  </button>
+                </>
               )}
               {!isAuthenticated ? (
-                <Link
-                  to="/login"
+                <button
+                  onClick={() => navigate('/login')}
                   className="flex items-center px-3 py-2 text-gray-100 hover:text-white rounded-md hover:bg-blue-700 transition-colors"
                 >
                   <LogIn className="w-4 h-4 mr-2" />
                   Login
-                </Link>
+                </button>
               ) : (
                 <button
                   onClick={handleLogout}

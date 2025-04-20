@@ -68,7 +68,10 @@ import FAQ from './components/FAQ'; // Import FAQ component
 import SendEmailForm from './components/coordinator/SendEmailForm'
 // @ts-ignore
 import BulkStudentRegister from './components/coordinator/BulkStudentRegister';
-
+// @ts-ignore
+import StudentProfile from './components/student/StudentProfile';
+// @ts-ignore
+import ChangePassword from './components/ChangePassword';
 
 import InviteRequestsPage from './components/student/InviteRequestsPage';
 
@@ -104,6 +107,7 @@ function App() {
               } 
             />
             <Route path="/faq" element={<FAQ />} /> {/* Add FAQ route */}
+            <Route path="/changePassword" element={<ChangePassword />} />
 
 
             {/* coordinator */}
@@ -137,6 +141,7 @@ function App() {
             <Route path="/student/groupMembers" element={<GroupMembers />} />
             <Route path="/student/submitSkills" element={<SubmitSkill />} />
             <Route path="/student/inviteRequests" element={<InviteRequestsPage />} />
+            <Route path="/student/studentProfile" element={<StudentProfile />} />
 
 
             {/* not sure */}
