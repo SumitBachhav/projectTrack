@@ -13,7 +13,8 @@ import { check,
     getProjectAndStudentData,
     sendInvitations,
     getInvitesAndRequests,
-    inviteResponse
+    inviteResponse,
+    studentProfile
  } from "../controllers/student.controller.js";
 
 const router = Router()
@@ -31,6 +32,7 @@ router.route("/getProjectAndStudentData").get(verifyJWT, refreshTokenMiddleware,
 router.route("/sendInvitations").post(verifyJWT, refreshTokenMiddleware, sendInvitations)
 router.route("/getInvitesAndRequests").get(verifyJWT, refreshTokenMiddleware, getInvitesAndRequests)
 router.route("/inviteResponse").post(verifyJWT, refreshTokenMiddleware, inviteResponse)
+router.route("/studentProfile").get(verifyJWT, refreshTokenMiddleware, studentProfile)
 
 
 // router.route("/login").post(loginUser)
