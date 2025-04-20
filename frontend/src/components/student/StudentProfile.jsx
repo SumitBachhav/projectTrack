@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-// SkillCard component
 const SkillCard = ({ skill }) => (
     <div className="bg-gray-50 hover:shadow-md transition p-4 rounded-lg border border-gray-200">
         <h4 className="font-semibold text-lg text-gray-800 mb-1">{skill.domain}</h4>
@@ -19,7 +18,6 @@ const SkillCard = ({ skill }) => (
     </div>
 );
 
-// CertificatesList component
 const CertificatesList = ({ certificates }) => (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
         {certificates.length > 0 ? (
@@ -40,6 +38,9 @@ const CertificatesList = ({ certificates }) => (
 const StudentProfile = () => {
     const [student, setStudent] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [forgotLoading, setForgotLoading] = useState(false);
+    const [message, setMessage] = useState('');
+    const [error, setError] = useState('');
 
     const navigate = useNavigate();
 
@@ -60,6 +61,24 @@ const StudentProfile = () => {
 
         fetchStudentProfile();
     }, []);
+
+    const handleForgotPassword = async () => {
+        setForgotLoading(true);
+        setMessage('');
+        setError('');
+
+        try {
+            const res = await axios.post(
+                `${import.meta.env.VITE_API_URL}/api/v1/email/sendNewCredentials`,
+                { withCredentials: true }
+            );
+            setMessage("A new password has been generated and sent to your email. Please check your inbox.");
+        } catch (err) {
+            setError(err.response?.data?.message || "Something went wrong. Please try again.");
+        } finally {
+            setForgotLoading(false);
+        }
+    };
 
     const initials = useMemo(() => student?.name?.charAt(0).toUpperCase() || "?", [student]);
 
@@ -89,15 +108,14 @@ const StudentProfile = () => {
                 </div>
             </div>
 
-            {/* Profile Info Section */}
+            {/* Basic Info */}
             <div className="mb-8">
                 <h2 className="text-xl font-bold text-gray-800 mb-4 border-b pb-1">Basic Information</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    {[
-                        { label: "User ID", value: student.userID },
-                        { label: "Year", value: student.year },
-                        { label: "Division", value: student.division || "N/A" },
-                        { label: "Department", value: student.department },
+                    {[{ label: "User ID", value: student.userID },
+                    { label: "Year", value: student.year },
+                    { label: "Division", value: student.division || "N/A" },
+                    { label: "Department", value: student.department }
                     ].map((field, idx) => (
                         <div key={idx}>
                             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
@@ -122,7 +140,7 @@ const StudentProfile = () => {
                 </div>
             </div>
 
-            {/* Skills Section */}
+            {/* Skills */}
             <div className="mb-8">
                 <h2 className="text-xl font-bold text-gray-800 mb-4 border-b pb-1">Skills</h2>
                 {student.skills?.length > 0 ? (
@@ -136,22 +154,30 @@ const StudentProfile = () => {
                 )}
             </div>
 
-            {/* Certificates Section */}
+            {/* Certificates */}
             <div className="mb-8">
                 <h2 className="text-xl font-bold text-gray-800 mb-4 border-b pb-1">Certificates</h2>
                 <CertificatesList certificates={student.certificates || []} />
             </div>
 
-            {/* Action Buttons */}
+            {/* Messages */}
+            {(message || error) && (
+                <div className={`p-4 rounded-lg mb-4 ${message ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                    {message || error}
+                </div>
+            )}
+
+            {/* Actions */}
             <div className="flex justify-end mt-8 gap-4">
                 <button
-                    onClick={() => window.location.href = "/forgot-password"}
-                    className="bg-gray-100 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-200 transition text-sm font-medium"
+                    onClick={handleForgotPassword}
+                    className="bg-gray-100 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-200 transition text-sm font-medium disabled:opacity-50"
+                    disabled={forgotLoading}
                 >
-                    Forgot Password
+                    {forgotLoading ? "Sending..." : "Forgot Password"}
                 </button>
                 <button
-                    onClick={() => window.location.href = "/changePassword"}
+                    onClick={() => navigate("/changePassword")}
                     className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm font-medium"
                 >
                     Change Password

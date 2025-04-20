@@ -1,16 +1,8 @@
-<<<<<<< HEAD
-import React, { useState } from "react";
-import { Menu, X, LogIn, Bell, HelpCircle, CheckSquare } from "lucide-react";
-import { useAuth } from "../context/AuthContext";
-import { Link } from "react-router-dom";
-import axios from "axios";
-=======
 import React, { useState } from 'react';
-import { Menu, X, LogIn, Bell, HelpCircle, UserCircle } from 'lucide-react';
+import { Menu, X, LogIn, Bell, HelpCircle, UserCircle, CheckSquare } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
->>>>>>> ae556d35c1fec0cb434647189ce229e6c6a6240a
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,32 +11,18 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-<<<<<<< HEAD
-      const response = await axios.post(
-        "/api/v1/user/logout",
-        {},
-        { withCredentials: true }
-      );
-      // Call logout regardless of the API response to ensure local state is cleared
-=======
       await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/user/logout`, {}, { withCredentials: true });
->>>>>>> ae556d35c1fec0cb434647189ce229e6c6a6240a
       logout();
-      window.location.href = "/login";
+      window.location.href = '/login';
     } catch (err) {
-<<<<<<< HEAD
-      console.error("Logout error:", err);
-      // Still logout locally even if the API call fails
-=======
       console.error('Logout error:', err);
->>>>>>> ae556d35c1fec0cb434647189ce229e6c6a6240a
       logout();
-      window.location.href = "/login";
+      window.location.href = '/login';
     }
   };
 
   const goToProfile = () => {
-    navigate('/profile');
+    navigate('/student/studentProfile');
   };
 
   return (
@@ -60,13 +38,8 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-2">
-<<<<<<< HEAD
-            <Link
-              to="/faq"
-=======
             <button
               onClick={() => navigate('/faq')}
->>>>>>> ae556d35c1fec0cb434647189ce229e6c6a6240a
               className="flex items-center px-3 py-2 text-gray-100 hover:text-white rounded-md hover:bg-blue-700 transition-colors"
             >
               <HelpCircle className="w-4 h-4 mr-2" />
@@ -74,36 +47,27 @@ const Navbar = () => {
             </button>
             {isAuthenticated && (
               <>
-<<<<<<< HEAD
-                <Link
-                  to="/notifications"
-=======
                 <button
                   onClick={() => navigate('/notifications')}
->>>>>>> ae556d35c1fec0cb434647189ce229e6c6a6240a
                   className="flex items-center px-3 py-2 text-gray-100 hover:text-white rounded-md hover:bg-blue-700 transition-colors"
                 >
                   <Bell className="w-4 h-4 mr-2" />
                   Notifications
-<<<<<<< HEAD
-                </Link>
-                <Link
-                  to="/task"
+                </button>
+                <button
+                  onClick={() => navigate('/task')}
                   className="flex items-center px-3 py-2 text-gray-100 hover:text-white rounded-md hover:bg-blue-700 transition-colors"
                 >
                   <CheckSquare className="w-4 h-4 mr-2" />
                   Tasks
-                </Link>
-=======
                 </button>
                 <button
-                  onClick={() => navigate('/student/studentProfile')}
+                  onClick={goToProfile}
                   className="flex items-center px-3 py-2 text-gray-100 hover:text-white rounded-md hover:bg-blue-700 transition-colors"
                 >
                   <UserCircle className="w-4 h-4 mr-2" />
                   Profile
                 </button>
->>>>>>> ae556d35c1fec0cb434647189ce229e6c6a6240a
               </>
             )}
             {!isAuthenticated ? (
@@ -130,11 +94,7 @@ const Navbar = () => {
               onClick={() => setIsOpen(!isOpen)}
               className="p-2 rounded-md text-gray-100 hover:text-white hover:bg-blue-700"
             >
-              {isOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
-              )}
+              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
           </div>
         </div>
@@ -152,27 +112,19 @@ const Navbar = () => {
               </button>
               {isAuthenticated && (
                 <>
-<<<<<<< HEAD
-                  <Link
-                    to="/notifications"
-=======
                   <button
                     onClick={() => navigate('/notifications')}
->>>>>>> ae556d35c1fec0cb434647189ce229e6c6a6240a
                     className="flex items-center px-3 py-2 text-gray-100 hover:text-white rounded-md hover:bg-blue-700 transition-colors"
                   >
                     <Bell className="w-4 h-4 mr-2" />
                     Notifications
-<<<<<<< HEAD
-                  </Link>
-                  <Link
-                    to="/tasks"
+                  </button>
+                  <button
+                    onClick={() => navigate('/task')}
                     className="flex items-center px-3 py-2 text-gray-100 hover:text-white rounded-md hover:bg-blue-700 transition-colors"
                   >
                     <CheckSquare className="w-4 h-4 mr-2" />
                     Tasks
-                  </Link>
-=======
                   </button>
                   <button
                     onClick={goToProfile}
@@ -181,7 +133,6 @@ const Navbar = () => {
                     <UserCircle className="w-4 h-4 mr-2" />
                     Profile
                   </button>
->>>>>>> ae556d35c1fec0cb434647189ce229e6c6a6240a
                 </>
               )}
               {!isAuthenticated ? (
