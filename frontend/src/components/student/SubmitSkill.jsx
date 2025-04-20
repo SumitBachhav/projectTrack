@@ -20,7 +20,9 @@ const SkillSetSubmission = () => {
     useEffect(() => {
         const fetchDomainsAndSkills = async () => {
             try {
-                const response = await axios.get('/api/v1/user/getDomainsAndSkills');
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/user/getDomainsAndSkills`, {
+                    withCredentials: true
+                });
                 setSkillOptions(response.data.data.domainsWithSkills);
                 console.log(response.data.data.domainsWithSkills);
                 let d = Object.keys(response.data.data.domainsWithSkills);
@@ -87,7 +89,9 @@ const SkillSetSubmission = () => {
         e.preventDefault();
         try {
             console.log(allSkills);
-            await axios.post('/api/v1/student/submitSkills', allSkills);
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/student/submitSkills`, allSkills, {
+                withCredentials: true
+            });
             alert('Skills submitted successfully!');
             navigate('/student/dashboard');  // Navigate to dashboard after successful submission
         } catch (error) {

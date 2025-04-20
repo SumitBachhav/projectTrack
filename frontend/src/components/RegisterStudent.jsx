@@ -27,7 +27,9 @@ const RegisterStudent = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('/api/v1/user/register-student', formData);
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/user/register-student`, formData, {
+                withCredentials: true
+            });
             alert('Registration successful. Please submit your skill sets.');
             navigate('/student/submitSkills');
         } catch (error) {
@@ -65,7 +67,7 @@ const RegisterStudent = () => {
                 {[
                     { name: 'year', options: ['1', '2', '3', '4'] },
                     { name: 'division', options: ['A', 'B', 'None'] },
-                    { name: 'department', options: ['Computer', 'IT', 'Artificial Intelligence and Data Science', 'ENTC'] }
+                    { name: 'department', options: ['Civil Engineering', 'Mechanical Engineering', 'Electrical Engineering', 'Computer Engineering', 'Information Technology', 'Electronics and Telecommunication Engineering', 'Artificial Intelligence and Data Science'] }
                 ].map(({ name, options }) => (
                     <div key={name}>
                         <label className="block text-sm font-medium text-gray-700">{name.charAt(0).toUpperCase() + name.slice(1)}</label>

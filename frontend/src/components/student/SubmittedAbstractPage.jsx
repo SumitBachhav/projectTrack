@@ -9,7 +9,9 @@ const SubmittedAbstractPage = () => {
   useEffect(() => {
     const fetchSubmittedAbstracts = async () => {
       try {
-        const response = await axios.get('/api/v1/student/getSubmittedAbstract');
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/student/getSubmittedAbstract`, {
+          withCredentials: true
+        });
         setSubmittedAbstracts(response.data.data.abstracts);
       } catch (error) {
         console.error("Error fetching submitted abstracts", error);

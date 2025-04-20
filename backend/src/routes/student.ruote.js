@@ -13,7 +13,12 @@ import { check,
     getProjectAndStudentData,
     sendInvitations,
     getInvitesAndRequests,
+<<<<<<< HEAD
     inviteResponse
+=======
+    inviteResponse,
+    studentProfile
+>>>>>>> ae556d35c1fec0cb434647189ce229e6c6a6240a
  } from "../controllers/student.controller.js";
 
 const router = Router()
@@ -31,6 +36,10 @@ router.route("/getProjectAndStudentData").get(verifyJWT, refreshTokenMiddleware,
 router.route("/sendInvitations").post(verifyJWT, refreshTokenMiddleware, sendInvitations)
 router.route("/getInvitesAndRequests").get(verifyJWT, refreshTokenMiddleware, getInvitesAndRequests)
 router.route("/inviteResponse").post(verifyJWT, refreshTokenMiddleware, inviteResponse)
+<<<<<<< HEAD
+=======
+router.route("/studentProfile").get(verifyJWT, refreshTokenMiddleware, studentProfile)
+>>>>>>> ae556d35c1fec0cb434647189ce229e6c6a6240a
 
 
 // router.route("/login").post(loginUser)

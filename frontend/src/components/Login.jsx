@@ -28,6 +28,7 @@ const Login = () => {
     setError("");
 
     try {
+<<<<<<< HEAD
       const response = await axios.post(
         "/api/v1/user/login",
         {
@@ -38,6 +39,14 @@ const Login = () => {
           withCredentials: true, // Ensure cookies are sent with requests
         }
       );
+=======
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/user/login`, {
+        email,
+        password,
+      }, {
+        withCredentials: true,  // Ensure cookies are sent with requests
+      });
+>>>>>>> ae556d35c1fec0cb434647189ce229e6c6a6240a
 
       // Assuming the backend sends the user info after successful login
       const { success, data, message } = await response.data;
@@ -53,10 +62,18 @@ const Login = () => {
         console.log(user);
 
         // Redirect to another page after successful login
+<<<<<<< HEAD
         if (user.childId == "none") {
           if (user.role == "coordinator") {
             navigate("/coordinator/uploadAbstracts");
           } else if (user.role == "student") {
+=======
+        if (user.childId == 'none') {
+          if (user.role == 'coordinator') {
+            navigate('/coordinator/dashboard');
+          }
+          else if (user.role == 'student') {
+>>>>>>> ae556d35c1fec0cb434647189ce229e6c6a6240a
             console.log("navigating to student registration page");
             navigate("/register-student", { state: { user } });
           } else if (user.role == "staff") {

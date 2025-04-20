@@ -625,6 +625,31 @@ const studentDashboard = asyncHandler(async (req, res) => {
 });
 
 
+const studentProfile = asyncHandler(async (req, res) => {
+    const student = await Student.findById(req.user._id).populate("skills");
+    const user = await User.findById(req.mainId);
+
+    if (!student) {
+        throw new ApiError(404, "Student not found");
+    }
+
+    const response = {
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        userID: student.userID,
+        year: student.year,
+        division: student.division,
+        department: student.department,
+        skills: student.skills,
+        certificates: student.certificates,
+        github: student.github
+    }
+
+    return res.status(200).json(new ApiResponse(200, response, "Profile loaded successfully"));
+});
+
+
 
 export {
     check,
@@ -637,5 +662,10 @@ export {
     getProjectAndStudentData,
     sendInvitations,
     getInvitesAndRequests,
+<<<<<<< HEAD
     inviteResponse
+=======
+    inviteResponse,
+    studentProfile
+>>>>>>> ae556d35c1fec0cb434647189ce229e6c6a6240a
 }

@@ -27,7 +27,9 @@ const RegisterStaff = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('/api/v1/user/register-staff', formData);
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/user/register-staff`, formData, {
+        withCredentials: true
+      });
       console.log(formData);
       alert('Registration successful. Please submit your skill sets.');
       navigate('/staff/submitSkills');

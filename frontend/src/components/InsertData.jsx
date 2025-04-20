@@ -31,6 +31,9 @@ function InsertData() {
                     keywords: formData.keyword.split(',').map(item => item.trim()),
                 },
                 {
+                    withCredentials: true
+                },
+                {
                   headers: {
                     // 'Authorization': 'Bearer your-token-here',
                     'Content-Type': 'application/json',

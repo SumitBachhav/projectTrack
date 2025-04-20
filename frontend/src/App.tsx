@@ -64,7 +64,22 @@ import Navbar from "./components/Navbar";
 // @ts-ignore
 import Notifications from "./components/Notifications";
 // @ts-ignore
+<<<<<<< HEAD
 import { useAuth } from "./context/AuthContext";
+=======
+import FAQ from './components/FAQ'; // Import FAQ component
+// @ts-ignore
+import SendEmailForm from './components/coordinator/SendEmailForm'
+// @ts-ignore
+import BulkStudentRegister from './components/coordinator/BulkStudentRegister';
+// @ts-ignore
+import StudentProfile from './components/student/StudentProfile';
+// @ts-ignore
+import ChangePassword from './components/ChangePassword';
+
+import InviteRequestsPage from './components/student/InviteRequestsPage';
+
+>>>>>>> ae556d35c1fec0cb434647189ce229e6c6a6240a
 // @ts-ignore
 import FAQ from "./components/FAQ"; // Import FAQ component
 import InviteRequestsPage from "./components/student/InviteRequestsPage";
@@ -92,6 +107,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
 
 function App() {
   return (
+<<<<<<< HEAD
     <>
       <AuthProvider>
         <ToastProvider>
@@ -237,6 +253,77 @@ function App() {
       </AuthProvider>
     </>
   );
+=======
+    <AuthProvider>
+      <BrowserRouter>
+        <Navbar />
+        <Layout>
+          <Routes>
+
+            {/* common */}
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route 
+              path="/notifications" 
+              element={
+                <ProtectedRoute>
+                  <Notifications />
+                </ProtectedRoute>
+              } 
+            />
+            <Route path="/faq" element={<FAQ />} /> {/* Add FAQ route */}
+            <Route path="/changePassword" element={<ChangePassword />} />
+
+
+            {/* coordinator */}
+            <Route path="/coordinator/dashboard" element={<CoordinatorDashboard />} />
+            <Route path="/coordinator/uploadAbstracts" element={<UploadAbstracts />} />
+            <Route path="/coordinator/bulkRegister" element={<BulkStudentRegister />} />
+            <Route path='/coordinator/sendEmailForm' element={<SendEmailForm />} />
+
+
+
+            {/* staff */}
+            <Route path="/register-staff" element={<RegisterStaff />} />
+            <Route path="/staff/submitSkills" element={<StaffForm />} />
+            <Route path="/staff/topicReview" element={<TopicReview />} />
+            <Route path="/staff/topicReviewOverview" element={<TopicReviewOverview />} />
+            <Route path="/staff/dashboard" element={<StaffDashboard />} />
+
+
+
+            {/* student */}
+            <Route path="/register-student" element={<RegisterStudent />} />
+            <Route path="/student/dashboard" element={<StudentDashboard />} />
+            <Route path="/student/checkabstract" element={<CheckScore />} />
+            <Route path="/student/abstractSubmissionComplete" element={<AbstractComplete />} />
+            <Route path="/student/checkIfApproved" element={<CheckIfApproved />} />
+            <Route path="/student/projectSpecification" element={<ProjectSpecification />} />
+            <Route path="/student/inviteStudents" element={<InviteStuents />} />
+            <Route path="/student/availableProjects" element={<AvailableProjects />} />
+            <Route path="/student/availableGroups" element={<AvailableGroups />} />
+            <Route path="/student/submittedAbstracts" element={<SubmittedAbstractPage />} />
+            <Route path="/student/groupMembers" element={<GroupMembers />} />
+            <Route path="/student/submitSkills" element={<SubmitSkill />} />
+            <Route path="/student/inviteRequests" element={<InviteRequestsPage />} />
+            <Route path="/student/studentProfile" element={<StudentProfile />} />
+
+
+            {/* not sure */}
+            <Route path="/register" element={<Register />} />
+            <Route path="/register/coordinator" element={<CoordinatorForm />} />
+            <Route path="/register/successful" element={<RegisterComplete />} />
+            <Route path="/student/insertdata" element={<InsertData />} />
+            <Route path="/test" element={<TestPage />} />
+
+            
+          </Routes>
+        </Layout>
+      </BrowserRouter>
+    </AuthProvider>
+  )
+>>>>>>> ae556d35c1fec0cb434647189ce229e6c6a6240a
 }
 
 export default App;

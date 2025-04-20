@@ -35,7 +35,7 @@ router.route("/logout").get(verifyJWT, refreshTokenMiddleware,
     logoutUser)
 
 // router.route("/refresh-token").post(refreshAccessToken)
-router.route("/change-password").post(verifyJWT, refreshTokenMiddleware, 
+router.route("/changePassword").put(verifyJWT, refreshTokenMiddleware, 
     changeCurrentPassword)
 
 router.route("/register-student").post(verifyJWT, refreshTokenMiddleware, 

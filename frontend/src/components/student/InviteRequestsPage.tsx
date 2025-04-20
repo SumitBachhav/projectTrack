@@ -22,6 +22,7 @@ interface InviteRequest {
   status: string;
   abstract?: Abstract;
   skills?: Skill[];
+  _id: string;
 }
 
 interface ApiResponse {
@@ -35,12 +36,17 @@ const InviteRequestsPage: React.FC = () => {
   const [data, setData] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [modifiableInviteId, setModifiableInviteId] = useState<string | null>(null);
+  const [acceptedInviteId, setAcceptedInviteId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/api/v1/student/getInvitesAndRequests");
+        const response = await axios.get<{ data: ApiResponse }>(`${import.meta.env.VITE_API_URL}/api/v1/student/getInvitesAndRequests`, {
+          withCredentials: true
+        });
         setData(response.data.data);
+        setAcceptedInviteId(response.data.data.receivedInvites.find(invite => invite.status === "accepted")?._id || null);
       } catch (err) {
         setError("Failed to fetch data.");
       } finally {
@@ -50,9 +56,31 @@ const InviteRequestsPage: React.FC = () => {
     fetchData();
   }, []);
 
-  const formatDate = (dateStr: string): string => {
-    return new Date(dateStr).toLocaleDateString("en-GB"); // DD/MM/YYYY format
+  const handleResponse = async (inviteId: string, response: "accepted" | "rejected") => {
+    try {
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/v1/student/inviteResponse`,
+        { inviteId, response },
+        { withCredentials: true }
+      );
+      alert(`Invite ${response}`);
+      setAcceptedInviteId(response === "accepted" ? inviteId : null);
+      setData(prevData => {
+        if (!prevData) return prevData;
+        return {
+          ...prevData,
+          receivedInvites: prevData.receivedInvites.map(invite =>
+            invite._id === inviteId ? { ...invite, status: response } : invite
+          ),
+        };
+      });
+      setModifiableInviteId(null);
+    } catch (err) {
+      alert("Failed to send response.");
+    }
   };
+
+  const formatDate = (dateStr: string): string => new Date(dateStr).toLocaleDateString("en-GB");
 
   if (loading) return <p className="text-center mt-6">Loading...</p>;
   if (error) return <p className="text-center text-red-500 mt-6">{error}</p>;
@@ -69,7 +97,7 @@ const InviteRequestsPage: React.FC = () => {
               <p className="text-gray-500 mt-2">No {key.replace(/([A-Z])/g, " $1").toLowerCase()}.</p>
             ) : (
               list.map((item: InviteRequest, index: number) => (
-                <div key={index} className="mt-3 p-4 border rounded-lg shadow-sm bg-gray-50">
+                <div key={index} className={`mt-3 p-4 border rounded-lg shadow-sm bg-gray-50 ${acceptedInviteId && acceptedInviteId !== item._id ? "opacity-50" : ""}`}>
                   <p className="text-gray-800 font-medium">👤 {item.name}</p>
                   <p className="text-gray-600 text-sm">📅 {formatDate(item.date)}</p>
                   <p className={`text-sm mt-1 font-semibold ${item.status === "pending" ? "text-yellow-600" : "text-green-600"}`}>
@@ -83,31 +111,40 @@ const InviteRequestsPage: React.FC = () => {
                       <p className="text-gray-700 text-sm mt-1">
                         <strong>Domain:</strong> {item.abstract.domain.join(", ")}
                       </p>
-                      {item.abstract.requirements.length > 0 && (
-                        <div className="mt-2">
-                          <p className="font-medium">🛠 Requirements:</p>
-                          <ul className="list-disc ml-5 text-gray-600 text-sm">
-                            {item.abstract.requirements.map((req: { domain: string; skills: string[] }, i: number) => (
-                              <li key={i}>
-                                <strong>{req.domain}:</strong> {req.skills.join(", ")}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
                     </div>
                   )}
 
-                  {item.skills && (
-                    <div className="mt-3 bg-white p-3 border rounded-lg">
-                      <p className="font-medium">💡 Skills:</p>
-                      <ul className="list-disc ml-5 text-gray-600 text-sm">
-                        {item.skills.map((skill: Skill, i: number) => (
-                          <li key={i}>
-                            <strong>{skill.domain}:</strong> {skill.skills.join(", ")} (Exp: {skill.experience} year)
-                          </li>
-                        ))}
-                      </ul>
+                  {(key === "receivedInvites") && (
+                    <div className="mt-3 flex space-x-3">
+                      {modifiableInviteId === item._id || (item.status === "pending" && !acceptedInviteId) ? (
+                        <>
+                          <button
+                            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                            onClick={() => handleResponse(item._id, "accepted")}
+                          >
+                            Accept
+                          </button>
+                          <button
+                            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                            onClick={() => handleResponse(item._id, "rejected")}
+                          >
+                            Reject
+                          </button>
+                          <button
+                            className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+                            onClick={() => setModifiableInviteId(null)}
+                          >
+                            Cancel Modify
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                          onClick={() => setModifiableInviteId(item._id)}
+                        >
+                          Modify Decision
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>

@@ -25,12 +25,14 @@ function CheckScore() {
     useEffect(() => {
         const fetchDomains = async () => {
             try {
-                const response = await axios.get('/api/v1/user/getDomains');
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/user/getDomains`, {
+                    withCredentials: true
+                });
                 // let d = data;
                 const domainOptions = response.data.data.domains.map((domain) => ({
                     value: domain,
                     label: domain,
-                    isDisabled: submittedDomains.includes(domain), // Disable submitted domains
+                    // isDisabled: submittedDomains.includes(domain), // Disable submitted domains
                 }));
                 setDomains(domainOptions);
             } catch (error) {
@@ -124,7 +126,9 @@ function CheckScore() {
 
     const send = async () => {
         try {
-            await axios.post('/api/v1/student/submitAbstracts', abstractList);
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/student/submitAbstracts`, abstractList, {
+                withCredentials: true
+            });
             setAbstractList([]);
             navigate('/student/abstractSubmissionComplete');
         } catch (error) {
@@ -147,17 +151,14 @@ function CheckScore() {
         setEmbedding('');
 
         try {
-            const response = await axios.post(
-                'http://localhost:8000/compareDatabase',
-                {
-                    abstract: formData.abstract,
+            const response = await axios.post(`${import.meta.env.VITE_SIMILARITY_API_URL}/compareDatabase`, {
+                abstract: formData.abstract,
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
                 },
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                }
-            );
+                withCredentials: true
+            });
 
             console.log(response);
 
