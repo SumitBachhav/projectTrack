@@ -23,7 +23,7 @@ const staffSchema = new Schema({
     },
     department: {
         type: String,
-        enum: ['computer', 'civil', 'mechanical', 'electrical', 'it'],
+        enum: ['Civil Engineering', 'Mechanical Engineering', 'Electrical Engineering', 'Computer Engineering', 'Information Technology', 'Electronics and Telecommunication Engineering', 'Artificial Intelligence and Data Science'],
     },
     googleScholar: {
         type: String

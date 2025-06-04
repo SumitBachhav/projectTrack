@@ -93,7 +93,7 @@ const assignAbstractsToStaffLogic = async () => {
     try {
         // Step 1: Fetch all abstracts and staff members
         const abstracts = await Abstract.find({ status: 'pending' });
-        const staffMembers = await Staff.find();
+        const staffMembers = await Staff.find({employedInInstitution: true , availability: true});
 
         if (staffMembers.length === 0) {
             throw new Error("No staff members found in the system.");
