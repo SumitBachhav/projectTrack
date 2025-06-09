@@ -8,6 +8,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { Staff } from "../models/staff.model.js";
 import { SystemData } from "../models/system.model.js";
 import { DonatedAbstract } from "../models/donatedAbstract.model.js";
+import { resolveAbstractDecision } from "../utils/resolveAbstractDecision.js";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 
@@ -48,33 +49,33 @@ const reset = asyncHandler(async (req, res) => {
 
 const toVerifyAbstractList = asyncHandler(async (req, res) => {
 
-   try {
-     const staff = await Staff.findById(req.user._id).populate("verificationAssigned");
-     
-     if (!staff) {
-         throw new ApiError(404, "Staff not found");
-     }
-     
-     let data = [];
- 
-     for (let x of staff.verificationAssigned){
-         data.push({
-             id: x._id,
-             title: x.title,
-             status: x.status
-         })
-     }
+    try {
+        const staff = await Staff.findById(req.user._id).populate("verificationAssigned");
 
-     res.status(200).json(
-        new ApiResponse(200, data, "success")
-    )
-    
-   } catch (error) {
-    throw new ApiError(500, `Something went wrong while fetching student list - ${error.message}`);
-   }
+        if (!staff) {
+            throw new ApiError(404, "Staff not found");
+        }
+
+        let data = [];
+
+        for (let x of staff.verificationAssigned) {
+            data.push({
+                id: x._id,
+                title: x.title,
+                status: x.status
+            })
+        }
+
+        res.status(200).json(
+            new ApiResponse(200, data, "success")
+        )
+
+    } catch (error) {
+        throw new ApiError(500, `Something went wrong while fetching student list - ${error.message}`);
+    }
 
 
-    
+
 })
 
 
@@ -132,7 +133,9 @@ const getAbstractDetail = asyncHandler(async (req, res) => {
 
 const updateAbstractReview = asyncHandler(async (req, res) => {
     const { reviewedAbstractId, status, comments } = req.body;
+    const staffId = req.user._id;
 
+    // Validate inputs
     if (!reviewedAbstractId || !status) {
         throw new ApiError(400, "Reviewed Abstract ID and status are required.");
     }
@@ -142,30 +145,87 @@ const updateAbstractReview = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Invalid status value.");
     }
 
-    const abstract = await Abstract.findById(reviewedAbstractId);
-    if (!abstract) {
-        throw new ApiError(404, "Abstract not found.");
-    }
+    const session = await mongoose.startSession();
 
-    abstract.status = status;
-    if (comments) {
-        abstract.comments.push(comments);
-    }
+    try {
+        session.startTransaction();
 
-    await abstract.save();
-
-    if (status === 'accepted') {
-        const student = await Student.findOne({ id: abstract.ownerId });
-        if (student) {
-            student.acceptedByStaffAbstracts.push(reviewedAbstractId);
-            await student.save();
-        }else{
-            throw new ApiError(404, "Student not found.");
+        // Step 1: Find the abstract
+        const abstract = await Abstract.findById(reviewedAbstractId).session(session);
+        if (!abstract) {
+            throw new ApiError(404, "Abstract not found.");
         }
-    }
 
-    res.status(200).json(new ApiResponse(200, "Abstract review updated successfully", abstract));
+        // Step 2: Find the staff
+        const staff = await Staff.findById(staffId).session(session);
+        if (!staff) {
+            throw new ApiError(404, "Staff not found.");
+        }
+
+        // Step 3: Update the Abstract's assignedTo entry
+        const assignedToEntry = abstract.assignedTo.find(entry => entry.assignedStaff.toString() === staffId.toString());
+
+        if (!assignedToEntry) {
+            throw new ApiError(403, "You are not assigned to review this abstract.");
+        }
+
+        assignedToEntry.decision = status;
+
+        if (comments) {
+            // Move existing 'new' comments to 'old' if any
+            if (assignedToEntry.comments.new.length > 0) {
+                assignedToEntry.comments.old.push(...assignedToEntry.comments.new);
+                assignedToEntry.comments.new = [];  // clear new before adding current
+            }
+
+            // Add the latest comment
+            assignedToEntry.comments.new.push(comments);
+        }
+
+        // Step 4: Update the Staff's verificationAssigned entry
+        const staffReviewEntry = staff.verificationAssigned.find(entry => entry.abstract.toString() === reviewedAbstractId.toString());
+
+        if (staffReviewEntry) {
+            staffReviewEntry.status = status;
+        }
+
+        // Step 5: Optionally update Student
+        if (status === 'accepted') {
+            const student = await Student.findOne({ _id: abstract.ownerId }).session(session);
+            if (!student) {
+                throw new ApiError(404, "Student not found.");
+            }
+
+            // Add to acceptedByStaffAbstracts if not already present
+            if (!student.acceptedByStaffAbstracts.includes(reviewedAbstractId)) {
+                student.acceptedByStaffAbstracts.push(reviewedAbstractId);
+                await student.save({ session });
+            }
+        }
+
+        // Step 6: Save abstract and staff
+        await abstract.save({ session });
+        await staff.save({ session });
+
+        // Step 7: Commit transaction
+        await session.commitTransaction();
+        session.endSession();
+
+        // call resolveAbstractDecision to update abstract status
+        const result = await resolveAbstractDecision(reviewedAbstractId);
+        if (!result) {
+            console.log("Failed to process abstract resolution.");
+            throw new ApiError(403, "Failed to process abstract resolution.");
+        }
+
+        return res.status(200).json(new ApiResponse(200, {}, "Abstract review updated successfully."));
+    } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
+        throw new ApiError(500, `Failed to update abstract review - ${error.message}`);
+    }
 });
+
 
 
 //TODO: update topic review page and overview page
@@ -234,7 +294,7 @@ const donateAbstracts = asyncHandler(async (req, res) => {
 const setStaffExpertise = async (req, res, next) => {
     try {
         const staffId = req.user._id;
-        const  expertiseDomains = req.body; // Array of domains from request body
+        const expertiseDomains = req.body; // Array of domains from request body
 
         // Step 1: Validate input
         // console.log(expertiseDomains)

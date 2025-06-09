@@ -43,8 +43,16 @@ const staffSchema = new Schema({
         ref: "Group"
     }],
     verificationAssigned: [{
-        type: Schema.Types.ObjectId,
-        ref: "Abstract"
+        abstract: {
+            type: Schema.Types.ObjectId,
+            ref: "Abstract",
+            required: true
+        },
+        status: {
+            type: String,
+            enum: ['accepted', 'rejected', 'revision'],
+            default: 'revision'
+        }
     }]
 
 },

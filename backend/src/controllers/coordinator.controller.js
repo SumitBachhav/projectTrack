@@ -90,10 +90,13 @@ const submitAbstracts = asyncHandler(async (req, res) => {
 });
 
 const assignAbstractsToStaffLogic = async () => {
+    const session = await mongoose.startSession();
+
     try {
-        // Step 1: Fetch all abstracts and staff members
-        const abstracts = await Abstract.find({ status: 'pending' });
-        const staffMembers = await Staff.find({employedInInstitution: true , availability: true});
+        session.startTransaction();
+
+        const abstracts = await Abstract.find({ status: 'pending' }).session(session);
+        const staffMembers = await Staff.find({ employedInInstitution: true, availability: true }).session(session);
 
         if (staffMembers.length === 0) {
             throw new Error("No staff members found in the system.");
@@ -101,79 +104,110 @@ const assignAbstractsToStaffLogic = async () => {
 
         const totalAbstracts = abstracts.length;
         const totalStaff = staffMembers.length;
-        const maxAbstractsPerStaff = Math.floor(totalAbstracts / totalStaff);
+        const maxAbstractsPerStaff = Math.floor((totalAbstracts * 3) / totalStaff); // each abstract needs 3 staff
 
-        const staffAssignments = new Map(); // Track assigned abstracts for each staff
+        // Track how many abstracts each staff has
+        const staffAssignments = new Map();
         staffMembers.forEach(staff => staffAssignments.set(staff._id.toString(), []));
 
-        const assignedAbstracts = new Set(); // Track abstracts that get assigned
-        const unassignedAbstracts = [];
+        // Abstract to staff assignment map
+        const abstractAssignments = new Map(); // abstractId -> [staffIds]
 
-        // Step 2: Assign abstracts based on domain expertise with a limit
-        abstracts.forEach(abstract => {
-            let assigned = false;
+        for (const abstract of abstracts) {
+            const matchedStaff = [];
+            const abstractDomains = abstract.domain.map(domain => domain.toLowerCase());
 
+            // Step 1: Try to assign staff with matching domains
             for (const staff of staffMembers) {
-                const assignedList = staffAssignments.get(staff._id.toString());
-
-                if (assignedList.length >= maxAbstractsPerStaff) {
-                    continue; // Skip staff who already reached the limit
-                }
-
+                const staffIdStr = staff._id.toString();
+                const assignedList = staffAssignments.get(staffIdStr);
                 const expertiseDomains = staff.expertiseDomain.map(item => item.domain.toLowerCase());
-                const abstractDomains = abstract.domain.map(domain => domain.toLowerCase());
 
-                const hasMatchingDomain = abstractDomains.some(domain => expertiseDomains.includes(domain));
-
-                if (hasMatchingDomain) {
+                if (
+                    assignedList.length < maxAbstractsPerStaff &&
+                    matchedStaff.length < 3 &&
+                    abstractDomains.some(domain => expertiseDomains.includes(domain)) &&
+                    !matchedStaff.includes(staff._id.toString())
+                ) {
+                    matchedStaff.push(staff._id.toString());
                     assignedList.push(abstract._id);
-                    assignedAbstracts.add(abstract._id);
-                    assigned = true;
-                    break; // Stop after assigning to the first matching staff
+                }
+
+                if (matchedStaff.length === 3) break;
+            }
+
+            // Step 2: Fill remaining slots with random staff (if less than 3 assigned)
+            if (matchedStaff.length < 3) {
+                const needed = 3 - matchedStaff.length;
+                const shuffledStaff = [...staffMembers].sort(() => 0.5 - Math.random());
+
+                for (const staff of shuffledStaff) {
+                    const staffIdStr = staff._id.toString();
+                    const assignedList = staffAssignments.get(staffIdStr);
+
+                    if (
+                        assignedList.length < maxAbstractsPerStaff + 1 &&
+                        !matchedStaff.includes(staffIdStr)
+                    ) {
+                        matchedStaff.push(staffIdStr);
+                        assignedList.push(abstract._id);
+                    }
+
+                    if (matchedStaff.length === 3) break;
                 }
             }
 
-            if (!assigned) {
-                unassignedAbstracts.push(abstract._id);
+            if (matchedStaff.length === 3) {
+                abstractAssignments.set(abstract._id.toString(), matchedStaff);
+            } else {
+                throw new Error(`Unable to assign 3 staff to abstract: ${abstract._id}`);
             }
-        });
-
-        // Step 3: Randomly distribute unassigned abstracts
-        let staffIndex = 0;
-        while (unassignedAbstracts.length > 0) {
-            const staff = staffMembers[staffIndex];
-            const assignedList = staffAssignments.get(staff._id.toString());
-
-            // Ensure no staff exceeds the limit by more than one (for uneven distribution)
-            if (assignedList.length < maxAbstractsPerStaff + 1) {
-                const abstractId = unassignedAbstracts.pop();
-                assignedList.push(abstractId);
-                assignedAbstracts.add(abstractId);
-            }
-
-            staffIndex = (staffIndex + 1) % totalStaff;
         }
 
-        // Step 4: Update staff records with assigned abstracts
-        const staffUpdatePromises = staffMembers.map(staff => {
-            const assignedList = staffAssignments.get(staff._id.toString());
-            return Staff.findByIdAndUpdate(staff._id, {
-                $set: { verificationAssigned: assignedList }
-            });
-        });
+        // Update staff and abstract documents in DB
+        for (const staff of staffMembers) {
+            const assignedAbstracts = staffAssignments.get(staff._id.toString()) || [];
 
-        // Step 5: Update abstract statuses to 'submitted'
-        const abstractUpdatePromises = Array.from(assignedAbstracts).map(abstractId => 
-            Abstract.findByIdAndUpdate(abstractId, { $set: { status: 'submitted' } })
-        );
+            const verificationAssigned = assignedAbstracts.map(abstractId => ({
+                abstract: abstractId,
+                status: 'pending'
+            }));
 
-        await Promise.all([...staffUpdatePromises, ...abstractUpdatePromises]);
+            await Staff.findByIdAndUpdate(
+                staff._id,
+                { $set: { verificationAssigned } },
+                { session }
+            );
+        }
 
-        console.log('Abstracts assigned and statuses updated successfully!');
+        for (const [abstractId, staffIds] of abstractAssignments.entries()) {
+            const assignedTo = staffIds.map(staffId => ({
+                assignedStaff: staffId,
+                decision: 'pending',
+                comments: { old: [], new: [] }
+            }));
+
+            await Abstract.findByIdAndUpdate(
+                abstractId,
+                {
+                    $set: { status: 'submitted' },
+                    $push: { assignedTo: { $each: assignedTo } }
+                },
+                { session }
+            );
+        }
+
+        await session.commitTransaction();
+        console.log("Abstracts and staff records updated successfully within a transaction!");
     } catch (error) {
-        console.error('Error assigning abstracts:', error.message);
+        await session.abortTransaction();
+        console.error("Transaction aborted due to error:", error.message);
+    } finally {
+        session.endSession();
     }
 };
+
+
 
 const assignAbstractsToStaff = asyncHandler(async (req, res) => {
     await assignAbstractsToStaffLogic();
