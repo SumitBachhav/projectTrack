@@ -7,6 +7,7 @@ import {
   HelpCircle,
   UserCircle,
   CheckSquare,
+  LayoutDashboard,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -35,6 +36,32 @@ const Navbar = () => {
 
   const goToProfile = () => {
     navigate("/student/studentProfile");
+  };
+
+  const goToDashboard = () => {
+    const user = JSON.parse(sessionStorage.getItem('userData'));
+    console.log('usd', user)
+    if (user.childId == 'none') {
+      if (user.role == 'coordinator') {
+        navigate('/coordinator/dashboard');
+      }
+      else if (user.role == 'student') {
+        console.log("navigating to student registration page");
+        navigate('/register-student', { state: { user } });
+      } else if (user.role == 'staff') {
+        console.log("navigating to staff registration page");
+        navigate('/register-staff', { state: { user } });
+      }
+    } else {
+      if (user.role == 'student') {
+        console.log("navigating to student dashboard");
+        navigate('/student/dashboard');
+
+      } else if (user.role == 'staff') {
+        navigate('/staff/dashboard');
+      }
+    }
+    navigate("/student/dashboard");
   };
 
   return (
@@ -79,6 +106,13 @@ const Navbar = () => {
                 >
                   <UserCircle className="w-4 h-4 mr-2" />
                   Profile
+                </button>
+                <button
+                  onClick={goToDashboard}
+                  className="flex items-center px-3 py-2 text-gray-100 hover:text-white rounded-md hover:bg-blue-700 transition-colors"
+                >
+                  <LayoutDashboard className="w-4 h-4 mr-2" />
+                  Dashboard
                 </button>
               </>
             )}
@@ -149,6 +183,13 @@ const Navbar = () => {
                     <UserCircle className="w-4 h-4 mr-2" />
                     Profile
                   </button>
+                  <button
+                  onClick={goToDashboard}
+                  className="flex items-center px-3 py-2 text-gray-100 hover:text-white rounded-md hover:bg-blue-700 transition-colors"
+                >
+                  <LayoutDashboard className="w-4 h-4 mr-2" />
+                  Dashboard
+                </button>
                 </>
               )}
               {!isAuthenticated ? (

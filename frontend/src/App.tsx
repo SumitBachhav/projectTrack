@@ -103,6 +103,8 @@ import FormTask from "./components/TaskManagement/FormTask";
 import Comments from "./components/TaskManagement/Comments";
 // @ts-ignore
 import Calendar from "./components/TaskManagement/Calendar";
+// @ts-ignore
+import GroupDetails from "./components/student/GroupDetails";
 
 // Misc
 // @ts-ignore
@@ -161,6 +163,7 @@ function App() {
               <Route path="/student/inviteRequests" element={<InviteRequestsPage />} />
               <Route path="/student/studentProfile" element={<StudentProfile />} />
               <Route path="/student/insertdata" element={<InsertData />} />
+              <Route path="/student/groupDetails" element={<GroupDetails />} />
 
               {/* Task Management */}
               <Route path="/tasks" element={<ProtectedRoute><TaskList /></ProtectedRoute>} />

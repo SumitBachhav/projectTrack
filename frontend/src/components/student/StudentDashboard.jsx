@@ -119,6 +119,18 @@ const StudentDashboard = () => {
             </button>
           </div>
 
+          {/* Go to group */}
+          <div className="bg-red-50 p-6 rounded-lg shadow-md">
+            <h3 className="text-xl font-semibold text-gray-700 mb-4">Your group</h3>
+            <p className="text-lg text-gray-500">Check your group details.</p>
+            <button
+              onClick={() => navigate('/student/groupDetails')}
+              className="mt-4 w-full py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-200"
+            >
+              Open
+            </button>
+          </div>
+
           {/* Deadlines */}
           <div className="bg-yellow-50 p-6 rounded-lg shadow-md">
             <h3 className="text-xl font-semibold text-gray-700 mb-4">Upcoming Deadlines</h3>

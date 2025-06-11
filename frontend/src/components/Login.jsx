@@ -47,6 +47,9 @@ const Login = () => {
         const user = data.user;
         console.log(user)
 
+         // ✅ Save user data in sessionStorage
+        sessionStorage.setItem('userData', JSON.stringify(user));
+
         // Redirect to another page after successful login
         if (user.childId == 'none') {
           if (user.role == 'coordinator') {
