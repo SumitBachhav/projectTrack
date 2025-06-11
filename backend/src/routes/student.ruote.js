@@ -18,7 +18,9 @@ import { check,
     getStudentGroupDetails,
     getAvailableGroups,
     sendRequestToGroup,
-    RequestResponseForGroup
+    RequestResponseForGroup,
+    getDonatedAbstracts,
+    selectDonatedAbstract
  } from "../controllers/student.controller.js";
 
 const router = Router()
@@ -41,6 +43,8 @@ router.route("/groupDetails").get(verifyJWT, refreshTokenMiddleware, getStudentG
 router.route("/getAvailableGroups").get(verifyJWT, refreshTokenMiddleware, getAvailableGroups)
 router.route("/sendRequestToGroup").post(verifyJWT, refreshTokenMiddleware, sendRequestToGroup)
 router.route("/requestResponseForGroup").post(verifyJWT, refreshTokenMiddleware, RequestResponseForGroup)
+router.route("/getDonatedAbstracts").get(verifyJWT, refreshTokenMiddleware, getDonatedAbstracts)
+router.route("/selectDonatedAbstract").post(verifyJWT, refreshTokenMiddleware, selectDonatedAbstract)
 
 
 // router.route("/login").post(loginUser)

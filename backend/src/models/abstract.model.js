@@ -69,7 +69,16 @@ const abstractSchema = new Schema({
             new: [{
                 type: String
             }]
-        }
+        },
+        abstractType: {
+            type: String,
+            enum: ['submitted', 'donated'],
+            default: 'submitted'
+        },
+        prevOwners: [{
+            type: Schema.Types.ObjectId,
+            ref: "User"
+        }]
     }]
 },
     {

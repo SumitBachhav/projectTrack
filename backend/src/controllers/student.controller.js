@@ -855,7 +855,36 @@ const RequestResponseForGroup = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, {}, "Request accepted successfully"));
 });
 
+const getDonatedAbstracts = asyncHandler(async (req, res) => {
 
+    // find abstracts with abstractType = donated
+    // const abstracts = await Abstract.find({ abstractType: "donated" });
+    const abstracts = await Abstract.find({ status: "pending" });
+
+        const restructureAbstractData =  abstracts.map((item, index) => ({
+            stdAbsId: item.ownerId,
+            title: item.title,
+            abstract: item.abstract,
+            domain: item.domain.join(", "),
+            keywords: item.keywords.join(", "),
+            abstractId: item._id
+
+        }));
+    
+    return res.status(200).json(new ApiResponse(200, restructureAbstractData, "Donated abstracts fetched successfully"));
+});
+
+const selectDonatedAbstract = asyncHandler(async (req, res) => {
+    const { abstractId } = req.body;
+    const student = await Student.findOne({ _id: req.user._id });
+    student.finalizedAbstract = abstractId;
+    await student.save();
+    const abstract = await Abstract.findById(abstractId);
+    abstract.ownerId = req.user._id;
+    abstract.status = "accepted";
+    await abstract.save();
+    return res.status(200).json(new ApiResponse(200, {}, "Abstract selected successfully"));
+});
 
 export {
     check,
@@ -873,5 +902,7 @@ export {
     getStudentGroupDetails,
     getAvailableGroups,
     sendRequestToGroup,
-    RequestResponseForGroup
+    RequestResponseForGroup,
+    getDonatedAbstracts,
+    selectDonatedAbstract
 }
