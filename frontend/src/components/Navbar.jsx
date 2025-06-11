@@ -41,7 +41,7 @@ const Navbar = () => {
   const goToDashboard = () => {
     const user = JSON.parse(sessionStorage.getItem('userData'));
     console.log('usd', user)
-    if (user.childId == 'none') {
+    if (user.childId === 'none') {
       if (user.role == 'coordinator') {
         navigate('/coordinator/dashboard');
       }
@@ -61,7 +61,7 @@ const Navbar = () => {
         navigate('/staff/dashboard');
       }
     }
-    navigate("/student/dashboard");
+    // navigate("/student/dashboard");
   };
 
   return (
