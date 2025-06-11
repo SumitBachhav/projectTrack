@@ -550,6 +550,9 @@ const getInvitesAndRequests = asyncHandler(async (req, res) => {
 const inviteResponse = asyncHandler(async (req, res) => {
     const { inviteId, response } = req.body;
 
+    console.log("response", response);
+    console.log("inviteId", inviteId);
+
     if (!inviteId || !response) {
         throw new ApiError(400, "Invite ID and response are required");
     }
@@ -560,9 +563,9 @@ const inviteResponse = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Invite not found");
     }
 
-    if (invite.status !== "pending") {
-        throw new ApiError(400, "Invite is not pending");
-    }
+    // if (invite.status !== "pending") {
+    //     throw new ApiError(400, "Invite is not pending");
+    // }
 
     // check if group has less than 4 members
     let group = await Group.findById(invite.groupId);
@@ -593,6 +596,11 @@ const inviteResponse = asyncHandler(async (req, res) => {
             group.status = "completed";
         }
         await group.save();
+    }
+
+    // update student group id
+    if (response === "accepted") {
+        await Student.updateOne({ _id: invite.to }, { $set: { groupId: invite.groupId } });
     }
 
     // change group status if group is full
