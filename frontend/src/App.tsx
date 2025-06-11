@@ -74,11 +74,13 @@ import GroupMembers from "./components/student/GroupMembers";
 // @ts-ignore
 import SubmitSkill from "./components/student/SubmitSkill";
 // @ts-ignore
-import InviteRequestsPage from "./components/student/InviteRequestsPage";
+import InviteRequestsPage from "./components/student/InviteRequestsPage"
 // @ts-ignore
 import StudentProfile from "./components/student/StudentProfile";
 // @ts-ignore
 import InsertData from "./components/InsertData";
+// @ts-ignore
+import GroupDetails from "./components/student/GroupDetails";
 
 // Registration
 // @ts-ignore
@@ -103,8 +105,7 @@ import FormTask from "./components/TaskManagement/FormTask";
 import Comments from "./components/TaskManagement/Comments";
 // @ts-ignore
 import Calendar from "./components/TaskManagement/Calendar";
-// @ts-ignore
-import GroupDetails from "./components/student/GroupDetails";
+
 
 // Misc
 // @ts-ignore
