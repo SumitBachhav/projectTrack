@@ -15,7 +15,10 @@ import { check,
     getInvitesAndRequests,
     inviteResponse,
     studentProfile,
-    getStudentGroupDetails
+    getStudentGroupDetails,
+    getAvailableGroups,
+    sendRequestToGroup,
+    RequestResponseForGroup
  } from "../controllers/student.controller.js";
 
 const router = Router()
@@ -35,6 +38,9 @@ router.route("/getInvitesAndRequests").get(verifyJWT, refreshTokenMiddleware, ge
 router.route("/inviteResponse").post(verifyJWT, refreshTokenMiddleware, inviteResponse)
 router.route("/studentProfile").get(verifyJWT, refreshTokenMiddleware, studentProfile)
 router.route("/groupDetails").get(verifyJWT, refreshTokenMiddleware, getStudentGroupDetails)
+router.route("/getAvailableGroups").get(verifyJWT, refreshTokenMiddleware, getAvailableGroups)
+router.route("/sendRequestToGroup").post(verifyJWT, refreshTokenMiddleware, sendRequestToGroup)
+router.route("/requestResponseForGroup").post(verifyJWT, refreshTokenMiddleware, RequestResponseForGroup)
 
 
 // router.route("/login").post(loginUser)

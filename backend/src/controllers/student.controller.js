@@ -351,9 +351,9 @@ const sendInvitations = asyncHandler(async (req, res) => {
 
         // check if group exists
         let groupId;
-        if(fromStudent.groupId){
+        if (fromStudent.groupId) {
             groupId = fromStudent.groupId;
-        }else{
+        } else {
             try {
                 const group = await Group.create({
                     project: fromStudent.finalizedAbstract,
@@ -367,7 +367,7 @@ const sendInvitations = asyncHandler(async (req, res) => {
                 console.error("Error creating group:", error);
                 return res.status(500).json({ message: "Internal Server Error" });
             }
-            
+
         }
 
         // Create new invite requests excluding existing ones
@@ -487,15 +487,15 @@ const getInvitesAndRequests = asyncHandler(async (req, res) => {
     const invitesAndRequests = await InviteAndRequest.find({
         $or: [{ from: userId }, { to: userId }]
     })
-    .populate({
-        path: 'from to',
-        select: 'id skills',
-        populate: { path: 'id', select: 'name' }
-    })
-    .populate({
-        path: 'abstractId',
-        select: 'title abstract domain requirements'
-    });
+        .populate({
+            path: 'from to',
+            select: 'id skills',
+            populate: { path: 'id', select: 'name' }
+        })
+        .populate({
+            path: 'abstractId',
+            select: 'title abstract domain requirements'
+        });
 
     // Process fetched data
     const response = {
@@ -550,9 +550,6 @@ const getInvitesAndRequests = asyncHandler(async (req, res) => {
 const inviteResponse = asyncHandler(async (req, res) => {
     const { inviteId, response } = req.body;
 
-    console.log("response", response);
-    console.log("inviteId", inviteId);
-
     if (!inviteId || !response) {
         throw new ApiError(400, "Invite ID and response are required");
     }
@@ -563,48 +560,57 @@ const inviteResponse = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Invite not found");
     }
 
-    // if (invite.status !== "pending") {
-    //     throw new ApiError(400, "Invite is not pending");
-    // }
-
-    // check if group has less than 4 members
+    // check if group is completed
     let group = await Group.findById(invite.groupId);
     let memberCount = 0;
     if (group) {
         if (group.members.length >= 4) {
             throw new ApiError(400, "Group has already 4 members");
         }
-    
-        // check number of members in group
+
         memberCount = group.members.length;
 
-    
-        // check if group is completed
         if (group.status === "completed") {
             throw new ApiError(400, "Group is not accepting more members");
         }
     }
 
-
-    invite.status = response;
-    await invite.save();
-
-    // update group members
     if (response === "accepted" && group) {
+
+        const student = await Student.findById(invite.to);
+        if (student.groupId) {
+            throw new ApiError(400, "You are already in a group");
+        }
         group.members.push(invite.to);
         if (memberCount === 3) {
             group.status = "completed";
         }
+        // update group members
         await group.save();
-    }
 
-    // update student group id
-    if (response === "accepted") {
+        // update student group id
         await Student.updateOne({ _id: invite.to }, { $set: { groupId: invite.groupId } });
     }
 
-    // change group status if group is full
-    
+    if (response === "rejected" && group) {
+        if (group.members.some(member => member.toString() === invite.to.toString())) {
+            group.members = group.members.filter(
+                member => member.toString() !== invite.to.toString()
+            );
+
+            group.status = "inProgress";
+
+            // update group members
+            await group.save();
+
+            // remove student group id
+            await Student.updateOne({ _id: invite.to }, { $set: { groupId: null } });
+        }
+
+    }
+
+    invite.status = response;
+    await invite.save();
 
     if (response === "accepted") {
         return res.status(200).json(new ApiResponse(200, {}, "Invite accepted successfully"));
@@ -660,35 +666,35 @@ const studentProfile = asyncHandler(async (req, res) => {
 });
 
 const getStudentGroupDetails = asyncHandler(async (req, res) => {
-  const studentID  = req.user._id;
-//   console.log("user details", req.user);
-  
-  if (!studentID) {
-    return res.status(400).json(new ApiResponse(400, null, "Missing userID in request"));
-  }
+    const studentID = req.user._id;
+    //   console.log("user details", req.user);
 
-  const student = await Student.findById( studentID );
-//   const student = await Student.findById(req.user._id).populate("skills");
+    if (!studentID) {
+        return res.status(400).json(new ApiResponse(400, null, "Missing userID in request"));
+    }
 
-  if (!student) {
-    return res.status(404).json(new ApiResponse(404, null, "Student not found"));
-  }
+    const student = await Student.findById(studentID);
+    //   const student = await Student.findById(req.user._id).populate("skills");
 
-  if (!student.groupId) {
-    return res.status(200).json(new ApiResponse(200, null, "No group exists for this student"));
-  }
+    if (!student) {
+        return res.status(404).json(new ApiResponse(404, null, "Student not found"));
+    }
 
-  const group = await Group.findById(student.groupId)
-    .populate({
-        path: "leader members guide supervisor",
-        select: 'id',
-        populate: {
-            path: 'id',
-            select: 'name email'
-        }
-    })
-    .populate("tasks", "title")
-    .populate("project", "title abstract domain requirements");
+    if (!student.groupId) {
+        return res.status(200).json(new ApiResponse(200, null, "No group exists for this student"));
+    }
+
+    const group = await Group.findById(student.groupId)
+        .populate({
+            path: "leader members guide supervisor",
+            select: 'id',
+            populate: {
+                path: 'id',
+                select: 'name email'
+            }
+        })
+        .populate("tasks", "title")
+        .populate("project", "title abstract domain requirements");
 
     /**
      .populate({
@@ -702,11 +708,151 @@ const getStudentGroupDetails = asyncHandler(async (req, res) => {
     });
      */
 
-  if (!group) {
-    return res.status(404).json(new ApiResponse(404, null, "Group not found"));
-  }
+    if (!group) {
+        return res.status(404).json(new ApiResponse(404, null, "Group not found"));
+    }
 
-  return res.status(200).json(new ApiResponse(true,  group , "Group details fetched successfully"));
+    return res.status(200).json(new ApiResponse(true, group, "Group details fetched successfully"));
+});
+
+const getAvailableGroups = asyncHandler(async (req, res) => {
+
+    //get all groups with status = inProgress
+    const groups = await Group.find({ status: "inProgress" })
+        .populate({
+            path: "leader members guide supervisor",
+            select: 'id',
+            populate: {
+                path: 'id',
+                select: 'name email'
+            }
+        })
+        .populate("project", "title abstract domain requirements");
+
+
+    const formattedGroups = groups.map((group) => {
+        const project = group.project;
+
+        // Helper to safely extract name
+        const getName = (person) => person?.id?.name ?? "Unknown";
+        return {
+            projectTitle: project?.title || "Untitled Project",
+            projectAbstract: project?.abstract || "",
+            projectId: project?._id?.toString() || "",
+            members: [
+
+                ...group.members.map(member => getName(member))
+            ],
+            projectHead: getName(group.leader),
+            groupId: group._id
+        };
+    });
+
+    return res.status(200).json(new ApiResponse(200, formattedGroups, "Available groups fetched successfully"));
+
+});
+
+const sendRequestToGroup = asyncHandler(async (req, res) => {
+
+    const { groupIds } = req.body;
+    const sender = req.user._id;
+
+    console.log('groupIds', groupIds);
+
+    for (const groupId of groupIds) {
+        const group = await Group.findById(groupId);
+        if (!group) {
+            throw new ApiError(404, "Group not found");
+        }
+
+        const inviteAndRequest = new InviteAndRequest({
+            from: sender,
+            to: group.leader,
+            groupId: group._id,
+            type: "request",
+            status: "pending",
+            abstractId: group.project
+        });
+
+        await inviteAndRequest.save();
+    }
+
+    //TODO: send email
+
+    return res.status(200).json(new ApiResponse(200, {}, "Requests sent successfully"));
+});
+
+const RequestResponseForGroup = asyncHandler(async (req, res) => {
+
+    const { inviteId, response } = req.body;
+
+    console.log('inviteId', inviteId);
+    console.log('response', response);
+
+    if (!inviteId || !response) {
+        throw new ApiError(400, "Request ID is required");
+    }
+
+    const invite = await InviteAndRequest.findById(inviteId);
+
+    if (!invite) {
+        throw new ApiError(404, "Request not found");
+    }
+
+    // check if group is completed
+    let group = await Group.findById(invite.groupId);
+    let memberCount = 0;
+    if (group) {
+        if (group.members.length >= 4) {
+            throw new ApiError(400, "Group has already 4 members");
+        }
+
+        memberCount = group.members.length;
+
+        if (group.status === "completed") {
+            throw new ApiError(400, "Group is not accepting more members");
+        }
+    }
+
+    if (response === "accepted" && group) {
+        const student = await Student.findById(invite.from);
+        if (student.groupId) {
+            throw new ApiError(400, "Student is already in a group");
+        }
+        group.members.push(invite.from);
+        if (memberCount === 3) {
+            group.status = "completed";
+        }
+        // update group members
+        await group.save();
+
+        // update student group id
+        await Student.updateOne({ _id: invite.from }, { $set: { groupId: invite.groupId } });
+    }
+
+    if (response === "rejected" && group) {
+        if (group.members.some(member => member.toString() === invite.from.toString())) {
+            group.members = group.members.filter(
+                member => member.toString() !== invite.from.toString()
+            );
+            group.status = "inProgress";
+
+            // update group members
+            await group.save();
+
+            // remove student group id
+            await Student.updateOne({ _id: invite.from }, { $set: { groupId: null } });
+        }
+    }
+
+
+    invite.status = response;
+    await invite.save();
+
+
+
+
+    return res.status(200).json(new ApiResponse(200, {}, "Request accepted successfully"));
 });
 
 
@@ -724,5 +870,8 @@ export {
     getInvitesAndRequests,
     inviteResponse,
     studentProfile,
-    getStudentGroupDetails
+    getStudentGroupDetails,
+    getAvailableGroups,
+    sendRequestToGroup,
+    RequestResponseForGroup
 }
