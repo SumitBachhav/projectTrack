@@ -73,9 +73,10 @@ const ProjectSpecification = () => {
     const handleFinalSubmit = async (e) => {
         e.preventDefault();
         try {
+            const tempAbsId = abstract._id || abstract.id;
             await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/student/finalizeAbstract`, {
                 requirements: allSkills,
-                abstractId: abstract._id,
+                abstractId: tempAbsId,
                 donatedIds
             }, {
                 withCredentials: true

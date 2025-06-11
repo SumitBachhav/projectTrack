@@ -134,34 +134,75 @@ const InviteRequestsPage = () => {
                 {/* Only show buttons for received invites and requests, not sent ones */}
                 {!isSentSection && (
                   <div className="mt-3 flex space-x-3">
-                    {isModifiable ? (
-                      <>
+                    {item.status === "pending" ? (
+                      isModifiable ? (
+                        <>
+                          <button
+                            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                            onClick={() => handleResponse(item, "accepted", isRequest)}
+                          >
+                            Accept
+                          </button>
+                          <button
+                            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                            onClick={() => handleResponse(item, "rejected", isRequest)}
+                          >
+                            Reject
+                          </button>
+                          <button
+                            className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+                            onClick={() => toggleModifiable(uniqueKey)}
+                          >
+                            Cancel
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                            onClick={() => handleResponse(item, "accepted", isRequest)}
+                          >
+                            Accept
+                          </button>
+                          <button
+                            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                            onClick={() => handleResponse(item, "rejected", isRequest)}
+                          >
+                            Reject
+                          </button>
+                        </>
+                      )
+                    ) : (
+                      // For non-pending status, show modify decision button
+                      isModifiable ? (
+                        <>
+                          <button
+                            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                            onClick={() => handleResponse(item, "accepted", isRequest)}
+                          >
+                            Accept
+                          </button>
+                          <button
+                            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                            onClick={() => handleResponse(item, "rejected", isRequest)}
+                          >
+                            Reject
+                          </button>
+                          <button
+                            className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+                            onClick={() => toggleModifiable(uniqueKey)}
+                          >
+                            Cancel
+                          </button>
+                        </>
+                      ) : (
                         <button
-                          className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-                          onClick={() => handleResponse(item, "accepted", isRequest)}
-                        >
-                          Accept
-                        </button>
-                        <button
-                          className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-                          onClick={() => handleResponse(item, "rejected", isRequest)}
-                        >
-                          Reject
-                        </button>
-                        <button
-                          className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+                          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
                           onClick={() => toggleModifiable(uniqueKey)}
                         >
-                          Cancel
+                          Modify Decision
                         </button>
-                      </>
-                    ) : (
-                      <button
-                        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                        onClick={() => toggleModifiable(uniqueKey)}
-                      >
-                        Modify Decision
-                      </button>
+                      )
                     )}
                   </div>
                 )}
