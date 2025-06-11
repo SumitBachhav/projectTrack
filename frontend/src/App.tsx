@@ -81,6 +81,8 @@ import StudentProfile from "./components/student/StudentProfile";
 import InsertData from "./components/InsertData";
 // @ts-ignore
 import GroupDetails from "./components/student/GroupDetails";
+// @ts-ignore
+import SuggestedWorkbook from "./components/student/SuggestedWorkbook";
 
 // Registration
 // @ts-ignore
@@ -165,6 +167,7 @@ function App() {
               <Route path="/student/studentProfile" element={<StudentProfile />} />
               <Route path="/student/insertdata" element={<InsertData />} />
               <Route path="/student/groupDetails" element={<GroupDetails />} />
+              <Route path="/student/suggestedWorkbook" element={<SuggestedWorkbook />} />
 
               {/* Task Management */}
               <Route path="/tasks" element={<ProtectedRoute><TaskList /></ProtectedRoute>} />
