@@ -8,7 +8,7 @@ const groupSchema = new Schema({
     },
     leader: {
         type: Schema.Types.ObjectId,
-        ref: "Abstract",
+        ref: "Student",
         required: true
     },
     members: [{
@@ -29,7 +29,7 @@ const groupSchema = new Schema({
     }],
     status: {
         type: String,
-        enum: ['inProgress', 'completed'],
+        enum: ['inProgress', 'completed', 'pending'],
         default: 'pending'
     },
 },

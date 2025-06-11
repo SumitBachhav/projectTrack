@@ -359,8 +359,10 @@ const sendInvitations = asyncHandler(async (req, res) => {
                     project: fromStudent.finalizedAbstract,
                     leader: fromStudent._id,
                     members: [fromStudent._id],
+                    status: "inProgress"
                 });
                 groupId = group._id;
+                await Student.updateOne({ _id: fromStudent._id }, { $set: { groupId: groupId } });
             } catch (error) {
                 console.error("Error creating group:", error);
                 return res.status(500).json({ message: "Internal Server Error" });
@@ -376,7 +378,8 @@ const sendInvitations = asyncHandler(async (req, res) => {
                 to: toStudentId,
                 abstractId: fromStudent.finalizedAbstract,
                 type: "invite",
-                status: "pending"
+                status: "pending",
+                groupId
             }));
 
         if (newInvites.length > 0) {
@@ -648,6 +651,56 @@ const studentProfile = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, response, "Profile loaded successfully"));
 });
 
+const getStudentGroupDetails = asyncHandler(async (req, res) => {
+  const studentID  = req.user._id;
+//   console.log("user details", req.user);
+  
+  if (!studentID) {
+    return res.status(400).json(new ApiResponse(400, null, "Missing userID in request"));
+  }
+
+  const student = await Student.findById( studentID );
+//   const student = await Student.findById(req.user._id).populate("skills");
+
+  if (!student) {
+    return res.status(404).json(new ApiResponse(404, null, "Student not found"));
+  }
+
+  if (!student.groupId) {
+    return res.status(200).json(new ApiResponse(200, null, "No group exists for this student"));
+  }
+
+  const group = await Group.findById(student.groupId)
+    .populate({
+        path: "leader members guide supervisor",
+        select: 'id',
+        populate: {
+            path: 'id',
+            select: 'name email'
+        }
+    })
+    .populate("tasks", "title")
+    .populate("project", "title abstract domain requirements");
+
+    /**
+     .populate({
+        path: 'from to',
+        select: 'id skills',
+        populate: { path: 'id', select: 'name' }
+    })
+    .populate({
+        path: 'abstractId',
+        select: 'title abstract domain requirements'
+    });
+     */
+
+  if (!group) {
+    return res.status(404).json(new ApiResponse(404, null, "Group not found"));
+  }
+
+  return res.status(200).json(new ApiResponse(true,  group , "Group details fetched successfully"));
+});
+
 
 
 export {
@@ -662,5 +715,6 @@ export {
     sendInvitations,
     getInvitesAndRequests,
     inviteResponse,
-    studentProfile
+    studentProfile,
+    getStudentGroupDetails
 }
