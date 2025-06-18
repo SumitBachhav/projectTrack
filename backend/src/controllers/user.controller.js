@@ -384,7 +384,7 @@ const registerStaff = asyncHandler(async (req, res) => {
     const staff = await Staff.create({
         id: req.user._id,
         userID: userID.toLowerCase(),
-        department : department.toLowerCase(),
+        department : department,
         // expertise,
         // otherSkills,
     })

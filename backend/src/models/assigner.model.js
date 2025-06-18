@@ -17,6 +17,9 @@ const taskSchema = new Schema(
       ref: "User",
       required: true,
     },
+    milestone: {
+      type: String
+    },
     receiver: {
       type: Schema.Types.ObjectId,
       ref: "User",

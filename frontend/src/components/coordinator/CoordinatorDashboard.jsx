@@ -39,6 +39,12 @@ const CoordinatorDashboard = () => {
     );
   }
 
+  const assignAbstractsToStaffFunction = () => {
+    navigate('/coordinator/assignAbstractsToStaff');
+    alert('Abstracts assigned successfully!');
+    navigate('/coordinator/dashboard');
+  };
+
   return (
     <div className="bg-gray-100 min-h-screen p-6 mt-12">
       <div className="max-w-4xl mx-auto p-8 bg-white shadow-xl rounded-lg">
@@ -78,6 +84,18 @@ const CoordinatorDashboard = () => {
               className="mt-4 w-full py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition duration-200"
             >
               Send Invitations
+            </button>
+          </div>
+
+          {/* Distribute Abstracts to staff */}
+          <div className="bg-green-50 p-6 rounded-lg shadow-md">
+            <h3 className="text-xl font-semibold text-gray-700 mb-4">Distribute Abstracts</h3>
+            <p className="text-lg text-gray-500">Distribute project abstracts.</p>
+            <button
+              onClick={assignAbstractsToStaffFunction}
+              className="mt-4 w-full py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition duration-200"
+            >
+              Distribute
             </button>
           </div>
 

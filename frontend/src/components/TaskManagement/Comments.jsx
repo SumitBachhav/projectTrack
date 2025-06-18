@@ -106,6 +106,12 @@ function Comments() {
                 {commentedBy?.name || "Unknown"}
               </span>
               <span className="text-sm text-gray-500">
+                {new Date(createdAt).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
+                {' • '}
                 {new Date(createdAt).toLocaleTimeString([], {
                   hour: "2-digit",
                   minute: "2-digit",

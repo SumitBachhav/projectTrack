@@ -15,11 +15,11 @@ const staffSchema = new Schema({
     },
     employedInInstitution: {
       type: Boolean,
-      required: true  
+    //   required: true  
     },
     availability: {
         type: Boolean,
-        required: true
+        // required: true
     },
     department: {
         type: String,

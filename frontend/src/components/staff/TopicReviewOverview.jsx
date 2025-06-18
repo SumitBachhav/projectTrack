@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
+import axios from "axios";
 
 const TopicReviewOverview = () => {
   const [abstracts, setAbstracts] = useState([]);
@@ -8,23 +9,24 @@ const TopicReviewOverview = () => {
   const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
-    const fetchAbstracts = async () => {
-      try {
-        const response = await fetch("/api/v1/staff/toVerifyAbstractList");
-        if (!response.ok) {
-          throw new Error("Failed to fetch abstracts");
-        }
-        const data = await response.json();
-        setAbstracts(data.data); // Update to match the API response structure
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchAbstracts = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/v1/staff/toVerifyAbstractList`,
+        { withCredentials: true }
+      );
+      setAbstracts(response.data.data);
+    } catch (error) {
+      console.error("Failed to fetch abstracts:", error);
+      setError("Failed to fetch abstracts.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchAbstracts();
-  }, []);
+  fetchAbstracts();
+}, []);
+
 
   // Function to handle row click
   const handleRowClick = (abstractId) => {

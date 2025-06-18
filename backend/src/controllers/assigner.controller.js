@@ -8,7 +8,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 // Assign a Task
 const assignTask = async (req, res) => {
   try {
-    const { title, description, receiverId, deadline, remark } = req.body;
+    const { title, description, receiverId, deadline, remark, milestone } = req.body;
     const assignerId = req.user.id;
 
     // Validate required fields
@@ -38,6 +38,7 @@ const assignTask = async (req, res) => {
       assigner: assignerId,
       receiver: receiverId,
       deadline,
+      milestone,
       remark: remark || undefined,
     });
 
@@ -55,6 +56,7 @@ const assignTask = async (req, res) => {
           : null,
         assigner: assignerId,
         receiver: receiverId,
+        milestone:milestone,
         remark: task.remark,
       },
     });
